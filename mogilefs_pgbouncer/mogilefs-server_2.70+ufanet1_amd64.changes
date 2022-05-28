@@ -1,0 +1,36 @@
+Format: 1.8
+Date: Wed, 18 May 2022 15:32:26 +0500
+Source: mogilefs-server
+Binary: mogstored mogilefsd
+Architecture: source all
+Version: 2.70+ufanet1
+Distribution: wheezy
+Urgency: low
+Maintainer: Jonathan Steinert <deb@hachi.kuiki.net>
+Changed-By: Vladimir Stupin <stupin@wheezy.core.ufanet.ru>
+Description: 
+ mogilefsd  - scalable distributed filesystem from Danga Interactive
+ mogstored  - storage node daemon for MogileFS
+Changes: 
+ mogilefs-server (2.70+ufanet1) wheezy; urgency=low
+ .
+   * Undoed usage of PostgreSQL advisory locks to support PgBouncer,
+   * Disabled option pg_server_prepare to support PgBouncer.
+Checksums-Sha1: 
+ 8ef42ad394edc22803a745ed39982adb8ea813ea 969 mogilefs-server_2.70+ufanet1.dsc
+ afe91d1784f5d8e33fce7348d4b30508bce66d8e 2328772 mogilefs-server_2.70+ufanet1.orig.tar.gz
+ 6afd7c1af8a4e59138d4db4548625398f169661c 7973 mogilefs-server_2.70+ufanet1.debian.tar.gz
+ 39d7bceb682cc433b4310a8d0e53984cc67cd9cf 27450 mogstored_2.70+ufanet1_all.deb
+ bd94c6c928a239046ac0a9d4e190fd1e981840fe 182660 mogilefsd_2.70+ufanet1_all.deb
+Checksums-Sha256: 
+ a059f6597c4c1d6aa3dedd5602cb6e851cdb4822e37f41a24393f877b7194224 969 mogilefs-server_2.70+ufanet1.dsc
+ 935ada9c39dbf750ccc1185432b78430175479ecc5235661a76239e38e7341d8 2328772 mogilefs-server_2.70+ufanet1.orig.tar.gz
+ 1cf454c4e60416782cddb29ac6b8b0cc268f5495e359c00d3cef259cd14bee71 7973 mogilefs-server_2.70+ufanet1.debian.tar.gz
+ a83abde3469ee29f8cc9cc929218622f8d20fcf71671f2208e8445c209b4664b 27450 mogstored_2.70+ufanet1_all.deb
+ 310da15b678525adb58c39c720f45686fae8b17a7ca7b322c8c3f82952b14d84 182660 mogilefsd_2.70+ufanet1_all.deb
+Files: 
+ 982fb3319149f67e00010808b70d9519 969 perl optional mogilefs-server_2.70+ufanet1.dsc
+ 0a2598714ce6bd31ba741296dcc90d8e 2328772 perl optional mogilefs-server_2.70+ufanet1.orig.tar.gz
+ 82fefd4619d7f5253b77654ce0024bbf 7973 perl optional mogilefs-server_2.70+ufanet1.debian.tar.gz
+ 30d3a6c8f9ec62d6ea7817f1419e962b 27450 perl optional mogstored_2.70+ufanet1_all.deb
+ 6dc6790b9d43c1afcf1f95d42fdf5ffe 182660 perl optional mogilefsd_2.70+ufanet1_all.deb

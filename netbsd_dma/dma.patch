@@ -1,0 +1,70 @@
+diff --git a/dma/Makefile b/dma/Makefile
+index 73869b14bf..6d8889c9ca 100644
+--- a/dma/Makefile
++++ b/dma/Makefile
+@@ -15,7 +15,7 @@ LICENSE=	modified-bsd
+ BUILD_DEFS+=		VARBASE
+ 
+ PKG_SYSCONFSUBDIR=	dma
+-EGDIR=			${PREFIX}/share/exmaples/${PKGBASE}
++EGDIR=			${PREFIX}/share/examples/${PKGBASE}
+ 
+ USE_TOOLS+=	flex yacc
+ LDFLAGS.SunOS+=	-lsocket -lnsl
+@@ -43,15 +43,39 @@ MAKE_FLAGS+=	"MAN=${PREFIX}/${PKGMANDIR}"
+ 
+ INSTALLATION_DIRS=	${EGDIR}
+ 
+-CONF_FILES=	${EGDIR}/dma.conf ${PKG_SYSCONFDIR}/dma.conf
+-CONF_FILES+=	${EGDIR}/auth.conf ${PKG_SYSCONFDIR}/auth.conf
++CONF_FILES=		${EGDIR}/dma.conf ${PKG_SYSCONFDIR}/dma.conf
++CONF_FILES_PERMS+=	${EGDIR}/auth.conf ${PKG_SYSCONFDIR}/auth.conf root wheel 0640
++
++SUBST_CLASSES+=		paths
++SUBST_FILES.paths=	${WRKDIR}/mailer.conf
++SUBST_VARS.paths=	PREFIX
++SUBST_STAGE.paths=	pre-build
++
++SUBST_CLASSES+=		auth
++SUBST_FILES.auth=	dma.conf
++SUBST_SED.auth=		-e 's,/etc/dma/,${PREFIX}/etc/dma/,g'
++SUBST_STAGE.auth=	pre-build
++
++.if "${OPSYS}" == "NetBSD"
++SUBST_CLASSES+=		aliases
++SUBST_FILES.aliases=	dma.conf
++SUBST_SED.aliases=	-e 's,/etc/aliases,/etc/mail/aliases,g' \
++			-e 's,^\#ALIASES,ALIASES,g'
++SUBST_STAGE.aliases=	pre-build
++.endif
+ 
+ OWN_DIRS=	${VARBASE}/spool/dma
+-OWN_DIRS_PERMS=	${VARBASE}/spool/dma ${DMA_ROOT_USER} ${DMA_GROUP} 750
++OWN_DIRS_PERMS=	${VARBASE}/spool/dma ${DMA_ROOT_USER} ${DMA_GROUP} 2770
++
++SPECIAL_PERMS+= sbin/dma root ${DMA_GROUP} 2555
++
++post-extract:
++	${CP} ${FILESDIR}/mailer.conf ${WRKDIR}/mailer.conf
+ 
+ post-install:
+ 	${INSTALL_DATA} ${WRKSRC}/dma.conf ${DESTDIR}${EGDIR}/dma.conf
+-	${INSTALL_DATA} ${WRKSRC}/auth.conf ${DESTDIR}${EGDIR}/auth.conf
++	${INSTALL_DATA} -m 0640 ${WRKSRC}/auth.conf ${DESTDIR}${EGDIR}/auth.conf
++	${INSTALL_DATA} ${WRKDIR}/mailer.conf ${DESTDIR}${EGDIR}/mailer.conf
+ 
+ .include "../../security/openssl/buildlink3.mk"
+ .include "../../mk/bsd.pkg.mk"
+diff --git a/dma/PLIST b/dma/PLIST
+index 66705d3bfb..05d3bac34c 100644
+--- a/dma/PLIST
++++ b/dma/PLIST
+@@ -2,5 +2,6 @@
+ libexec/dma-mbox-create
+ man/man8/dma.8
+ sbin/dma
+-share/exmaples/dma/auth.conf
+-share/exmaples/dma/dma.conf
++share/examples/dma/auth.conf
++share/examples/dma/dma.conf
++share/examples/dma/mailer.conf

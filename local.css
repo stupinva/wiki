@@ -1,0 +1,6 @@
+body { margin-left: 10%; margin-right: 10%; background: url(background.jpg) repeat; }
+table { border-collapse: collapse; margin: auto; }
+td, th { border-style: solid; border-width: 1px; padding: 5px; }
+pre code { background-color: black; color: white; display: inline-block; padding: 10px; }
+blockquote { border-color: black; border-style: solid; border-left-width: 3px; border-right-width: 0px; border-top-width: 0px; border-bottom-width: 0px; padding-left: 5px; }
+img { max-width: 100%; max-height: 480px; margin: auto; display: block; padding: 10px; }

@@ -1,0 +1,227 @@
+MogileFS с поддержкой работы через PgBouncer
+============================================
+
+После [[миграции трекера MogileFS с MySQL на PostgreSQL|mogilefs_mysql_postgresql]] на сервере PostgreSQL возросло количество используемых подключений. Поскольку каждое подключение обслуживается отдельным процессом PostgreSQL, для которого выделяются буферы `work_mem` и `temp_buffers`, возрастает потребление оперативной памяти. Для экономии оперативной памяти можно воспользоваться PgBouncer, который позволяет экономить подключения к серверу PostgreSQL за счёт повторного использования одного и того же процесса для обслуживания запросов, поступающих из разных входящих подключений. Однако при попытке переключить `mogilefsd` на работу через PgBouncer возникли проблемы.
+
+Заготовленные запросы
+---------------------
+
+Драйвер `DBD::Pg`, используемый трекером MogieFS, при подключении к PostgreSQL версии 8.8 и выше автоматически использует заготовленные запросы (prepared statements). К сожалению, при использовании PgBouncer заготовка запроса и попытка использования заготовленного запроса могут попадать в разные процессы PostgreSQL, из-за чего заготовленные запросы будут завершаться ошибкой.
+
+В драйвере `DBD::Pg` имеется опция [pg_server_prepare](https://metacpan.org/pod/DBD::Pg#pg_server_prepare-(boolean)), позволяющая отключить использование заготовленных запросов. К сожалению, её нельзя указать в строке DSN с настройками подключения и поэтому не получится указать в файле конфигурации трекера MogileFS. Для того, чтобы отключить использование заготовленных запросов, придётся отредактировать исходные тексты трекера MogileFS. Интересующий нас фрагмент находится в файле [MogileFS::Store](https://github.com/mogilefs/MogileFS-Server/blob/master/lib/MogileFS/Store.pm#L382). Строка 382 выглядит следующим образом:
+
+    sqlite_use_immediate_transaction => 1,
+
+Добавим сразу за ней такую строчку:
+
+    pg_server_prepare => 0,
+
+Рекомендательные блокировки
+---------------------------
+
+Если ограничиться описанным выше исправлением, то в журнале сервера PostgreSQL периодически будут появляться ошибки следующего вида:
+
+    [local] WARNING:  you don't own a lock of type ExclusiveLock
+
+Оказалось, что в модуле `MogileFS::Store::Postgres` используются рекомендательные блокировки (advisory locks). Если заглянуть в исходные тексты модуля [MogileFS::Store::Postgres](https://github.com/mogilefs/MogileFS-Server/blob/master/lib/MogileFS/Store/Postgres.pm), то можно обнаружить, что в нём используются функции PostgreSQL `pg_try_advisory_lock` и `pg_advisory_unlock`. Обе эти функции не блокируют доступ к каким-либо объектам в самой базе данных, а являются просто удобным механизмом синхронизации частей приложения, работающих на разных серверах, но использующих одну и ту же базу данных. Первая функция принимает идентификатор блокировки, который может состоять из одного или двух чисел и создаёт блокировку с указанным идентификатором. Блокировка действует до её снятия с помощью второй функции, либо до конца подключения.
+
+Возникающая проблема хорошо описана в статье [The Pitfall of Using PostgreSQL Advisory Locks with Go's DB Connection Pool](https://engineering.qubecinema.com/2019/08/26/unlocking-advisory-locks.html). освбодить блокировку можно только из того же процесса PostgreSQL, в котором она была создана. Поскольку PgBouncer может направлять запросы из входящих подключений в разные процессы PostgreSQL, попытка снять блокировку из другого процесса приведёт к возникновению приведённой выше ошибки: блокировка принадлежит другому процессу и поэтому не снимается.
+
+Я снова обратился к исходным текстам MogileFS, для чего сначала получил исходные тексты из репозитория:
+
+    $ git clone https://github.com/mogilefs/MogileFS-Server
+
+Перешёл в каталог с репозиторием:
+
+    $ cd MogileFS-Server
+
+И переключился на используемую мной версию 2.70:
+
+    $ git checkout 2.70
+
+Я просмотрел историю изменений модуля `MogileFS::Store::Postgres` следующим образом:
+
+    $ git log -p lib/MogileFS/Store/Postgres.pm
+
+Оказалось, что до того, как в трекере начали использоваться рекомендательные блокировки (advisory locks), тот же функционал был реализован с использованием таблицы `lock`. Для возврата нужно откатить две фиксации, одна из которых заменяет использование таблицы `lock` на рекомендательные блокировки, а вторая исправляет ошибку, добавленную первой фиксацией. Для начала я сформировал заплатку с изменениями:
+
+    $ git diff -R ac5534a0c3d046e660fa7581c9173857f182bd81 21a66942fde3bb4f9e5ee24dac787d3c9ebbb41f lib/MogileFS/Store/Postgres.pm > mogilefs_without_pg_advisory_locks.patch
+
+Применить эти изменения к исходным текстам можно следующим образом:
+
+    $ patch -p1 < mogilefs_without_pg_advisory_locks.patch
+
+Теперь можно приступить к сборке доработанного deb-пакета.
+
+Настройка виртуальной машины
+----------------------------
+
+Для сборки настроим виртуальную машину, аналогичную используемой на том сервере, где установлен трекер MogileFS. В рассматриваемом примере это система Debian 7.11.0 с кодовым именем Wheezy. Получить образ установочного диска можно по ссылке [debian-7.11.0-amd64-netinst.iso](http://cdimage.debian.org/cdimage/archive/7.11.0/amd64/iso-cd/debian-7.11.0-amd64-netinst.iso).
+
+Настройка репозиториев
+----------------------
+
+Для настройки репозиториев поместим в файл `/etc/apt/sources.list` следующие строки:
+
+    deb http://archive.debian.org/debian/ wheezy main contrib non-free
+    deb http://archive.debian.org/debian-security/ wheezy/updates main contrib non-free
+    deb http://archive.debian.org/debian/ wheezy-backports main contrib non-free
+    deb-src http://repo.lo.ufanet.ru/ wheezy main contrib non-free
+
+В списке репозиториев фигурирует репозиторий `repo.lo.ufanet.ru` в нём находятся исходные пакеты, доработанные под собственные нужды. Можно обойтись и без него, если воспользоваться [репозиторием git с исходными текстами MogileFS](https://github.com/mogilefs/MogileFS-Server). Установить в систему публиынй GPG-ключ, которым подписан репозиторий `repo.lo.ufanet.ru`, можно следующим образом:
+
+    # wget --quiet -O - http://repo.lo.ufanet.ru/key.gpg | apt-key add -
+
+Поскольу мы установили устаревший релиз, отключим проверку актуальности репозиториев, создав файл `/etc/apt/apt.conf.d/valid` со следующим содержимым:
+
+    Acquire::Check-Valid-Until "false";
+
+Отключаем установку предлагаемых зависимостей, создав файл `/etc/apt/apt.conf.d/suggests` со следующим содержимым:
+
+    APT::Install-Suggests "false";
+
+Отключаем установку рекомендуемых зависимостей, создав файл `/etc/apt/apt.conf.d/recommends` со следующим содержимым:
+
+    APT::Install-Recommends "false";
+
+Система apt сохраняет скачанные пакеты в каталоге `/var/cache/apt/archives/`, чтобы при необходимости не скачивать их снова. Файлы в этом каталоге по умолчанию не удаляются, что может привести к переполнению диска. Чтобы отключить размер файлов в этом каталоге 200 мегабайтами, создадим файл `/etc/apt/apt.conf.d/cache` со следующим содержимым:
+
+    APT::Cache-Limit "209715200";
+
+Создадим файл `/etc/apt/apt.conf.d/timeouts` с настройками таймаутов обращения к репозиториям:
+
+    Acquire::http::Timeout "5";
+    Acquire::https::Timeout "5";
+    Acquire::ftp::Timeout "5";
+
+При необходимости, если репозитории доступны через веб-прокси, можно создать файл `/etc/apt/apt.conf.d/proxy`, прописав в него прокси-серверы для протоколов HTTP, HTTPS и FTP:
+
+    Acquire::http::Proxy "http://10.0.25.3:8080";
+    Acquire::https::Proxy "http://10.0.25.3:8080";
+    Acquire::ftp::Proxy "http://10.0.25.3:8080";
+
+Обновим список пакетов, доступных через репозиторий:
+
+    # apt-get update
+
+Обновим систему с использованием самых свежих пакетов, доступных через репозитории:
+
+    # apt-get upgrade
+    # apt-get dist-upgrade
+
+Установка пакетов
+-----------------
+
+Установим пакеты, необходимые для сборки:
+
+    # apt-get install dpkg-dev devscripts libparse-debcontrol-perl quilt fakeroot build-essential:native debhelper debconf perl sysstat libstring-crc32-perl libperlbal-perl libio-aio-perl libdbd-mysql-perl libdbi-perl libnet-netmask-perl libwww-perl libdanga-socket-perl libmogilefs-perl libsys-syscall-perl libfile-fcntllock-perl
+
+Получение исходных текстов
+--------------------------
+
+Скачиваем исходники deb-пакета `mogilefs-server`, они автоматически распакуются в каталог `mogilefs-server-2.70`:
+
+    $ apt-get source mogilefs-server
+
+И переходим в каталог с распакованными исходными текстами:
+
+    $ cd mogilefs-server-2.70
+
+В качестве альтернативы можно воспользоваться репозиторием с исходниками MogileFS:
+
+    $ git clone https://github.com/mogilefs/MogileFS-Server
+
+Перейти в каталог с получеными исходным текстами:
+
+    $ cd MogileFS-Server
+
+И переключиться на используемую на сервере версию 2.70:
+
+    $ git checkout 2.70
+
+Доработка и сборка deb-пакета
+-----------------------------
+
+Переименовываем файл с исходными текстами для соответствия выбранному формату:
+
+    $ mv ../mogilefs-server_2.70.tar.gz ../mogilefs-server_2.70+ufanet1.orig.tar.gz
+
+Запускаем утилиту `dch` для обновления журнала изменений пакета:
+
+    $ dch -i
+
+Вводим описание доработанной нами версии пакета:
+
+    mogilefs-server (2.70+ufanet1) wheezy; urgency=low
+    
+      * Undoed usage of PostgreSQL advisory locks to support PgBouncer,
+      * Disabled option pg_server_prepare to support PgBouncer.
+    
+     -- Vladimir Stupin <vladimir@stupin.su>  Wed, 18 May 2022 15:28:20 +0500
+
+Редактируем файл `lib/MogileFS/Store.pm`, за строкой 380 с текстом `sqlite_use_immediate_transaction => 1,` добавляем строку `pg_server_prepare => 0,`.
+
+Скачиваем подготовленную ранее заплатку:
+
+    $ wget --quiet --no-check-certificate https://stupin.su/wiki/mogilefs_pgbouncer/mogilefs_without_pg_advisory_locks.patch
+
+На файл `lib/MogileFS/Store/Postgres.pm` накладываем заплатку:
+
+    $ patch -p1 < mogilefs_without_pg_advisory_locks.patch
+
+Удаляем заплатку и резервную копию файла до применения заплатки:
+
+    $ rm mogilefs_without_pg_advisory_locks.patch lib/MogileFS/Store/Postgres.pm.orig
+
+Добавляем новый файл, в который записываем формат, которому соответствует архив с исходными текстами программы:
+
+    $ mkdir debian/source
+    $ echo -n "3.0 (quilt)" > debian/source/format
+
+В файле `debian/rules` меняем строчку `dh_clean -k` на `dh_prep`.
+
+Меняем уровень совместимости для утилиты `debhelper`:
+
+    $ echo -n "7" > debian/compat
+
+Фиксируем изменения в исходном пакете:
+
+    $ dpkg-source --commit
+
+В ответ на запрос `Enter the desired patch name` вводим имя заплатки `pgbouncer-support`.
+
+Приводим заголовок заплатки к следующему виду:
+
+    Description: PgBouncer support
+     * Undoed usage of PostgreSQL advisory locks to support PgBouncer,
+     * Disabled option pg_server_prepare to support PgBouncer.
+     .
+     mogilefs-server (2.70+ufanet1) wheezy; urgency=low
+     .
+       * Undoed usage of PostgreSQL advisory locks to support PgBouncer,
+       * Disabled option pg_server_prepare to support PgBouncer.
+    Author: Vladimir Stupin <vladimir@stupin.su>
+    Last-Update: <2022-05-18>
+
+Выполняем сборку доработанного deb-пакета:
+
+    $ dpkg-buildpackage -rfakeroot -us -uc
+
+В результате в каталоге выше должны появиться следующие файлы:
+
+* [[mogilefsd_2.70+ufanet1_all.deb]]
+* [[mogilefs-server_2.70+ufanet1_amd64.changes]]
+* [[mogilefs-server_2.70+ufanet1.debian.tar.gz]]
+* [[mogilefs-server_2.70+ufanet1.dsc]]
+* [[mogstored_2.70+ufanet1_all.deb]]
+
+Эти файлы вместе с файлом [[mogilefs-server_2.70+ufanet1.orig.tar.gz]] можно поместить в репозиторий, например, с помощью утилиты `aptly`.
+
+Дополнительные материалы
+------------------------
+
+* [Миграция трекера MogileFS с MySQL на PostgreSQL](mogilefs_mysql_postgresql)
+* [Настройка PgBouncer](postgresql_pgbouncer)
+* [Настройка буферов PostgreSQL](postgresql_buffers)
+* [How To Setup MogileFS](https://mogilefs.github.io/mogilefs-docs/InstallHowTo.html)
+* [How To Interact with MogileFS](https://mogilefs.github.io/mogilefs-docs/CommandlineUsage.html)

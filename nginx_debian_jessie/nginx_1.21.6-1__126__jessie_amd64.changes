@@ -1,0 +1,32 @@
+Format: 1.8
+Date: Wed, 18 May 2022 10:31:17 +0500
+Source: nginx
+Binary: nginx nginx-dbg
+Architecture: source amd64
+Version: 1.21.6-1~jessie
+Distribution: jessie
+Urgency: low
+Maintainer: NGINX Packaging <nginx-packaging@f5.com>
+Changed-By: Vladimir Stupin <vladimir@stupin.su>
+Description:
+ nginx      - high performance web server
+ nginx-dbg  - nginx debug symbols
+Changes:
+ nginx (1.21.6-1~jessie) jessie; urgency=low
+ .
+   * Package backport for Debian 8.11 Jessie
+Checksums-Sha1:
+ 2b257da0af683ecb87c87248cf7f739aac1a3c6c 983 nginx_1.21.6-1~jessie.dsc
+ 6685231b12e4a5fa0eec45888099cd6f8512ab72 120900 nginx_1.21.6-1~jessie.debian.tar.xz
+ 180d7df417e7d4944f5261d0e9e0aa7a8f0a3f7c 868058 nginx_1.21.6-1~jessie_amd64.deb
+ 6801795d2d02f456042cda56af9ca8f20358abb1 2842078 nginx-dbg_1.21.6-1~jessie_amd64.deb
+Checksums-Sha256:
+ 9d346fc542bf718b7fb0686c7a54f22db0c3d5ad14b0079483f83444e7555f53 983 nginx_1.21.6-1~jessie.dsc
+ d5fbcc5b09547ad459795f14dfa1490771c44802083414349fc52477345406c2 120900 nginx_1.21.6-1~jessie.debian.tar.xz
+ 8e55577465bbbfb46193f56bfe2ddaacab70f892da5f0be4d2129552cc8c228f 868058 nginx_1.21.6-1~jessie_amd64.deb
+ f2615fd439a2ba2d97285563bbd45ad0bd6c68bd8da3af6518c262923a673849 2842078 nginx-dbg_1.21.6-1~jessie_amd64.deb
+Files:
+ bdcdf93ce1445fcb15958ae5fc5b543a 983 httpd optional nginx_1.21.6-1~jessie.dsc
+ 7278f1abdeb4d65f34f57cc775d0582b 120900 httpd optional nginx_1.21.6-1~jessie.debian.tar.xz
+ a2720f3ec1ce16ff01cdef03604a9c25 868058 httpd optional nginx_1.21.6-1~jessie_amd64.deb
+ 9eb2a8b8b2b164b088f35e5b97079a39 2842078 debug extra nginx-dbg_1.21.6-1~jessie_amd64.deb
