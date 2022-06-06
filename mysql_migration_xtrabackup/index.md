@@ -45,6 +45,16 @@
 
 Файлы `db_scheme.sql` и `db_import.sql` нужно перенести на целевой сервер.
 
+Для выполнения указанных действий над несколькими базами данных может быть удобно воспользоваться таким скриптом (первая и вторая строчки внутри цикла соответсвтвуют структурам без выражений `CREATE DATABASE` и с ним, используется второй вариант):
+
+    for db in db1 db2 db3
+    do
+        #mysqldump -d "$db" > "${db}_scheme.sql"
+        mysqldump -d --databases "$db" > "${db}_scheme.sql"
+        mysql "$db" -BNe 'SHOW TABLES;' | awk '{ print "ALTER TABLE " $0 " DISCARD TABLESPACE;" }' >> "${db}_scheme.sql"
+        mysql "$db" -BNe 'SHOW TABLES;' | awk '{ print "ALTER TABLE " $0 " IMPORT TABLESPACE;" }' > "${db}_import.sql"
+    done
+
 Восстановление резервной копии
 ------------------------------
 
