@@ -80,6 +80,7 @@ MySQL
 * [[Игнорирование ошибок репликации MySQL|mysql_slave_ignore_errors]]
 * [[Установка Percona Server в Debian/Ubuntu|percona_server_debian_ubuntu]]
 * [[Отслеживание подключений к MySQL|mysql_connections]]
+* [[Настройка ProxySQL|proxysql]]
 
 PostgreSQL
 ----------
