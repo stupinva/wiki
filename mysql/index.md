@@ -178,7 +178,7 @@
     ORDER BY tables.table_schema,
              tables.table_name;
 
-Источник: [https://dataedo.com/kb/query/mysql/find-tables-without-primary-keys](Bart Gawrych. Find tables without primary keys (PKs) in MySQL database)
+Источник: [Bart Gawrych. Find tables without primary keys (PKs) in MySQL database](https://dataedo.com/kb/query/mysql/find-tables-without-primary-keys)
 
 Просмотр необычных движков таблиц
 ---------------------------------
