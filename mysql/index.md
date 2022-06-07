@@ -197,6 +197,20 @@
 
     $ mysql information_schema -BNe "SELECT CONCAT('ALTER TABLE \`', table_schema, '\`.\`', table_name, '\` ENGINE=InnoDB;') FROM tables WHERE engine = 'MyISAM' AND table_schema NOT IN ('mysql', 'performance_schema', 'information_schema');" | mysql
 
+Поиск таблиц с секциями
+-----------------------
+
+Для вывода списка таблиц, поделённых на секции или подсекции, можно выполнить в базе данных `information_schema` следующий запрос:
+
+    SELECT DISTINCT table_schema, table_name
+    FROM partitions
+    WHERE partition_name IS NOT NULL
+      OR subpartition_name IS NOT NULL;
+
+Для удаления секций из таблицы без потери данных можно выполнить над ней запрос такого вида:
+
+    ALTER TABLE <таблица> REMOVE PARTITIONING;
+
 Выгрузка схемы базы данных
 --------------------------
 
