@@ -37,7 +37,7 @@ NetBSD установлена на виртуальную машину, диск
     Filesystem         Size       Used      Avail %Cap Mounted on
     /dev/dk0           4.8G       3.6G       1.0G  78% /
 
-На физической машине, где находятся LVM-тома и запущена виртуализация LVM, выполним увеличение размера LVM-тома виртуальной машины:
+На физической машине, где находятся LVM-тома и запущена виртуализация KVM, выполним увеличение размера LVM-тома виртуальной машины:
 
     root@stupin.su:~# lvresize -L 10G stupin/vm-mda
       Size of logical volume stupin/vm-mda changed from 5,00 GiB (1280 extents) to 10,00 GiB (2560 extents).
