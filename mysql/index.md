@@ -161,6 +161,25 @@
     ORDER BY s DESC
     LIMIT 10;
 
+Поиск таблиц без первичного ключа
+---------------------------------
+
+Для поиска таблиц, не имеющих первичного ключа, можно воспользоваться следующим запросом к базе данных `information_schema`:
+
+    SELECT tables.table_schema,
+           tables.table_name
+    FROM tables
+    LEFT JOIN table_constraints ON tables.table_schema = table_constraints.table_schema
+      AND tables.table_name = table_constraints.table_name
+      AND table_constraints.constraint_type = 'PRIMARY KEY'
+    WHERE table_constraints.constraint_type IS NULL
+      AND tables.table_schema NOT IN ('mysql', 'information_schema', 'performance_schema', 'sys')
+      AND tables.table_type = 'BASE TABLE'
+    ORDER BY tables.table_schema,
+             tables.table_name;
+
+Источник: [https://dataedo.com/kb/query/mysql/find-tables-without-primary-keys](Bart Gawrych. Find tables without primary keys (PKs) in MySQL database)
+
 Просмотр необычных движков таблиц
 ---------------------------------
 
