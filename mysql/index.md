@@ -173,6 +173,11 @@
     WHERE engine <> 'InnoDB'
       AND table_schema NOT IN ('mysql', 'performance_schema', 'information_schema');
 
+Преобразование всех таблиц из MyISAM в InnoDB
+---------------------------------------------
+
+    $ mysql information_schema -BNe "SELECT CONCAT('ALTER TABLE \`', table_schema, '\`.\`', table_name, '\` ENGINE=InnoDB;') FROM tables WHERE engine = 'MyISAM' AND table_schema NOT IN ('mysql', 'performance_schema', 'information_schema');" | mysql
+
 Выгрузка схемы базы данных
 --------------------------
 
