@@ -101,7 +101,7 @@
 
 Вводим в качестве описания последних изменений такой текст:
 
-    proxysql2 (2.4.1) unstable; urgency=medium
+    proxysql2 (2.4.1~buster) unstable; urgency=medium
     
       * Update to new upstream release ProxySQL 2.4.1
     
@@ -110,6 +110,10 @@
 Добавляем в файл `debian/control` зависимость от библиотек `libgnutls`, `zlib`, `uuid` и утилиты `gawk`:
 
     Build-Depends: debhelper (>= 9), debconf, pkg-config, g++, cmake, libgnutls28-dev, zlib1g-dev, uuid-dev, gawk
+
+Удаляем из файла `debian/control` следующую строчку:
+
+    Version: @@VERSION@@
 
 Добавляем в заплатку `percona-utilities` файлы, добавленные авторами исходного пакета:
 
@@ -165,13 +169,23 @@
     $ cp ../proxysql2-2.3.2/tools/README.md tools/
     $ quilt refresh
 
-В файл `debian/rules` добавим правило, удаляющее файлы, отмечающие выполненные этапы сборки пакета:
+В файл `debian/rules.systemd` добавим правило, удаляющее файлы, отмечающие выполненные этапы сборки пакета:
 
     override_dh_clean:
             @echo "RULES.$@"
             dh_clean
             rm -f override_dh_auto_build override_dh_auto_configure
 
+Скопируем содержимое файла `debian/rules.systemd` в файл `debian/rules`:
+
+    $ cat debian/rules.systemd > debian/rules
+
 Запускаем сборку пакета:
 
     $ GIT_VERSION=2.4.1 dpkg-buildpackage -us -uc -rfakeroot
+
+Использованные материалы
+------------------------
+
+* [[Сборка pg_repack для Debian 8.11.1 LTS Jessie и PostgresPro 9.5.14.1|pg_repack_debian_jessie_postgrespro95]]
+* [joey/ blog/ entry/ debhelper dh overrides](https://joeyh.name/blog/entry/debhelper_dh_overrides/)
