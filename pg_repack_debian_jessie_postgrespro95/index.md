@@ -15,7 +15,7 @@
     deb http://archive.debian.org/debian-security/ jessie/updates main contrib non-free
     deb http://repo.postgrespro.ru/pgpro-9.5/debian jessie main
 
-Также нужно установить в систему публиынй GPG-ключ, которым подписан репозиторий PostgresPro:
+Также нужно установить в систему публичный GPG-ключ, которым подписан репозиторий PostgresPro:
 
     # wget --quiet -O - http://repo.postgrespro.ru/keys/GPG-KEY-POSTGRESPRO | apt-key add -
 
