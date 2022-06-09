@@ -23,7 +23,7 @@
     deb http://mirror.ufanet.ru/ubuntu/ xenial-backports main restricted universe multiverse
     deb http://repo.postgrespro.ru/pgpro-archive/pgpro-9.6.21.1/ubuntu/ xenial main
 
-Также нужно установить в систему публиынй GPG-ключ, которым подписан репозиторий PostgresPro:
+Также нужно установить в систему публичный GPG-ключ, которым подписан репозиторий PostgresPro:
 
     # wget --quiet -O - http://repo.postgrespro.ru/keys/GPG-KEY-POSTGRESPRO | apt-key add -
 
