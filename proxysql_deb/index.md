@@ -73,3 +73,105 @@
 Обновляем список пакетов, доступных через репозитории:
 
     # apt-get update
+
+Сборка пакета
+-------------
+
+Установим пакеты, которые понадобятся дальнейших действий:
+
+    # apt-get install dpkg-dev git ca-certificates devscripts build-essential debhelper pkg-config g++ cmake quilt libgnutls28-dev zlib1g-dev uuid-dev gawk
+
+Получим исходный пакет, который на момент написания статьи соответствует версии 2.3.2:
+
+    $ apt-get source proxysql2
+
+Клонируем из репозитория ветку с нужной нам версией 2.4.1:
+
+    $ git clone --single-branch -b v2.4.1 https://github.com/sysown/proxysql/ proxysql2-2.4.1
+
+Скопируем каталог `debian` в каталог со скачанными исходными текстами и удалим служебный каталог `.git`:
+
+    $ cp -R proxysql2-2.3.2/debian proxysql2-2.4.1/
+    $ rm -fR proxysql2-2.4.1/.git
+
+Перейдём в каталог с новыми исходными текстами и запустим утилиту для редактирования журнала изменений пакета:
+
+    $ cd proxysql2-2.4.1
+    $ dch -i
+
+Вводим в качестве описания последних изменений такой текст:
+
+    proxysql2 (2.4.1) unstable; urgency=medium
+    
+      * Update to new upstream release ProxySQL 2.4.1
+    
+     -- Vladimir Stupin <vladimir@stupin.su>  Thu, 09 Jun 2022 11:03:26 +0500
+
+Добавляем в файл `debian/control` зависимость от библиотек `libgnutls`, `zlib`, `uuid` и утилиты `gawk`:
+
+    Build-Depends: debhelper (>= 9), debconf, pkg-config, g++, cmake, libgnutls28-dev, zlib1g-dev, uuid-dev, gawk
+
+Добавляем в заплатку `percona-utilities` файлы, добавленные авторами исходного пакета:
+
+    $ quilt new percona-utilities
+    $ quilt add etc/proxysql-admin.cnf
+    $ quilt add tools/proxysql-admin
+    $ quilt add tools/proxysql-admin-common
+    $ quilt add tools/proxysql-logrotate
+    $ quilt add tools/proxysql-status
+    $ quilt add tools/proxysql-login-file
+    $ quilt add tools/tools/enable_scheduler
+    $ quilt add tools/tools/mysql_exec
+    $ quilt add tools/tools/proxysql_exec
+    $ quilt add tools/tools/run_galera_checker
+    $ quilt add tools/tests/bad-login-file2.clear.cnf
+    $ quilt add tools/tests/bad-login-file2.cnf
+    $ quilt add tools/tests/bad-login-file.clear.cnf
+    $ quilt add tools/tests/bad-login-file.cnf
+    $ quilt add tools/tests/generic-test.bats
+    $ quilt add tools/tests/login-file2.clear.cnf
+    $ quilt add tools/tests/login-file2.cnf
+    $ quilt add tools/tests/login-file.clear.cnf
+    $ quilt add tools/tests/login-file.cnf
+    $ quilt add tools/tests/proxysql-admin-testsuite.bats
+    $ quilt add tools/tests/proxysql-admin-testsuite.sh
+    $ quilt add tools/tests/setup_workdir.sh
+    $ quilt add tools/tests/test-common.bash
+    $ quilt add doc/internal/command_line_options.txt
+    $ quilt add doc/internal/debug_filters.md
+    $ quilt add doc/internal/global_variables.txt
+    $ quilt add doc/internal/PROXYSQLTEST.md
+    $ quilt add doc/internal/query_parser.txt
+    $ quilt add doc/internal/Standard_ProxySQL_Admin.txt
+    $ quilt add doc/internal/Stats_API.txt
+    $ quilt add doc/release_notes/ProxySQL_v1.2.2.md
+    $ quilt add doc/release_notes/ProxySQL_v1.2.3.md
+    $ quilt add doc/release_notes/ProxySQL_v1.2.4.md
+    $ quilt add doc/release_notes/ProxySQL_v1.3.0g.md
+    $ quilt add doc/release_notes/ProxySQL_v1.3.0.md
+    $ quilt add doc/release_notes/ProxySQL_v1.3.2.md
+    $ quilt add doc/release_notes/ProxySQL_v1.3.3.md
+    $ quilt add doc/release_notes/ProxySQL_v1.4.4.md
+    $ quilt add tools/README.md
+    $ cp ../proxy2-2.3.2/etc/proxysql-admin.cnf etc/
+    $ cp ../proxysql2-2.3.2/tools/proxysql-admin tools/
+    $ cp ../proxysql2-2.3.2/tools/proxysql-admin-common tools/
+    $ cp ../proxysql2-2.3.2/tools/proxysql-logrotate tools/
+    $ cp ../proxysql2-2.3.2/tools/proxysql-status tools/
+    $ cp ../proxysql2-2.3.2/tools/proxysql-login-file tools/
+    $ cp -r ../proxysql2-2.3.2/tools/tools tools/
+    $ cp -r ../proxysql2-2.3.2/tools/tests tools/
+    $ cp -r ../proxysql2-2.3.2/doc .
+    $ cp ../proxysql2-2.3.2/tools/README.md tools/
+    $ quilt refresh
+
+В файл `debian/rules` добавим правило, удаляющее файлы, отмечающие выполненные этапы сборки пакета:
+
+    override_dh_clean:
+            @echo "RULES.$@"
+            dh_clean
+            rm -f override_dh_auto_build override_dh_auto_configure
+
+Запускаем сборку пакета:
+
+    $ GIT_VERSION=2.4.1 dpkg-buildpackage -us -uc -rfakeroot
