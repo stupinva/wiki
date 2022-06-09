@@ -24,7 +24,7 @@
     deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main
     #deb http://ppa.launchpad.net/timescale/timescaledb-ppa/ubuntu bionic main
 
-Также нужно установить в систему публиынй GPG-ключ, которым подписан репозиторий PostgreSQL:
+Также нужно установить в систему публичный GPG-ключ, которым подписан репозиторий PostgreSQL:
 
     $ wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
