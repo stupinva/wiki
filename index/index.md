@@ -81,6 +81,7 @@ MySQL
 * [[Установка Percona Server в Debian/Ubuntu|percona_server_debian_ubuntu]]
 * [[Отслеживание подключений к MySQL|mysql_connections]]
 * [[Настройка ProxySQL|proxysql]]
+* [[Сборка ProxySQL для Debian 10.12 Buster|proxysql_deb]]
 
 PostgreSQL
 ----------
