@@ -97,6 +97,7 @@ PostgreSQL
 * [[Сборка pg_repack для Debian 8.11.1 LTS Jessie и PostgresPro 9.5.14.1|pg_repack_debian_jessie_postgrespro95]]
 * [[Сборка pg_repack для Ubuntu 16.04 LTS Xenial и PostgresPro 9.6.21.1|pg_repack_ubuntu_xenial_postgrespro96]]
 * [[Сборка pg_repack для Ubuntu 18.04 LTS Bionic и PostgreSQL 12.11|pg_repack_ubuntu_bionic_postgresql12]]
+* [[Поиск неиспользуемых строчек в файле pg_hba.conf|check_hba]]
 * [[Настройка PgBouncer|postgresql_pgbouncer]]
 
 ClickHouse
