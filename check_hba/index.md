@@ -24,11 +24,11 @@
 
 Пример вывода программы:
 
-    Unused hba: local	all			postgres				peer
-    Unused hba: local	all			all					peer
-    Unused hba: host	all			all		127.0.0.1/32		md5
-    Unused hba: local	replication		all					peer
-    Unused hba: host	replication		all		127.0.0.1/32		md5
-    Unused hba: host	"sentry"		"sentry"	10.2.88.77/32		md5 # sentry.lo.ufanet.ru
+    Unused hba: local   all                     postgres                                peer
+    Unused hba: local   all                     all                                     peer
+    Unused hba: host    all                     all             127.0.0.1/32            md5
+    Unused hba: local   replication             all                                     peer
+    Unused hba: host    replication             all             127.0.0.1/32            md5
+    Unused hba: host    "sentry"                "sentry"        10.2.88.77/32           md5
 
 Для получения более объективной картины стоит дождаться, когда в журналах накопится достаточно информации. Но в вывод программы могут попасть и нужные строчки, которые просто не использовались за время ведения журнала, поэтому перед удалением каких-либо строчек из файла `pg_hba.conf` стоит убедиться, что они действительно не нужны.
