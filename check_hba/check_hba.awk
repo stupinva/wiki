@@ -1,6 +1,6 @@
 #!/usr/bin/mawk -f
 
-function ip2number(ip) {
+function ip2i(ip) {
 	split(ip, octets, /\./);
 	if (split(ip, octets, /\./) != 4) {
 		print "Wrong IP: " ip > "/dev/stderr";
@@ -22,8 +22,8 @@ function matchip(ip, network_mask) {
 		exit 2;
 	}
 
-	ip = ip2number(ip);
-	network = ip2number(network);
+	ip = ip2i(ip);
+	network = ip2i(network);
 	i = 32 - mask;
 	while (i > 0) {
 		ip = (ip - ip % 2) / 2;
@@ -38,8 +38,8 @@ BEGIN {
 	pgbouncer_log = "/var/log/pgbouncer/pgbouncer.log";
 	postgresql_hba = "/etc/postgresql/12/main/pg_hba.conf";
 
-	lfgz = "sh -c 'cat " postgresql_log " 2>/dev/null ; zcat " postgresql_log ".*.gz 2>/dev/null'";
-	while (lfgz | getline) {
+	all_postgresql_logs = "sh -c 'cat " postgresql_log " 2>/dev/null ; zcat " postgresql_log ".*.gz 2>/dev/null'";
+	while (all_postgresql_logs | getline) {
 		# for PostgreSQL 9.5
 		if (/connection received/) {
 			split($9, a, /=/);
@@ -87,8 +87,8 @@ BEGIN {
 		}
 	}
 
-	bggz = "sh -c 'cat " pgbouncer_log " 2>/dev/null ; zcat " pgbouncer_log ".*.gz 2>/dev/null'";
-	while (bggz | getline) {
+	all_pgbouncer_logs = "sh -c 'cat " pgbouncer_log " 2>/dev/null ; zcat " pgbouncer_log ".*.gz 2>/dev/null'";
+	while (all_bgbouncer_logs | getline) {
 		if (/login attempt/) {
 			split($7, a, /:/);
 			split(a[1], a, /@/);
