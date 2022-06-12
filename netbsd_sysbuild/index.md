@@ -1,6 +1,8 @@
 Настройка сборочного сервера NetBSD
 ===================================
 
+[[!tag pkgsrc pkgsrc-wip sysbuild daemontools mathopd]]
+
 Оглавление
 ----------
 
