@@ -1,5 +1,119 @@
 #!/usr/bin/mawk -f
 
+function parse_posgresql_log(connections, postgresql_log) {
+	num_connections = 0;
+	all_postgresql_logs = "sh -c 'cat " postgresql_log " 2>/dev/null ; zcat " postgresql_log ".*.gz 2>/dev/null'";
+	while (all_postgresql_logs | getline) {
+		# for PostgreSQL 9.5
+		if (/connection received/) {
+			split($9, a, /=/);
+			ip = a[2];
+			gsub(/\[|\]/, "", ip);
+
+			split($4, a, /-/);
+			id = a[1];
+
+			id_ip[id] = ip;
+		} else if (/connection authorized/) {
+			# for PostgreSQL 9.5
+			if ($6 == "LOG:") {
+				split($4, a, /-/);
+				id = a[1];
+
+				# No appropriate "connection received" for "connection authorized"
+				if (!(id in id_ip)) {
+					continue;
+				}
+
+				ip = id_ip[id];
+
+				split($9, a, /=/);
+				user = a[2];
+
+				split($10, a, /=/);
+				db = a[2];
+			} else {
+				split($6, a, /\(/);
+				ip = a[1];
+				gsub(/\[|\]/, "", ip);
+
+				split($10, a, /=/);
+				user = a[2];
+
+				split($11, a, /=/);
+				db = a[2];
+			}
+
+			# Skip IPv6
+			if (ip ~ /:/) {
+				continue;
+			}
+
+			key = db " " user " " ip;
+			if (key in connections) {
+				continue;
+			}
+			#print "Client connection: " key;
+			connections[key] = 1;
+			num_connections++;
+		}
+	}
+	return num_connections;
+}
+
+function parse_pgbouncer_log(connections, reconnections, pgbouncer_log) {
+	num_connections = 0;
+	all_pgbouncer_logs = "sh -c 'cat " pgbouncer_log " 2>/dev/null ; zcat " pgbouncer_log ".*.gz 2>/dev/null'";
+	while (all_pgbouncer_logs | getline) {
+		if (/login attempt/) {
+			split($7, a, /:/);
+			split(a[1], a, /@/);
+			ip = a[2];
+			gsub(/\[|\]/, "", ip);
+
+			split($10, a, /=/);
+			db = a[2];
+
+			split($11, a, /=/);
+			user = a[2];
+
+			# Skip IPv6
+			if (ip ~ /:/) {
+				continue;
+			}
+
+			key = db " " user " " ip;
+			if (key in connections) {
+				continue;
+			}
+			#print "PgBouncer connection: " key;
+			connections[key] = 1;
+			num_connections++;
+		} else if (/new connection to server/) {
+			split($7, a, /:/);
+			split(a[1], a, /@/);
+			ip = a[2];
+			if (ip == "unix") {
+				ip = "local";
+			}
+			gsub(/\[|\]/, "", ip);
+
+			split(a[1], a, /\//);
+			db = a[1];
+			user = a[2];
+
+			key = db " " user " " ip;
+			if (key in reconnections) {
+				continue;
+			}
+			#print "PgBouncer reconnection: " key;
+			reconnections[key] = 1;
+			num_connections++;
+                }
+	}
+	return num_connections;
+}
+
 function ip2i(ip) {
 	split(ip, octets, /\./);
 	if (split(ip, octets, /\./) != 4) {
@@ -33,87 +147,36 @@ function matchip(ip, network_mask) {
 	return ip == network;
 }
 
+function matchconnection(connections, db, user, hosts) {
+	for(connection in connections) {
+		split(connection, fields, " ");
+		cdb = fields[1];
+		cuser = fields[2];
+		chost = fields[3];
+
+		if ((db == "all" || db == cdb) &&
+		    (user == "all" || user == cuser)) {
+			if (chost == "local" || hosts == "skip") {
+				# Matched db and user
+				return 1;
+			} else if (matchip(chost, hosts)) {
+				# Full match
+				return 2;
+			}
+		}
+	}
+	# No match
+	return 0;
+}
+
 BEGIN {
-	postgresql_log = "/var/log/postgresql/postgresql-12-main.log";
+	postgresql_log = "/var/log/postgresql/postgresql-9.6-main.log";
 	pgbouncer_log = "/var/log/pgbouncer/pgbouncer.log";
-	postgresql_hba = "/etc/postgresql/12/main/pg_hba.conf";
+	postgresql_hba = "/etc/postgresql/9.6/main/pg_hba.conf";
 
-	all_postgresql_logs = "sh -c 'cat " postgresql_log " 2>/dev/null ; zcat " postgresql_log ".*.gz 2>/dev/null'";
-	while (all_postgresql_logs | getline) {
-		# for PostgreSQL 9.5
-		if (/connection received/) {
-			split($9, a, /=/);
-			ip = a[2];
-			gsub(/\[|\]/, "", ip);
-
-			split($4, a, /-/);
-			id = a[1];
-
-			id_ip[id] = ip;
-		} else if (/connection authorized/) {
-			# for PostgreSQL 9.5
-			if ($6 == "LOG:") {
-				split($4, a, /-/);
-				id = a[1];
-
-				ip = id_ip[id];
-
-				split($9, a, /=/);
-				user = a[2];
-
-				split($10, a, /=/);
-				db = a[1];
-			} else {
-				split($6, a, /\(/);
-				ip = a[1];
-				gsub(/\[|\]/, "", ip);
-
-				split($10, a, /=/);
-				user = a[2];
-
-				split($11, a, /=/);
-				db = a[2];
-			}
-
-			# Skip IPv6
-			if (ip ~ /:/) {
-				continue;
-			}
-
-			key = db " " user " " ip;
-			#print "postgresql " key;
-			connections[key] = 1;
-			num_connections++;
-		}
-	}
-
-	all_pgbouncer_logs = "sh -c 'cat " pgbouncer_log " 2>/dev/null ; zcat " pgbouncer_log ".*.gz 2>/dev/null'";
-	while (all_bgbouncer_logs | getline) {
-		if (/login attempt/) {
-			split($7, a, /:/);
-			split(a[1], a, /@/);
-			ip = a[2];
-			gsub(/\[|\]/, "", ip);
-
-			split($10, a, /=/);
-			db = a[2];
-
-			split($11, a, /=/);
-			user = a[2];
-
-			# Skip IPv6
-			if (ip ~ /:/) {
-				continue;
-			}
-
-			key = db " " user " " ip;
-			#print "pgbouncer " key;
-			connections[key] = 2;
-			num_connections++;
-		}
-	}
-
-	if (num_connections == 0) {
+        num_clients_connections = parse_posgresql_log(clients_connections, postgresql_log);
+        num_pgbouncer_connections = parse_pgbouncer_log(pgbouncer_connections, pgbouncer_reconnections, pgbouncer_log);
+	if (num_clients_connections + num_pgbouncer_connections == 0) {
 		print "Connections not found!" > "/dev/stderr";
 		exit 3;
 	}
@@ -133,23 +196,14 @@ BEGIN {
 				continue;
 			}
 
-			used = 0;
-			for(connection in connections) {
-				split(connection, fields, " ");
-				cdb = fields[1];
-				cuser = fields[2];
-				chosts = fields[3];
-
-				if ((db == "all" || db == cdb) &&
-				    (user == "all" || user == cuser) &&
-				    (chosts != "local") &&
-				    matchip(chosts, ip)) {
-					used = 1;
-					break;
-				}
-			}
-			if (used == 0) {
-				print "Unused hba: " $0;
+			if (matchconnection(clients_connections, db, user, ip) == 2) {
+				print "Used by client:             " $0;
+			} else if (matchconnection(pgbouncer_connections, db, user, ip) == 2) {
+				print "Used by PgBouncer:          " $0;
+			} else if (matchconnection(pgbouncer_reconnections, db, user, ip) == 1) {
+				print "Probably used by PgBouncer: " $0;
+			} else {
+				print "Unused:                     " $0;
 			}
 		} else if (/^local/) {
 			db = $2;
@@ -158,25 +212,17 @@ BEGIN {
 			user = $3;
 			gsub(/\"/, "", user);
 
-			used = 0;
-			for(connection in connections) {
-				split(connection, fields, " ");
-				cdb = fields[1];
-				cuser = fields[2];
-				chosts = fields[3];
-
-				if ((db == "all" || db == cdb) &&
-				    (user == "all" || user == cuser) &&
-				    chosts == "local") {
-					used = 1;
-					break;
-				}
-			}
-			if (used == 0) {
-				print "Unused hba: " $0;
+			if (matchconnection(clients_connections, db, user, "skip") == 1) {
+				print "Used by client:             " $0;
+			} else if (matchconnection(pgbouncer_connections, db, user, "skip") == 1) {
+				print "Used by PgBouncer:          " $0;
+			} else if (matchconnection(pgbouncer_reconnections, db, user, "skip") == 1) {
+				print "Probably used by PgBouncer: " $0;
+			} else {
+				print "Unused:                     " $0;
 			}
 		} else if (!/^(#|$)/) {
-			print "Skiped hba: " $0;
+			print "Skipped:                    " $0;
 			continue;
 		}
 	}
