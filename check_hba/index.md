@@ -24,11 +24,9 @@
 
 Пример вывода программы:
 
-    Unused hba: local   all                     postgres                                peer
-    Unused hba: local   all                     all                                     peer
-    Unused hba: host    all                     all             127.0.0.1/32            md5
-    Unused hba: local   replication             all                                     peer
-    Unused hba: host    replication             all             127.0.0.1/32            md5
-    Unused hba: host    "sentry"                "sentry"        10.2.88.77/32           md5
+    Used by PgBouncer:          host    "app_wifi"                      "app_wifi"			199.30.81.70/32         md5
+    Unused:                     host    "app_wifi"                      "uradius" 			199.30.81.70/32         md5
+    Used by client:             host    "vkomandu"                      "vkomandu"			10.2.88.122/32          md5
+    Probably used by PgBouncer: host    "mogilefs_12"                   "mogilefs_12"			10.2.88.224/32          md5
 
 Для получения более объективной картины стоит дождаться, когда в журналах накопится достаточно информации. Но в вывод программы могут попасть и нужные строчки, которые просто не использовались за время ведения журнала, поэтому перед удалением каких-либо строчек из файла `pg_hba.conf` стоит убедиться, что они действительно не нужны.
