@@ -128,11 +128,11 @@ ProxySQL по умолчанию настраивается на прослуш�
 
 Для изменения конфигурации без перезапуска ProxySQL нужно отредактировать файл конфигурации `/etc/proxysql.cnf` и выполнить команды через интерфейс администрирования:
 
-    $ mysql -uroot -p -h127.0.0.1 -P6032 -e 'LOAD MYSQL SERVERS FROM CONFIG; LOAD MYSQL SERVERS TO RUNTIME;'
+    $ mysql -uroot -p -h127.0.0.1 -P6032 -e 'LOAD ADMIN VARIABLES TO RUNTIME; LOAD ADMIN VARIABLES FROM CONFIG; LOAD MYSQL VARIABLES TO RUNTIME; LOAD MYSQL VARIABLES FROM CONFIG; LOAD MYSQL SERVERS TO RUNTIME; LOAD MYSQL SERVERS FROM CONFIG; LOAD MYSQL USERS TO RUNTIME; LOAD MYSQL USERS FROM CONFIG; LOAD MYSQL QUERY RULES TO RUNTIME; LOAD MYSQL QUERY RULES FROM CONFIG; LOAD SCHEDULER TO RUNTIME; LOAD SCHEDULER FROM CONFIG;'
 
 Для удобства можно доработать service-файл `/etc/systemd/system/proxysql.service`, в который прописать правило перезагрузки сервиса:
 
-    ExecReload=/usr/bin/mysql --defaults-file=/root/.proxysql.cnf -e 'LOAD MYSQL SERVERS FROM CONFIG; LOAD MYSQL SERVERS TO RUNTIME;'
+    ExecReload=/usr/bin/mysql --defaults-file=/root/.my.cnf -h127.0.0.1 -P6032 -e 'LOAD ADMIN VARIABLES TO RUNTIME; LOAD ADMIN VARIABLES FROM CONFIG; LOAD MYSQL VARIABLES TO RUNTIME; LOAD MYSQL VARIABLES FROM CONFIG; LOAD MYSQL SERVERS TO RUNTIME; LOAD MYSQL SERVERS FROM CONFIG; LOAD MYSQL USERS TO RUNTIME; LOAD MYSQL USERS FROM CONFIG; LOAD MYSQL QUERY RULES TO RUNTIME; LOAD MYSQL QUERY RULES FROM CONFIG; LOAD SCHEDULER TO RUNTIME; LOAD SCHEDULER FROM CONFIG;'
 
 Для применения нового service-файла нужно сообщить об этом `systemd`:
 
