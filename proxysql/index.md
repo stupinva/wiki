@@ -199,5 +199,5 @@ ProxySQL обрабатывает каждое входящее подключе
 ------------------------
 
 * [ProxySQL / Documentation / Main (runtime tables definition)](https://proxysql.com/documentation/main-runtime/)
-* [MySQL auxiliary threads|https://proxysql.com/documentation/proxysql-threads/#mysql-auxiliary-threads]]
+* [MySQL auxiliary threads](https://proxysql.com/documentation/proxysql-threads/#mysql-auxiliary-threads)
 * [Art van Scheppingen. The ProxySQL multiplexing wild goose chase](https://mysqlquicksand.wordpress.com/2019/11/28/the-proxysql-multiplexing-wild-goose-chase/)
