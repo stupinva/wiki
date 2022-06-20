@@ -49,7 +49,7 @@ read_rnd_buffer_size
 
 Теперь нужно указать в файле конфигурации сервера MySQL внутри секции server соответствующую опцию:
 
-tmpdir = /mysql-tmp
+    tmpdir = /mysql-tmp
 
 И перезапустить MySQL:
 
