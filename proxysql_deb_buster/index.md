@@ -157,7 +157,7 @@
     $ quilt add doc/release_notes/ProxySQL_v1.3.3.md
     $ quilt add doc/release_notes/ProxySQL_v1.4.4.md
     $ quilt add tools/README.md
-    $ cp ../proxy2-2.3.2/etc/proxysql-admin.cnf etc/
+    $ cp ../proxysql2-2.3.2/etc/proxysql-admin.cnf etc/
     $ cp ../proxysql2-2.3.2/tools/proxysql-admin tools/
     $ cp ../proxysql2-2.3.2/tools/proxysql-admin-common tools/
     $ cp ../proxysql2-2.3.2/tools/proxysql-logrotate tools/
