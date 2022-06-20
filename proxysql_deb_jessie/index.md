@@ -46,3 +46,28 @@
 
     # apt-get upgrade
     # apt-get dist-upgrade
+
+Настройка репозиториев Percona
+------------------------------
+
+Установим пакеты, необходимые для работы пакета настройки репозиториев:
+
+    # apt-get install curl
+
+Заглядываем в файл `/etc/debian_version` или `/etc/lsb-release`, определяем кодовое имя релиза.
+
+Открываем страницу [repo.percona.com/percona/apt/](http://repo.percona.com/percona/apt/) и находим там пакет `percona-release_latest.jessie_all.deb`, где `jessie` - кодовое имя релиза. Копируем ссылку на пакет и скачиваем в систему, где нужно установить ProxySQL:
+
+    $ curl http://repo.percona.com/percona/apt/percona-release_latest.jessie_all.deb > percona-release_latest.jessie_all.deb
+
+Установим пакет в систему:
+
+    # dpkg -i percona-release_latest.jessie_all.deb
+
+Подключаем репозитории с ProxySQL:
+
+    # percona-release enable proxysql
+
+Обновляем список пакетов, доступных через репозитории:
+
+    # apt-get update
