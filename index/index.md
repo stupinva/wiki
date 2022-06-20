@@ -82,6 +82,7 @@ MySQL
 * [[Отслеживание подключений к MySQL|mysql_connections]]
 * [[Настройка ProxySQL|proxysql]]
 * [[Сборка ProxySQL для Debian 10.12 Buster|proxysql_deb]]
+* [[Сборка ProxySQL для Debian 8.11 Jessie|proxysql_deb_jessie]]
 
 PostgreSQL
 ----------
