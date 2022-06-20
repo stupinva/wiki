@@ -339,5 +339,5 @@ P.S. Это руководство годится для обновления с
 * [Привилегии в PostgreSQL](https://sysadminium.ru/privilegii_v_postgresql/)
 * [Схемы и шаблоны в СУБД PostgreSQL](https://sysadminium.ru/shemy_i_shablony_v_subd_postgresql/)
 * [Табличные пространства в PostgreSQL](https://sysadminium.ru/tablichnye_prostranstva_v_postgresql/)
-* [Авторизация в PostgreSQL. Часть 1 — Роли и Привилегии](https://habr.com/ru/company/timeweb/blog/661771/)
+* [Авторизация в PostgreSQL. Часть 1. Роли и Привилегии](https://habr.com/ru/company/timeweb/blog/661771/)
 * [Авторизация в PostgreSQL. Часть 2. Безопасность на уровне строк](https://habr.com/ru/company/timeweb/blog/662209/)
