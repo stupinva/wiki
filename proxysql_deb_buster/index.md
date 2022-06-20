@@ -1,7 +1,7 @@
 Сборка ProxySQL для Debian 10.12 Buster
 =======================================
 
-[[!tag proxysql debian buster]]
+[[!tag proxysql debian buster percona]]
 
 Настройка виртуальной машины
 ----------------------------
