@@ -60,7 +60,7 @@
 
 Открываем страницу [repo.percona.com/percona/apt/](http://repo.percona.com/percona/apt/) и находим там пакет `percona-release_latest.buster_all.deb`, где `buster` - кодовое имя релиза. Копируем ссылку на пакет и скачиваем в систему, где нужно установить ProxySQL:
 
-    $ curl http://repo.percona.com/percona/apt/percona-release_latest.buster_all.deb > percona-release_latest.buster_all.de
+    $ curl http://repo.percona.com/percona/apt/percona-release_latest.buster_all.deb > percona-release_latest.buster_all.deb
 
 Установим пакет в систему:
 
