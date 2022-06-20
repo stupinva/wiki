@@ -1,6 +1,8 @@
 Установка Percona Server в Debian/Ubuntu
 ========================================
 
+[[!tag mysql percona debian ubuntu]]
+
 Заглядываем в файл `/etc/debian_version` или `/etc/lsb-release`, определяем кодовое имя релиза.
 
 Открываем страницу [repo.percona.com/percona/apt/](http://repo.percona.com/percona/apt/) и находим там пакет `percona-release_latest.bionic_all.deb`, где bionic - кодовое имя релиза. Копируем ссылку на пакет и скачиваем в систему, где нужно установить Percona Server:
