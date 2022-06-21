@@ -1,6 +1,8 @@
 Настройка буферов PostgreSQL
 ============================
 
+[[!tag postgresql]]
+
 Максимальный объём оперативной памяти, который может занять PostgreSQL, можно посчитать по одной из формул:
 
     shared_buffers + wal_buffer + (work_mem + temp_buffers) * max_connections + maintenance_work_mem * autovacuum_max_workers
