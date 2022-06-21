@@ -1,6 +1,8 @@
 Сборка pg_repack для Ubuntu 16.04 LTS Xenial и PostgresPro 9.6.21.1
 ===================================================================
 
+[[!tag postgresql postgrespro ubuntu xenial pg_repack]]
+
 Настройка виртуальной машины
 ----------------------------
 
