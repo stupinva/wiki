@@ -1,5 +1,7 @@
-Сборка pg repack для Ubuntu 18.04 LTS Bionic и PostgreSQL 12.11
+Сборка pg_repack для Ubuntu 18.04 LTS Bionic и PostgreSQL 12.11
 ===============================================================
+
+[[!tag postgresql ubuntu bionic pg_repack]]
 
 Настройка виртуальной машины
 ----------------------------
