@@ -1,6 +1,8 @@
 Сборка pg_repack для Debian 8.11.1 LTS Jessie и PostgresPro 9.5.14.1
 ====================================================================
 
+[[!tag postgresql postgrespro debian jessie pg_repack]]
+
 Настройка виртуальной машины
 ----------------------------
 
