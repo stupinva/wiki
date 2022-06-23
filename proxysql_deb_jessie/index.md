@@ -165,6 +165,13 @@
 
     $ GIT_VERSION=2.4.1 dpkg-buildpackage -us -uc -rfakeroot
 
+В результате сборки в каталоге выше должны сформироваться следующие файлы:
+
+* [[proxysql2_2.4.1~jessie.dsc]]
+* [[proxysql2_2.4.1~jessie.tar.xz]]
+* [[proxysql2_2.4.1~jessie_amd64.changes]]
+* [[proxysql2_2.4.1~jessie_amd64.deb]]
+
 Использованные материалы
 ------------------------
 
