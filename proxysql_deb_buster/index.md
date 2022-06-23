@@ -186,6 +186,15 @@
 
     $ GIT_VERSION=2.4.1 dpkg-buildpackage -us -uc -rfakeroot
 
+В результате сборки в каталоге выше должны сформироваться следующие файлы:
+
+* [[proxysql2_2.4.1~buster.dsc]]
+* [[proxysql2_2.4.1~buster.tar.xz]]
+* [[proxysql2_2.4.1~buster_amd64.buildinfo]]
+* [[proxysql2_2.4.1~buster_amd64.changes]]
+* [[proxysql2_2.4.1~buster_amd64.deb]]
+* [[proxysql2-dbgsym_2.4.1~buster_amd64.deb]]
+
 Использованные материалы
 ------------------------
 
