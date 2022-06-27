@@ -54,7 +54,7 @@ innodb_buffer_pool_instances
 
 При увеличении количества экземпляров буферного пула нужно кратно уменьшать значение опции `innodb_lru_scan_depth`, которое по умолчанию равно 1024. Эта опция отвечает за глубину поиска наименее используемых страниц для их выгрузки на диск. Операция выгрузки запускается каждую секунду и должна укладываться в одну секунду. Если это не так, то в журнале ошибок MySQL будут появляться ошибки следующего вида:
 
-    \[Note] InnoDB: page_cleaner: 1000ms intended loop took 8067ms. The settings might not be optimal. (flushed=386, during the time.)
+    [Note] InnoDB: page_cleaner: 1000ms intended loop took 8067ms. The settings might not be optimal. (flushed=386, during the time.)
 
 innodb_buffer_pool_dump_at_shutdown и innodb_buffer_pool_load_at_startup
 ------------------------------------------------------------------------
