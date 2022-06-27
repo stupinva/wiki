@@ -67,4 +67,4 @@
 
     DISABLE_SERVER_SIDE_CURSORS = True
 
-Подробнее об этом можно прочитать в документации [Databases / Transaction pooling and server-side cursors](https://docs.djangoproject.com/en/4.0/ref/databases/#transaction-pooling-server-side-cursors).
+Опция поддерживается в Django версии 1.11.1 и выше. Подробнее об этом можно прочитать в документации [Databases / Transaction pooling and server-side cursors](https://docs.djangoproject.com/en/4.0/ref/databases/#transaction-pooling-server-side-cursors).
