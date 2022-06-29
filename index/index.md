@@ -100,6 +100,7 @@ PostgreSQL
 * [[Сборка pg_repack для Ubuntu 18.04 LTS Bionic и PostgreSQL 12.11|pg_repack_ubuntu_bionic_postgresql12]]
 * [[Поиск неиспользуемых строчек в файле pg_hba.conf|check_hba]]
 * [[Настройка PgBouncer|postgresql_pgbouncer]]
+* [[PostgreSQL и TimescaleDB|postgresql_timescaledb]]
 
 ClickHouse
 ----------
