@@ -1,6 +1,13 @@
 PostgreSQL и TimescaleDB
 ========================
 
+[[!tag postgresql timescaledb]]
+
+Содержание
+----------
+
+[[!toc startlevel=2 levels=4]]
+
 Настройка репозиториев Debian
 -----------------------------
 
