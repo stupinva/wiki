@@ -124,8 +124,45 @@ PostgreSQL и TimescaleDB
 
     # systemctl restart postgresql
 
+Резервное копирование и восстановление
+--------------------------------------
+
+Снимаем резервную копию, выполняя команду от имени пользователя `postgres`:
+
+    $ pg_dump -d db | gzip db.sql.gz
+
+Восстанавливаем резервную копию следующим образом также командами от имени пользователя `postgres` в следующей последовательности:
+
+    $ createdb db -O owner
+    $ psql -d db -c "CREATE EXTENSION IF NOT EXISTS timescaledb;"
+    $ psql -d db -c "SELECT timescaledb_pre_restore();"
+    $ zcat db.sql.gz | psql -qd db
+    $ psql -d db -c "SELECT timescaledb_post_restore();"
+
+После создания пустой базы данных `db`, которой владеет пользователь `owner` нужно установить в базу данных расширение `timescaledb` версии, соотвесттвующей версии TimescaleDB в резервной копии. Далее нужно вызвать функцию `timescaledb_pre_restore` для подготовки к восстановлению, после чего восстановить базу данных и вызывать функцию `timescaledb_post_restore` для завершения резервного копирования.
+
+Обновление TimescaleDB
+----------------------
+
+После восстановления базы данных можно обновить расширение до актуальной версии или до строго определённой с помощью запросов следующего вида:
+
+    ALTER EXTENSION timescaledb UPDATE;
+    ALTER EXTENSION timescaledb UPDATE TO '2.5.1';
+
+При обновлении нужно руководствоваться таблицей совместимости PostgreSQL и TimescaleDB:
+
+|Выпуск TimescaleDB|Поддерживаемые выпуски PostgreSQL|
+|:----------------:|:-------------------------------:|
+|1.7               |9.6, 10, 11, 12                  |
+|2.0               |11, 12                           |
+|2.1-2.3           |11, 12, 13                       |
+|2.4               |12, 13                           |
+|2.5+              |12, 13, 14                       |
+
 Использованные материалы
 ------------------------
 
 * [Installation instructions / Manual Installation / deb](https://packagecloud.io/timescale/timescaledb/install#manual-deb)
 * [TimescaleDB / How-to Guides / Configuration / TimescaleDB configuration / TimescaleDB configuration and tuning](https://docs.timescale.com/timescaledb/latest/how-to-guides/configuration/timescaledb-config/#administration)
+* [TimescaleDB / How-to Guides / Backup and restore / Using pg_dump/pg_restore / Logical backups with pg_dump and pg_restore](https://docs.timescale.com/timescaledb/latest/how-to-guides/backup-and-restore/pg-dump-and-restore/#backup-entiredb)
+* [TimescaleDB / How-to Guides / Update TimescaleDB / TimescaleDB release compatibility](https://docs.timescale.com/timescaledb/latest/how-to-guides/update-timescaledb/#timescaledb-release-compatibility)
