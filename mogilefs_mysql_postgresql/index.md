@@ -10,7 +10,7 @@
 
     [ERROR] WSREP: Percona-XtraDB-Cluster prohibits use of GET_LOCK with pxc_strict_mode = ENFORCING
 
-Оказалось, что трекер MogileFS использует функций `GET_LOCK` и `RELEASE_LOCK`, которые Percona XtraDB Cluster не поддерживает.
+Оказалось, что трекер MogileFS использует функции `GET_LOCK` и `RELEASE_LOCK`, которые Percona XtraDB Cluster не поддерживает.
 
 Функции `GET_LOCK` и `RELEASE_LOCK` используются в модуле `MogileFS::Store::MySQL`. Самая свежая версия этого модуля, доступная в репозитории, также использует эти функции. В этом можно убедиться, заглянув на страницу по ссылке [[https://github.com/mogilefs/MogileFS-Server/blob/master/lib/MogileFS/Store/MySQL.pm]]
 
