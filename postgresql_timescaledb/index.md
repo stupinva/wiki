@@ -149,6 +149,12 @@ PostgreSQL и TimescaleDB
     ALTER EXTENSION timescaledb UPDATE;
     ALTER EXTENSION timescaledb UPDATE TO '2.5.1';
 
+Посмотреть список доступных версий расширения можно с помощью следующего запроса:
+
+    SELECT name, version, installed
+    FROM   pg_available_extension_versions
+    WHERE  name = 'timescaledb';
+
 При обновлении нужно руководствоваться таблицей совместимости PostgreSQL и TimescaleDB:
 
 |Выпуск TimescaleDB|Поддерживаемые выпуски PostgreSQL|
