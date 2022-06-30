@@ -71,3 +71,22 @@
 Обновим список пакетов, доступных через репозитории:
 
     # apt-get update
+
+Установка PostgreSQL и TimescaleDB
+----------------------------------
+
+Установим PostgreSQL версии 12:
+
+    # apt-get install postgresql-12
+
+Установим TimescaleDB версии 1.7.4:
+
+    # apt-get install timescaledb-1.7.4-postgresql-12
+
+Пропишем расширение `timescaledb` в опцию `shared_preload_libraries` в файле конфигурации `/etc/postgresql/13/main/postgresql.conf`:
+
+    shared_preload_libraries = 'timescaledb'
+
+Чтобы расширение стало доступным, нужно перезапустить PostgreSQL:
+
+    # systemctl restart postgresql
