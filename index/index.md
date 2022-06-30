@@ -101,6 +101,7 @@ PostgreSQL
 * [[Поиск неиспользуемых строчек в файле pg_hba.conf|check_hba]]
 * [[Настройка PgBouncer|postgresql_pgbouncer]]
 * [[PostgreSQL и TimescaleDB|postgresql_timescaledb]]
+* [[Настройка PostgreSQL для миграции базы данных на новую версию TimescaleDB|postgresql_timescaledb_migration]]
 
 ClickHouse
 ----------
