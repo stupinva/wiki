@@ -102,6 +102,7 @@ PostgreSQL
 * [[Настройка PgBouncer|postgresql_pgbouncer]]
 * [[PostgreSQL и TimescaleDB|postgresql_timescaledb]]
 * [[Настройка PostgreSQL для миграции базы данных на новую версию TimescaleDB|postgresql_timescaledb_migration]]
+* [[Удаление дубликатов строк в таблицах PostgreSQL|postgresql_remove_duplicates]]
 
 ClickHouse
 ----------
