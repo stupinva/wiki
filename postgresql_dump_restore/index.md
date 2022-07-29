@@ -72,3 +72,9 @@
 -------------------------------------------------
 
     pg_basebackup -D /destination/path -Pv --checkpoint=fast -F t -X stream -z
+
+Использованные материалы
+------------------------
+
+* [Jorge Torralba. PostgreSQL 101 for Non-Postgres DBAs (Simple Backup and Restore)](https://www.percona.com/blog/postgresql-101-simple-backup-and-restore/)
+* [AkashKathiriya. PostgreSQL Backups: What is pg_basebackup?](https://backup.ninja/news/postgresql-backups-what-is-pgbasebackup)
