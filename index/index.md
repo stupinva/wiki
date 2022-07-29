@@ -103,6 +103,7 @@ PostgreSQL
 * [[PostgreSQL и TimescaleDB|postgresql_timescaledb]]
 * [[Настройка PostgreSQL для миграции базы данных на новую версию TimescaleDB|postgresql_timescaledb_migration]]
 * [[Удаление дубликатов строк в таблицах PostgreSQL|postgresql_remove_duplicates]]
+* [[Резервное копирование и восстановление PostgreSQL|postgresql_dump_restore]]
 
 ClickHouse
 ----------
