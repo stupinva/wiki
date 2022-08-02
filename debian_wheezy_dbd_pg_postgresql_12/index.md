@@ -85,3 +85,63 @@
 
     # apt-get upgrade
     # apt-get dist-upgrade
+
+Установка пакетов
+-----------------
+
+Установим пакеты, необходимые для сборки:
+
+    # apt-get install dpkg-dev devscripts libparse-debcontrol-perl quilt fakeroot build-essential:native debhelper debconf perl sysstat libperlbal-perl libdbi-perl libpq-dev postgresql git
+
+Доработка и сборка deb-пакета
+-----------------------------
+
+В репозитории исходных текстов модуля можно найти нужное нам исправление:
+
+    $ git clone https://github.com/bucardo/dbdpg
+    $ cd dbdpg
+    $ git diff f6e604507fdaeb750ce30e218cbbf9331cf27f79 88d2f8f1fc95bcd16e95d3fc667783fb7a9ab05b
+
+Скачаем и распакуем исходные тексты пакета:
+
+    $ apt-get source libdbd-pg-perl
+
+Перейдём в каталог с распакованными исходными текстами и создадим новую заплатку `postgresql12_fix.patch`:
+
+    $ cd libdbd-pg-perl-2.19.2
+    $ quilt new postgresql12_fix
+    $ quilt add Pg.pm README
+
+Воспроизведём нужные нам исправления на файле `Pg.pm`:
+
+    -                       $SQL = "SELECT a.attname, i.indisprimary, pg_catalog.pg_get_expr(adbin,adrelid)\n".
+    +                       $SQL = "SELECT a.attname, i.indisprimary, pg_catalog.pg_get_expr(d.adbin, d.adrelid)\n".
+    
+    -                               q{ AND d.adsrc ~ '^nextval'};
+    +                               "  AND pg_catalog.pg_get_expr(d.adbin, d.adrelid) ~ '^nextval'";
+
+И в файле `README`:
+
+    -       build, test, and install PostgreSQL     (at least 7.4)
+    +       build, test, and install PostgreSQL     (at least 8.0)
+
+Обновляем заплатку:
+
+    $ quilt refresh
+
+Добавляем описание изменений:
+
+    $ dch -i
+
+Вводим описание:
+
+    libdbd-pg-perl (2.19.2-2+deb7u1+ufanet1) UNRELEASED; urgency=low
+    
+      * Non-maintainer upload.
+      * Fixed support for PostgreSQL 12 and above.
+    
+     -- Vladimir Stupin <stupin_v@ufanet.ru>  Tue, 02 Aug 2022 11:33:07 +0500
+
+Собираем пакет:
+
+    $ dpkg-buildpackage -us -uc -rfakeroot
