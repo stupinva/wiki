@@ -145,3 +145,17 @@
 Собираем пакет:
 
     $ dpkg-buildpackage -us -uc -rfakeroot
+
+В результате в каталоге выше должны появиться следующие файлы:
+
+* [[libdbd-pg-perl_2.19.2-2+deb7u1.debian.tar.gz]]
+* [[libdbd-pg-perl_2.19.2-2+deb7u1+ufanet1_amd64.changes]]
+* [[libdbd-pg-perl_2.19.2-2+deb7u1+ufanet1_amd64.deb]]
+* [[libdbd-pg-perl_2.19.2-2+deb7u1+ufanet1.debian.tar.gz]]
+* [[libdbd-pg-perl_2.19.2-2+deb7u1+ufanet1.dsc]]
+* [[libdbd-pg-perl_2.19.2.orig.tar.gz]]
+
+Использованные материалы
+------------------------
+
+* [[MogileFS с поддержкой работы через PgBouncer|mogilefs_pgbouncer]]
