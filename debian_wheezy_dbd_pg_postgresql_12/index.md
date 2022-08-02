@@ -31,3 +31,57 @@
 
 Итак, нужно собрать пакет с модулем `DBD::Pg` для Debian Wheezy, в котором проблемный запрос будет исправлен так, чтобы модуль работал с PostgreSQL версий 12 и выше.
 
+Настройка виртуальной машины
+----------------------------
+
+Для сборки настроим виртуальную машину, аналогичную используемой на том сервере, где установлено проблемное приложение. В рассматриваемом примере это система Debian 7.11.0 с кодовым именем Wheezy. Получить образ установочного диска можно по ссылке [debian-7.11.0-amd64-netinst.iso](http://cdimage.debian.org/cdimage/archive/7.11.0/amd64/iso-cd/debian-7.11.0-amd64-netinst.iso).
+
+Настройка репозиториев
+----------------------
+
+Для настройки репозиториев поместим в файл `/etc/apt/sources.list` следующие строки:
+
+    deb http://archive.debian.org/debian/ wheezy main contrib non-free
+    deb http://archive.debian.org/debian-security/ wheezy/updates main contrib non-free
+    deb http://archive.debian.org/debian/ wheezy-backports main contrib non-free
+    
+    deb-src http://archive.debian.org/debian/ wheezy main contrib non-free
+    deb-src http://archive.debian.org/debian-security/ wheezy/updates main contrib non-free
+    deb-src http://archive.debian.org/debian/ wheezy-backports main contrib non-free
+
+Поскольку мы установили устаревший релиз, отключим проверку актуальности репозиториев, создав файл `/etc/apt/apt.conf.d/valid` со следующим содержимым:
+
+    Acquire::Check-Valid-Until "false";
+
+Отключаем установку предлагаемых зависимостей, создав файл `/etc/apt/apt.conf.d/suggests` со следующим содержимым:
+
+    APT::Install-Suggests "false";
+
+Отключаем установку рекомендуемых зависимостей, создав файл `/etc/apt/apt.conf.d/recommends` со следующим содержимым:
+
+    APT::Install-Recommends "false";
+
+Система apt сохраняет скачанные пакеты в каталоге `/var/cache/apt/archives/`, чтобы при необходимости не скачивать их снова. Файлы в этом каталоге по умолчанию не удаляются, что может привести к переполнению диска. Чтобы отключить размер файлов в этом каталоге 200 мегабайтами, создадим файл `/etc/apt/apt.conf.d/cache` со следующим содержимым:
+
+    APT::Cache-Limit "209715200";
+
+Создадим файл /etc/apt/apt.conf.d/timeouts с настройками таймаутов обращения к репозиториям:
+
+    Acquire::http::Timeout "5";
+    Acquire::https::Timeout "5";
+    Acquire::ftp::Timeout "5";
+
+При необходимости, если репозитории доступны через веб-прокси, можно создать файл `/etc/apt/apt.conf.d/proxy`, прописав в него прокси-серверы для протоколов HTTP, HTTPS и FTP:
+
+    Acquire::http::Proxy "http://10.0.25.3:8080";
+    Acquire::https::Proxy "http://10.0.25.3:8080";
+    Acquire::ftp::Proxy "http://10.0.25.3:8080";
+
+Обновим список пакетов, доступных через репозиторий:
+
+    # apt-get update
+
+Обновим систему с использованием самых свежих пакетов, доступных через репозитории:
+
+    # apt-get upgrade
+    # apt-get dist-upgrade
