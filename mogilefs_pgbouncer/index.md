@@ -68,11 +68,11 @@ MogileFS с поддержкой работы через PgBouncer
     deb http://archive.debian.org/debian/ wheezy-backports main contrib non-free
     deb-src http://repo.lo.ufanet.ru/ wheezy main contrib non-free
 
-В списке репозиториев фигурирует репозиторий `repo.lo.ufanet.ru` в нём находятся исходные пакеты, доработанные под собственные нужды. Можно обойтись и без него, если воспользоваться [репозиторием git с исходными текстами MogileFS](https://github.com/mogilefs/MogileFS-Server). Установить в систему публиынй GPG-ключ, которым подписан репозиторий `repo.lo.ufanet.ru`, можно следующим образом:
+В списке репозиториев фигурирует репозиторий `repo.lo.ufanet.ru` в нём находятся исходные пакеты, доработанные под собственные нужды. Можно обойтись и без него, если воспользоваться [репозиторием git с исходными текстами MogileFS](https://github.com/mogilefs/MogileFS-Server). Установить в систему публичный GPG-ключ, которым подписан репозиторий `repo.lo.ufanet.ru`, можно следующим образом:
 
     # wget --quiet -O - http://repo.lo.ufanet.ru/key.gpg | apt-key add -
 
-Поскольу мы установили устаревший релиз, отключим проверку актуальности репозиториев, создав файл `/etc/apt/apt.conf.d/valid` со следующим содержимым:
+Поскольку мы установили устаревший релиз, отключим проверку актуальности репозиториев, создав файл `/etc/apt/apt.conf.d/valid` со следующим содержимым:
 
     Acquire::Check-Valid-Until "false";
 
