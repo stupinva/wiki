@@ -104,6 +104,7 @@ PostgreSQL
 * [[Настройка PostgreSQL для миграции базы данных на новую версию TimescaleDB|postgresql_timescaledb_migration]]
 * [[Удаление дубликатов строк в таблицах PostgreSQL|postgresql_remove_duplicates]]
 * [[Резервное копирование и восстановление PostgreSQL|postgresql_dump_restore]]
+* [[Исправление DBD::Pg из Debian Wheezy для поддержки PostgreSQL 12 и выше|debian_wheezy_dbd_pg_postgresql_12]]
 
 ClickHouse
 ----------
