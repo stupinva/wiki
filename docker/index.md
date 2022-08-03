@@ -11,6 +11,7 @@
 * `docker container restart <контейнер>` - перезапустить контейнер,
 * `docker system df` - показать использование диска образами, контейнерами, локальными томами и кэшем сборки,
 * `docker system prune` - очистить кэш сборки и т.п. для освобождения места на диске,
+* `docker-compose -f <docker-compose.yml> stop <контейнер>` - остановить контейнер с указанным именем, описанный в указанном файле `docker-compose.yml`,
 * `docker-compose -f <docker-compose.yml> down` - остановить контейнер, соответствующий файлу `docker-compose.yml`,
 * `docker-compose -f <docker-compose.yml> up -d` - запустить в фоновом режиме контейнер, соответствующий файлу `docker-compose.yml`,
 * `docker-compose -f <docker-compose.yml> pull` - получить обновления контейнера, соответствующего файлу `docker-compose.yml` из удалённого репозитория.
