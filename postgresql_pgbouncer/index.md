@@ -68,3 +68,11 @@
     DISABLE_SERVER_SIDE_CURSORS = True
 
 Опция поддерживается в Django версии 1.11.1 и выше. Подробнее об этом можно прочитать в документации [Databases / Transaction pooling and server-side cursors](https://docs.djangoproject.com/en/4.0/ref/databases/#transaction-pooling-server-side-cursors).
+
+В случае с Django предыдущих версий можно воспользоваться опцией `CONN_MAX_AGE` в сочетании с `pool_mode = session`.
+
+Для этого выставляем в конфигурации подключения к базе данных в проекте Django опцию CONN_MAX_AGE, равную очень малому значению, позволяющему закрывать неиспользуемые подключения к pgbouncer'у как можно скорее. Обычно я выставляю значение, равное 2 секундам.
+
+Далее в файле `/etc/pgbouncer/pgbouncer.ini` можно поменять значение опции `pool_mode` на `session` глобально в секции `[pgbouncer]`, если нет других баз данных. Или можно прописать индивидуальные настройки для выбранной базы данных в секцию `[databases]`, например, следующим образом:
+
+    db = auth_user=postgres host=/var/run/postgresql pool_mode=session
