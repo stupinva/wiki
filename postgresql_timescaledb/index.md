@@ -23,6 +23,10 @@ PostgreSQL и TimescaleDB
 
     deb https://packagecloud.io/timescale/timescaledb/debian/ bullseye main
 
+Для Ubuntu также доступен альтернативный репозиторий:
+
+    deb http://ppa.launchpad.net/timescale/timescaledb-ppa/ubuntu bionic main
+
 Выполним обновление списка пакетов, доступных через репозитории:
 
     # apt-get update
