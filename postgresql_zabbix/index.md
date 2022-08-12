@@ -87,9 +87,9 @@
     # systemctl restart zabbix-agent
     # /etc/init.d/zabbix-agent restart
 
-Если у вас есть доступ к Zabbix-серверу или Zabbix-прокси, который осуществялет опрос Zabbix-агента, то проверить правильность настройки Zabbix-агента можно с помощью команд следующего вида:
+Если у вас есть доступ к Zabbix-серверу или Zabbix-прокси, который осуществляет опрос Zabbix-агента, то проверить правильность настройки Zabbix-агента можно с помощью команд следующего вида:
 
-    $ zabbix_get -s postgresql.core.ufanet.ru -k pgsql.version
+    $ zabbix_get -s postgresql.server.tld -k pgsql.version
 
 После этого можно назначить наблюдаемому узлу шаблон [[Template_App_PostgreSQL_Active.xml]] для контроля общих показателей производительности и исправности.
 
