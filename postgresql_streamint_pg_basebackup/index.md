@@ -31,7 +31,7 @@
 
     # systemctl reload postgresql
 
-Далее нужно проверить конфигурацию сервера в файле /etc/postgresql/13/main/postgresql.conf.
+Далее нужно проверить конфигурацию сервера в файле `/etc/postgresql/13/main/postgresql.conf` следующим образом:
 
     listen_addresses = '*'
     wal_level = replica
