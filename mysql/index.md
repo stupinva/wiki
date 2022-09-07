@@ -65,6 +65,10 @@
     JOIN processlist ON processlist.id = innodb_trx.trx_mysql_thread_id
     ORDER BY innodb_trx.trx_started;
 
+Для завершения зависшей транзакции нужно выполнить команду `KILL` с идентификатором потока MySQL, в котором открыта транзакция:
+
+    KILL <trx_mysql_thread_id>;
+
 Просмотр количества записей в журнале откатов
 ---------------------------------------------
 
