@@ -166,7 +166,7 @@
     -> FROM percona.checksums
     -> WHERE master_cnt <> this_cnt
     ->   OR master_crc <> this_crc
-    ->   OR ISNULL(master_crc) <> ISNULL(this_crc))
+    ->   OR ISNULL(master_crc) <> ISNULL(this_crc)
     -> GROUP BY db, tbl;
     +------+--------+------------+--------+
     | db   | tbl    | total_rows | chunks |
