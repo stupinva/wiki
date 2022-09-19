@@ -51,7 +51,7 @@
 
 Отнимаем у пользователей права доступа к таблице `connections` в базе данных `admin`:
 
-    $ mysql mysql -BNe "SELECT CONCAT('REVOKE INSERT, UPDATE ON admin.connections FROM \'', user, '\'@\'', host, '\';') FROM user WHERE user <> 'root';" | mysql
+    $ mysql mysql -BNe "SELECT CONCAT('REVOKE SELECT, INSERT, UPDATE ON admin.connections FROM \'', user, '\'@\'', host, '\';') FROM user WHERE user <> 'root';" | mysql
     $ mysqladmin flush-privileges
 
 Удаляем базу данных вместе с таблицей:
