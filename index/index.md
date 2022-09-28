@@ -79,6 +79,7 @@ MySQL
 * [[Мониторинг MySQL с помощью Zabbix|mysql_zabbix]]
 * [[Игнорирование ошибок репликации MySQL|mysql_slave_ignore_errors]]
 * [[Исправление ошибок в таблице InnoDB|mysql_recovery_innodb_table]]
+* [[Удаление временной системной таблицы MySQL|mysql_drop_temporary_system_table]]
 * [[Утилита для проверки синхронности баз данных pt-table-checksum|pt_table_checksum]]
 * [[Актуализация реплики mysql с помощью pt-table-checksum и pt-table-sync|pt_table_checksum_sync]]
 * [[Установка Percona Server в Debian/Ubuntu|percona_server_debian_ubuntu]]
