@@ -13,7 +13,7 @@ PostgreSQL и TimescaleDB
 
 Установим в систему пакеты `gpg` и `gpg-agent` для проверки подписи репозитория пакетов TimescaleDB:
 
-    # apt-get install gpg gpg-agent
+    # apt-get install wget ca-certificates gpg gpg-agent
 
 Установим в систему GPG-ключ репозитория пакетов TimescaleDB:
 
