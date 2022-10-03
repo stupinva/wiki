@@ -21,7 +21,7 @@
 
 Теперь предоставим всем пользователям права на вставку записей в эту таблицу, например, с помощью следующей команды:
 
-    $ mysql mysql -BNe "SELECT CONCAT('GRANT SELECT, INSERT, UPDATE ON admin.connections TO \'', user, '\'@\'', host, '\';') FROM user WHERE user <> 'root';" | mysql
+    $ mysql mysql -BNe "SELECT CONCAT('GRANT SELECT, INSERT, UPDATE ON admin.connections TO \'', user, '\'@\'', host, '\';') FROM user WHERE user NOT IN ('root', 'mysql.session');" | mysql
     $ mysqladmin flush-privileges
 
 Если на сервере включена опция `read_only`, то вставить данные в таблицу не получится, несмотря на наличие соответствующих прав. Поэтому если она включена, её нужно отключить:
@@ -51,7 +51,7 @@
 
 Отнимаем у пользователей права доступа к таблице `connections` в базе данных `admin`:
 
-    $ mysql mysql -BNe "SELECT CONCAT('REVOKE SELECT, INSERT, UPDATE ON admin.connections FROM \'', user, '\'@\'', host, '\';') FROM user WHERE user <> 'root';" | mysql
+    $ mysql mysql -BNe "SELECT CONCAT('REVOKE SELECT, INSERT, UPDATE ON admin.connections FROM \'', user, '\'@\'', host, '\';') FROM user WHERE user NOT IN ('root', 'mysql.session');" | mysql
     $ mysqladmin flush-privileges
 
 Удаляем базу данных вместе с таблицей:
