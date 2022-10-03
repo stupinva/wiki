@@ -125,6 +125,15 @@
 
     # systemctl reload postgresql
 
+Реплику часто используют для снятия нагрузки с основного сервера, выполняя на реплике долгие аналитические запросы или резервное копирование данных. Процесс резервного копирования данных может завершиться аварийно с сообщением об ошибке следующего вида:
+
+    pg_dump: error: Dumping the contents of table "core_embedding" failed: PQgetResult() failed.
+    pg_dump: error: Error message from server: ERROR:  canceling statement due to conflict with recovery
+    DETAIL:  User was holding a relation lock for too long.
+    pg_dump: error: The command was: COPY public.core_embedding (id, date_created, embedding, photo_id, version_id) TO stdout;
+
+Ошибки "canceling statement due to conflict with recovery" и "User was holding a relation lock for too long." говорят о том, что реплика слишком долго пыталась удержать от очистки на исходном сервере строки, подлежащие резервному копированию. Время удержания строк, подлежащих очистке, настраивается с помощью опций `max_standby_archive_delay` и `max_standby_streaming_delay`. По умолчанию они обе настроены на удержание в течение 30 секунд. Для успешного выполнения резервного копирования можно попробовать увеличить значения этих опций.
+
 Использованные материалы
 ------------------------
 
