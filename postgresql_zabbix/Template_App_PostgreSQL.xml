@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>3.4</version>
-    <date>2022-05-13T09:37:08Z</date>
+    <date>2022-10-04T06:16:29Z</date>
     <groups>
         <group>
             <name>Templates</name>
@@ -27,11 +27,52 @@
             </applications>
             <items>
                 <item>
-                    <name>Активных подключений</name>
+                    <name>Доступность порта 5432</name>
                     <type>0</type>
                     <snmp_community/>
                     <snmp_oid/>
-                    <key>pgsql.active_connections</key>
+                    <key>net.tcp.listen[5432]</key>
+                    <delay>5m</delay>
+                    <history>90d</history>
+                    <trends>365d</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>PostgreSQL</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                    <preprocessing/>
+                    <jmx_endpoint/>
+                    <master_item/>
+                </item>
+                <item>
+                    <name>Активных реплик</name>
+                    <type>0</type>
+                    <snmp_community/>
+                    <snmp_oid/>
+                    <key>pgsql.active_replicas</key>
                     <delay>5m</delay>
                     <history>90d</history>
                     <trends>365d</trends>
@@ -767,6 +808,47 @@
                     <trends>365d</trends>
                     <status>0</status>
                     <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>PostgreSQL</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                    <preprocessing/>
+                    <jmx_endpoint/>
+                    <master_item/>
+                </item>
+                <item>
+                    <name>Отставание реплики от мастера</name>
+                    <type>0</type>
+                    <snmp_community/>
+                    <snmp_oid/>
+                    <key>pgsql.max_replay_lag</key>
+                    <delay>5m</delay>
+                    <history>90d</history>
+                    <trends>365d</trends>
+                    <status>0</status>
+                    <value_type>0</value_type>
                     <allowed_hosts/>
                     <units/>
                     <snmpv3_contextname/>
@@ -1936,40 +2018,7 @@
                             <master_item_prototype/>
                         </item_prototype>
                     </item_prototypes>
-                    <trigger_prototypes>
-                        <trigger_prototype>
-                            <expression>{Template App PostgreSQL:pgsql.cache_hit_ratio[{#DB}].last()}&lt;80</expression>
-                            <recovery_mode>0</recovery_mode>
-                            <recovery_expression/>
-                            <name>PostgreSQL {#DB}: Коэффициент попадания в кэш ниже 80% ({ITEM.LASTVALUE})</name>
-                            <correlation_mode>0</correlation_mode>
-                            <correlation_tag/>
-                            <url/>
-                            <status>0</status>
-                            <priority>1</priority>
-                            <description/>
-                            <type>0</type>
-                            <manual_close>0</manual_close>
-                            <dependencies/>
-                            <tags/>
-                        </trigger_prototype>
-                        <trigger_prototype>
-                            <expression>{Template App PostgreSQL:pgsql.commit_ratio[{#DB}].last()}&lt;95</expression>
-                            <recovery_mode>0</recovery_mode>
-                            <recovery_expression/>
-                            <name>PostgreSQL {#DB}: Коэффициент фиксации транзакций менее 95% ({ITEM.LASTVALUE})</name>
-                            <correlation_mode>0</correlation_mode>
-                            <correlation_tag/>
-                            <url/>
-                            <status>0</status>
-                            <priority>1</priority>
-                            <description/>
-                            <type>0</type>
-                            <manual_close>0</manual_close>
-                            <dependencies/>
-                            <tags/>
-                        </trigger_prototype>
-                    </trigger_prototypes>
+                    <trigger_prototypes/>
                     <graph_prototypes>
                         <graph_prototype>
                             <name>{#DB}: Частота завершения транзакций</name>
@@ -2021,7 +2070,16 @@
                 </discovery_rule>
             </discovery_rules>
             <httptests/>
-            <macros/>
+            <macros>
+                <macro>
+                    <macro>{$MIN_CACHE_HIT_RATIO}</macro>
+                    <value>80</value>
+                </macro>
+                <macro>
+                    <macro>{$NUM_REPLICAS}</macro>
+                    <value>0</value>
+                </macro>
+            </macros>
             <templates/>
             <screens/>
         </template>
@@ -2069,10 +2127,10 @@
             <tags/>
         </trigger>
         <trigger>
-            <expression>{Template App PostgreSQL:pgsql.cache_hit_ratio.prev()}&lt;80 and {Template App PostgreSQL:pgsql.cache_hit_ratio.last()}&lt;80</expression>
+            <expression>{Template App PostgreSQL:pgsql.cache_hit_ratio.prev()}&lt;{$MIN_CACHE_HIT_RATIO} and {Template App PostgreSQL:pgsql.cache_hit_ratio.last()}&lt;{$MIN_CACHE_HIT_RATIO}</expression>
             <recovery_mode>0</recovery_mode>
             <recovery_expression/>
-            <name>PostgreSQL: Коэффициент попадания в кэш ниже 80% ({ITEM.LASTVALUE})</name>
+            <name>PostgreSQL: Коэффициент попадания в кэш ниже {$MIN_CACHE_HIT_RATIO}% ({ITEM.LASTVALUE})</name>
             <correlation_mode>0</correlation_mode>
             <correlation_tag/>
             <url/>
@@ -2095,6 +2153,92 @@
             <url/>
             <status>0</status>
             <priority>1</priority>
+            <description/>
+            <type>0</type>
+            <manual_close>0</manual_close>
+            <dependencies/>
+            <tags/>
+        </trigger>
+        <trigger>
+            <expression>{Template App PostgreSQL:pgsql.active_replicas.last()}&lt;{$NUM_REPLICAS}</expression>
+            <recovery_mode>0</recovery_mode>
+            <recovery_expression/>
+            <name>PostgreSQL: Нет связи с репликой</name>
+            <correlation_mode>0</correlation_mode>
+            <correlation_tag/>
+            <url/>
+            <status>0</status>
+            <priority>5</priority>
+            <description/>
+            <type>0</type>
+            <manual_close>0</manual_close>
+            <dependencies/>
+            <tags/>
+        </trigger>
+        <trigger>
+            <expression>{Template App PostgreSQL:pgsql.max_replay_lag.last()}&gt;3600</expression>
+            <recovery_mode>0</recovery_mode>
+            <recovery_expression/>
+            <name>PostgreSQL: Отставание реплики более 1 часа ({ITEM.LASTVALUE})</name>
+            <correlation_mode>0</correlation_mode>
+            <correlation_tag/>
+            <url/>
+            <status>0</status>
+            <priority>5</priority>
+            <description/>
+            <type>0</type>
+            <manual_close>0</manual_close>
+            <dependencies>
+                <dependency>
+                    <name>PostgreSQL: Отставание реплики более 10 минут ({ITEM.LASTVALUE})</name>
+                    <expression>{Template App PostgreSQL:pgsql.max_replay_lag.last()}&gt;600</expression>
+                    <recovery_expression/>
+                </dependency>
+            </dependencies>
+            <tags/>
+        </trigger>
+        <trigger>
+            <expression>{Template App PostgreSQL:pgsql.max_replay_lag.last()}&gt;600</expression>
+            <recovery_mode>0</recovery_mode>
+            <recovery_expression/>
+            <name>PostgreSQL: Отставание реплики более 10 минут ({ITEM.LASTVALUE})</name>
+            <correlation_mode>0</correlation_mode>
+            <correlation_tag/>
+            <url/>
+            <status>0</status>
+            <priority>1</priority>
+            <description/>
+            <type>0</type>
+            <manual_close>0</manual_close>
+            <dependencies/>
+            <tags/>
+        </trigger>
+        <trigger>
+            <expression>{Template App PostgreSQL:pgsql.active_replicas.last()}&gt;{$NUM_REPLICAS}</expression>
+            <recovery_mode>0</recovery_mode>
+            <recovery_expression/>
+            <name>PostgreSQL: Реплика не на контроле!</name>
+            <correlation_mode>0</correlation_mode>
+            <correlation_tag/>
+            <url/>
+            <status>0</status>
+            <priority>2</priority>
+            <description/>
+            <type>0</type>
+            <manual_close>0</manual_close>
+            <dependencies/>
+            <tags/>
+        </trigger>
+        <trigger>
+            <expression>{Template App PostgreSQL:net.tcp.listen[5432].last()}=0</expression>
+            <recovery_mode>0</recovery_mode>
+            <recovery_expression/>
+            <name>Порт 5432 недоступен</name>
+            <correlation_mode>0</correlation_mode>
+            <correlation_tag/>
+            <url/>
+            <status>0</status>
+            <priority>2</priority>
             <description/>
             <type>0</type>
             <manual_close>0</manual_close>
@@ -2257,7 +2401,7 @@
                     <type>0</type>
                     <item>
                         <host>Template App PostgreSQL</host>
-                        <key>pgsql.active_connections</key>
+                        <key>pgsql.active_replicas</key>
                     </item>
                 </graph_item>
                 <graph_item>

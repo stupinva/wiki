@@ -6,6 +6,16 @@ $2
 END
 }
 
+psql0() {
+	v=`psql "$1" "$2"`
+
+	if [ -z "$v" ] ; then
+		echo "0"
+	else
+		echo "$v"
+	fi
+}
+
 psql_db_ratio() {
 	if [ -z "$1" ] ; then
 		v=`psql postgres "$2"`
@@ -320,6 +330,20 @@ case "$1" in
 				WHERE p.schemaname = '$3'
 				  AND p.relname = '$4'
 			)"
+		;;
+	active_replicas)
+		psql0 postgres \
+			"SELECT COUNT(*)
+			FROM pg_stat_replication;"
+		;;
+	max_replay_lag)
+		v=`psql postgres "SELECT current_setting('server_version_num')"` 
+		if [ -z "$v" -o "$v" -lt 100000 ] ; then
+			echo "Unsupported"
+		else
+			psql0 postgres \
+				"SELECT EXTRACT(SECOND FROM MAX(replay_lag)) FROM pg_stat_replication;"
+		fi
 		;;
 	*)
 		;;
