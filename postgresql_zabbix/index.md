@@ -16,7 +16,11 @@
 
     GRANT CONNECT ON DATABASE template1 TO zabbix;
 
-Предоставив права доступа к базе данных `template1` мы обеспечим доступ пользователя `zabbix` ко всем вновь создаваемым базам данных.
+Предоставив права доступа к базе данных `template1` мы обеспечим доступ пользователя `zabbix` ко всем вновь создаваемым базам данных (или нет).
+
+Если у сервера есть реплики, то для их контроля, начиная с PostgreSQL версии 10, нужно выдать права:
+
+    GRANT pg_monitor TO zabbix;
 
 Создадим файл `/etc/zabbix/pgpass` следующего вида:
 
@@ -79,6 +83,8 @@
     UserParameter=pgsql.n_tup_del[*],/etc/zabbix/pgsql.sh n_tup_del "$1" "$2" "$3"
     UserParameter=pgsql.n_tup_hot_upd[*],/etc/zabbix/pgsql.sh n_tup_hot_upd "$1" "$2" "$3"
     UserParameter=pgsql.n_tup_hot_upd_ratio[*],/etc/zabbix/pgsql.sh n_tup_hot_upd_ratio "$1" "$2" "$3"
+    UserParameter=pgsql.active_replicas,/etc/zabbix/pgsql.sh active_replicas
+    UserParameter=pgsql.max_replay_lag,/etc/zabbix/pgsql.sh max_replay_lag
 
 Как вариант, указанные выше строчки можно прописать в один из файлов в каталоге `/etc/zabbix/zabbix_agentd.d` или `/etc/zabbix/zabbix_agentd.conf.d` или создать новый файл с указанными выше строками.
 
@@ -96,3 +102,8 @@
 Если следить за показателями производительности не требуется, то можно ограничиться шаблоном [[Template_App_PostgreSQL_process_Active.xml]]. Для использования этого шаблона описанная выше процедура настройки Zabbix-агента не требуется.
 
 При необходимости вместо этих шаблонов можно воспользоваться одним из двух других, в которых вместо активного Zabbix-агента используется пассивный: [[Template_App_PostgreSQL.xml]], [[Template_App_PostgreSQL_process.xml]].
+
+Использованные материалы
+========================
+
+* [Can't get access to streaming replication stats in PostgreSQL](https://stackoverflow.com/questions/32735805/cant-get-access-to-streaming-replication-stats-in-postgresql)
