@@ -127,6 +127,31 @@
 * [Innodb transaction history often hides dangerous ‘debt’](https://www.percona.com/blog/2014/10/17/innodb-transaction-history-often-hides-dangerous-debt/).
 * [24.4.2 The INFORMATION_SCHEMA INNODB_BUFFER_PAGE Table](https://dev.mysql.com/doc/refman/5.7/en/information-schema-innodb-buffer-page-table.html)
 
+Просмотр пользователей-определителей
+------------------------------------
+
+В базах данных могут быть определены представления, подпрограммы, события и триггеры, исполняемые с правами пользователя, который их определил. Для получения списка таких пользователей можно воспользоваться следующим запросом:
+
+    SELECT DISTINCT m.user,
+                    m.host,
+                    CASE WHEN is_v.DEFINER IS NULL THEN 'N' ELSE 'Y' END AS view_definer,
+                    CASE WHEN is_r.DEFINER IS NULL THEN 'N' ELSE 'Y' END AS routine_definer,
+                    CASE WHEN is_e.DEFINER IS NULL THEN 'N' ELSE 'Y' END AS event_definer,
+                    CASE WHEN is_t.DEFINER IS NULL THEN 'N' ELSE 'Y' END AS trigger_definer
+    FROM mysql.user m
+    LEFT JOIN information_schema.views is_v ON is_v.security_type = 'DEFINER'
+      AND is_v.definer LIKE CONCAT(m.user, '@', m.host)
+    LEFT JOIN information_schema.routines is_r ON is_r.security_type = 'DEFINER'
+      AND is_r.definer LIKE CONCAT(m.user, '@', m.host)
+    LEFT JOIN information_schema.events is_e ON is_e.definer LIKE CONCAT(m.user, '@', m.host)
+    LEFT JOIN information_schema.triggers is_t ON is_t.definer LIKE CONCAT(m.user, '@', m.host)
+    WHERE is_v.DEFINER IS NOT NULL
+      OR is_r.DEFINER IS NOT NULL
+      OR is_e.DEFINER IS NOT NULL
+      OR is_t.DEFINER IS NOT NULL
+    GROUP BY m.user, m.host
+    ORDER BY user, host
+
 Просмотр неактивных пользователей
 ---------------------------------
 
