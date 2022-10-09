@@ -139,6 +139,7 @@ SQL-серверы
 * [[Настройка и использвоание LFS в git-репозитории|git_lfs]]
 * [[Zabbix-агент в Debian Bullseye и Zabbix-сервер 3.4|zabbix_agent_bullseye]]
 * [[Изменение размера диска в Linux|linux_resize_disk]]
+* [[Разблокировка загрузчика Xiaomi|xiaomi_bootloader_unlock]]
 * [[Забавная проблема с uBlock Origin|ublock_trouble]]
 * [[Сборка deb-пакета nginx из Debian 11 Bullseye для Debian 8.11 Jessie|nginx_debian_jessie]]
 * [[Приоритеты звуковых карт в ALSA|alsa]]
