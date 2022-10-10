@@ -140,6 +140,7 @@ SQL-серверы
 * [[Zabbix-агент в Debian Bullseye и Zabbix-сервер 3.4|zabbix_agent_bullseye]]
 * [[Изменение размера диска в Linux|linux_resize_disk]]
 * [[Разблокировка загрузчика Xiaomi|xiaomi_bootloader_unlock]]
+* [[Обновление операционной системы MIUI на Xiaomi Mi 10T|xiaomi_mi_10t_miui_upgrade]]
 * [[Забавная проблема с uBlock Origin|ublock_trouble]]
 * [[Сборка deb-пакета nginx из Debian 11 Bullseye для Debian 8.11 Jessie|nginx_debian_jessie]]
 * [[Приоритеты звуковых карт в ALSA|alsa]]
