@@ -1,7 +1,7 @@
 Прошивка TWRP на Xiaomi Mi 10T
 ==============================
 
-TWRP - это инструмент восстановления операционной системы. К сожалению, официальной версии TWRP для смартфона Xiaomi Mi 10T нет, но есть неофициальный.
+TWRP - это инструмент восстановления операционной системы. К сожалению, [официальной версии TWRP для смартфона Xiaomi Mi 10T нет](https://twrp.me/Devices/Xiaomi/), но есть неофициальный.
 
 Неофициальный TWRP самой свежей версии 3.6.2 на момент написания статьи можно взять по ссылке [(update) unofficial twrp 3.6.2 for Xiaomi Mi 10T (Apollo)](https://unofficialtwrp.com/twrp-3-6-2-for-xiaomi-mi-10t-apollo/).
 
@@ -65,3 +65,9 @@ TWRP - это инструмент восстановления операцио
 После установки TWRP загружается с установленным по умолчанию китайским языком. Включить английский язык можно следующим образом, изображённым на видео:
 
 [[twrp_chinese_to_english.mp4]]
+
+Использованные материалы
+------------------------
+
+* [(update) unofficial twrp 3.6.2 for Xiaomi Mi 10T (Apollo)](https://unofficialtwrp.com/twrp-3-6-2-for-xiaomi-mi-10t-apollo/)
+* [TWRP for Xiaomi Mi 10i / Mi 10T Lite / Redmi Note 9 Pro 5G](https://twrp.me/xiaomi/xiaomimi10i.html)
