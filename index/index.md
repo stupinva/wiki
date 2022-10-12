@@ -142,6 +142,7 @@ SQL-серверы
 * [[Разблокировка загрузчика Xiaomi|xiaomi_bootloader_unlock]]
 * [[Обновление операционной системы MIUI на Xiaomi Mi 10T|xiaomi_mi_10t_miui_upgrade]]
 * [[Прошивка TWRP на Xiaomi Mi 10T|xiaomi_mi_10t_twrp]]
+* [[Установка LineageOS 19.1 на Xiaomi Mi 10T с помощью TWRP|xiaomi_mi_10t_twrp_lineageos19]]
 * [[Забавная проблема с uBlock Origin|ublock_trouble]]
 * [[Сборка deb-пакета nginx из Debian 11 Bullseye для Debian 8.11 Jessie|nginx_debian_jessie]]
 * [[Приоритеты звуковых карт в ALSA|alsa]]
