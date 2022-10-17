@@ -1,7 +1,7 @@
 Разблокировка загрузчика Xiaomi
 ===============================
 
-[[!tag fastboot android]]
+[[!tag fastboot android xiaomi miui]]
 
 Введение
 --------
