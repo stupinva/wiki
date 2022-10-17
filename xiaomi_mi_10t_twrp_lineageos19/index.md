@@ -1,6 +1,8 @@
 Установка LineageOS 19.1 на Xiaomi Mi 10T с помощью TWRP
 ========================================================
 
+[[!tag adb android xiaomi lineageos twrp]]
+
 Введение
 --------
 
