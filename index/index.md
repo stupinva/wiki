@@ -139,6 +139,7 @@ Android
 * [[Прошивка TWRP на Xiaomi Mi 10T|xiaomi_mi_10t_twrp]]
 * [[Установка LineageOS 19.1 на Xiaomi Mi 10T с помощью TWRP|xiaomi_mi_10t_twrp_lineageos19]]
 * [[Перенос данных и приложений на новое устройство с помощью adb (LineageOS 17)|lineageos17_migration]] (перевод)
+* [[Перенос приложений и данных LineageOS на новое устройство|lineageos_migration]]
 * [[Монтирование устройств по протоколу MTP|mtp]]
 
 Другие статьи
