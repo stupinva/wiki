@@ -37,6 +37,11 @@ read_rnd_buffer_size
  
 Буфер read_rnd используется для чтения строк в произвольном порядке из таблиц MyISAM и при сортировке строк. По умолчанию имеет значение 256 килобайт. Если какой-то клиент выполняет запрос с сортировкой большой выборки, то лучше менять значение этой опции внутри клиентского подключения, а не на уровне сервера.
 
+bulk_insert_buffer_size
+-----------------------
+
+Максимальный размер буфера, используемого для вставки данных в непустые таблицы MyISAM, для выполнения запросов INSERT ... SELECT, INSERT ... VALUES и LOAD DATA. По умолчанию равен 8 мегабайтам. Для ускорения вставки данных в таблицы MyISAM размер этого буфера можно увеличить.
+
 Временные файлы
 ---------------
 
@@ -108,7 +113,8 @@ interactive_timeout
 Использованные материалы
 ------------------------
 
-* [MySQL 8.0 Reference Manual / 5.1.8 Server System Variables](https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html)
+* [MySQL 8.0 Reference Manual / Server System Variables](https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html)
 * [Hayden James. Tuning MySQL my.cnf? Avoid this common pitfall!](https://haydenjames.io/my-cnf-tuning-avoid-this-common-pitfall/) - [Настройка MySQL: часто встречающиеся ошибки](https://netpoint-dc.com/blog/mysql-chastie-oshibki-nastroiki/)
 * [Peter Zaitsev. MySQL: What read_buffer_size Value is Optimal?](https://www.percona.com/blog/2007/09/17/mysql-what-read_buffer_size-value-is-optimal/)
-* [MySQL 5.7 C API Developer Guide / 5.4.54 mysql_real_connect()](https://dev.mysql.com/doc/c-api/5.7/en/mysql-real-connect.html)
+* [MySQL 5.7 C API Developer Guide / mysql_real_connect()](https://dev.mysql.com/doc/c-api/5.7/en/mysql-real-connect.html)
+* [MySQL 5.7 Reference Manual / MyISAM Startup Options](https://dev.mysql.com/doc/refman/5.7/en/myisam-start.html)
