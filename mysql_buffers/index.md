@@ -79,6 +79,11 @@ key_buffer_size
     SHOW GLOBAL STATUS WHERE Variable_name = 'Key_read_requests';
     SHOW GLOBAL STATUS WHERE Variable_name = 'Key_reads';
 
+myisam_sort_buffer_size
+-----------------------
+
+Размер буфера, выделяемого для сортировки индексов таблиц MyISAM, для выполнения запросов `REPAIR TABLE` или создания индексов запросами `CREATE INDEX` и `ALTER TABLE`. По умолчанию равен 8 мегабайтам.
+
 tmp_table_size
 --------------
 
@@ -96,3 +101,4 @@ tmp_table_size
 * [Peter Zaitsev. InnoDB Performance Optimization Basics](https://www.percona.com/blog/2007/11/01/innodb-performance-optimization-basics/) - оригинальная статья 2007 года
 * [Вячеслав Гапон. Изменение InnoDB buffer pool в MySQL](https://ixnfo.com/innodb-buffer-pool-size.html)
 * [MySQL 8.0 Reference Manual / Configuring InnoDB Buffer Pool Size](https://dev.mysql.com/doc/refman/8.0/en/innodb-buffer-pool-resize.html)
+* [MySQL 5.7 Reference Manual / Server System Variables](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html)
