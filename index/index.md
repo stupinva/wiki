@@ -153,6 +153,7 @@ Android
 * [[Изменение размера диска в Linux|linux_resize_disk]]
 * [[Забавная проблема с uBlock Origin|ublock_trouble]]
 * [[Сборка deb-пакета nginx из Debian 11 Bullseye для Debian 8.11 Jessie|nginx_debian_jessie]]
+* [[Контроль аппаратного RAID-массива в Linux средствами Zabbix|zabbix_template_raid_lsi]]
 * [[Приоритеты звуковых карт в ALSA|alsa]]
 * [[Полезные sysctl|sysctl]]
 * [[Порты FreeBSD|freebsd_ports]]
