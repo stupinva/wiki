@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>3.4</version>
-    <date>2022-11-24T11:06:16Z</date>
+    <date>2022-11-24T11:27:09Z</date>
     <groups>
         <group>
             <name>Templates</name>
@@ -155,10 +155,10 @@
                     </item_prototypes>
                     <trigger_prototypes>
                         <trigger_prototype>
-                            <expression>{Template RAID megacli Active:megacli.battery.missing[{#ADAPTER}].last()}=1 and {$MEGACLI_CHECK_BATTERY:&quot;{#ADAPTER}&quot;}=1</expression>
+                            <expression>{Template RAID megacli Active:megacli.battery.state[{#ADAPTER}].last()}=0 and {$MEGACLI_CHECK_BATTERY:&quot;{#ADAPTER}&quot;}=1</expression>
                             <recovery_mode>0</recovery_mode>
                             <recovery_expression/>
-                            <name>RAID-контроллер {#ADAPTER}: Батарея отсутствует</name>
+                            <name>RAID-контроллер {#ADAPTER}: Батарея неисправна</name>
                             <correlation_mode>0</correlation_mode>
                             <correlation_tag/>
                             <url/>
@@ -171,10 +171,10 @@
                             <tags/>
                         </trigger_prototype>
                         <trigger_prototype>
-                            <expression>{Template RAID megacli Active:megacli.battery.state[{#ADAPTER}].last()}=0 and {$MEGACLI_CHECK_BATTERY:&quot;{#ADAPTER}&quot;}=1</expression>
+                            <expression>{Template RAID megacli Active:megacli.battery.missing[{#ADAPTER}].last()}=1 and {$MEGACLI_CHECK_BATTERY:&quot;{#ADAPTER}&quot;}=1</expression>
                             <recovery_mode>0</recovery_mode>
                             <recovery_expression/>
-                            <name>RAID-массива {#ADAPTER}: Батарея неисправна</name>
+                            <name>RAID-контроллер {#ADAPTER}: Батарея отсутствует</name>
                             <correlation_mode>0</correlation_mode>
                             <correlation_tag/>
                             <url/>
