@@ -278,3 +278,147 @@ FIXME: *Первоначальную настройку маршрутизато
     <hp>
 
 Маршрутизатор позволяет удалить пользователя, даже если он используется в текущем сеансе.
+
+Просмотр состояния портов и VLAN
+--------------------------------
+
+Посмотреть текущее состояние портов можно при помощи команды display interface brief:
+
+    <hp>display interface brief 
+    The brief information of interface(s) under route mode:
+    Link: ADM - administratively down; Stby - standby
+    Protocol: (s) - spoofing
+    Interface            Link Protocol Main IP         Description
+    Aux0                 UP   UP       --
+    Cellular0/0          DOWN DOWN     --
+    Eth0/0               DOWN DOWN     10.0.0.1
+    Eth0/1               DOWN DOWN     --
+    NULL0                UP   UP(s)    --
+    Vlan1                DOWN DOWN     192.168.1.1
+    
+    The brief information of interface(s) under bridge mode:
+    Link: ADM - administratively down; Stby - standby
+    Speed or Duplex: (a)/A - auto; H - half; F - full
+    Type: A - access; T - trunk; H - hybrid
+    Interface            Link Speed   Duplex Type PVID Description
+    Eth0/2               DOWN auto    A      A    1
+    Eth0/3               DOWN auto    A      A    1
+    Eth0/4               DOWN auto    A      A    1
+    Eth0/5               DOWN auto    A      A    1
+
+Как видно, сначала выводятся порты, находящиеся в режиме маршрутизации, а потом - в режиме коммутации.
+
+Посмотреть список портов и VLAN на них можно при помощи команд display vlan all:
+
+    [hp]display vlan all 
+     VLAN ID: 1
+     VLAN Type: static
+     Route Interface: configured
+     IP Address: 192.168.1.1
+     Subnet Mask: 255.255.255.0
+     Description: VLAN 0001
+     Name: VLAN 0001
+     Tagged   Ports: none
+     Untagged Ports:
+        Ethernet0/2              Ethernet0/3              Ethernet0/4
+        Ethernet0/5
+
+Настройка портов и VLAN
+-----------------------
+
+Переходим в режим настройки маршрутизатора:
+
+    <hp>system-view 
+    Enter system view, return user view with Ctrl+Z.
+
+Вход в режим настройки порта (выход осуществляется по команде quit):
+
+    [hp]interface Ethernet 0/2
+    [hp-Ethernet0/2]
+
+В режиме настройки интерфейса можно задать его описание:
+
+    [hp]interface Ethernet 0/2
+    [hp-Ethernet0/2]description mgmt
+    [hp-Ethernet0/2]quit
+
+Очистить описание у интерфейса можно следующим образом:
+
+    [hp]interface Ethernet 0/2
+    [hp-Ethernet0/2]undo description
+    [hp-Ethernet0/2]quit
+
+Для переключения режима работы порта из коммутируемого в маршрутизируемый можно воспользоваться командой port link-mode route:
+
+    [hp-Ethernet0/2]port link-mode route
+
+Для обратного переключения режима работы порта из маршрутизируемого в коммутируемый можно воспользоваться командой port link-mode bridge:
+
+    [hp-Ethernet0/2]port link-mode bridge
+
+Стоит учитывать, что первые два порта Ethernet 0/0 и Ethernet 0/1 работают только в маршрутизируемом режиме, а попытка поменять их режим работы на коммутируемый завершится выводом сообщения об ошибке следующего вида:
+
+     Error: This mode is not supported on this interface!
+
+Перед настройкой VLAN на портах маршрутизатора можно настроить описание каждой VLAN:
+
+    [hp]vlan 1
+    [hp-vlan1]name default
+    [hp-vlan1]vlan 2
+    [hp-vlan2]name System
+    [hp-vlan2]quit
+    [hp]
+
+Настроить VLAN в режиме доступа на порту можно и так:
+
+    [hp]interface Ethernet 0/2
+    [hp-Ethernet0/2]port access vlan 2
+    [hp-Ethernet0/2]
+
+По умолчанию все коммутируемые порты маршрутизатора настроены в режиме доступа в VLAN 1 - принимают Ethernet-кадры без меток и помечают их как принадлежащие VLAN 1.
+
+Переключить порт коммутатора в режим транк можно следующим образом:
+
+    [hp]interface Ethernet 0/2
+    [hp-Ethernet0/2]port link-type trunk 
+    [hp-Ethernet0/2]
+
+Определить список VLAN на транк-порту можно следующим образом:
+
+    [hp-Ethernet0/2]port trunk permit vlan 2
+     Please wait... Done.
+
+Можно указать номера нескольких VLAN через пробел. Вместо одного номера можно указать диапазон, разделив начальный и конечный номера ключевым словом to:
+
+    [hp-Ethernet0/2]port trunk permit vlan 1 to 4 8 
+
+Если на интерфейс поступит пакет без метки, то его можно принять как принадлежащую VLAN по умолчанию для этого порта. Для указания номера VLAN по умолчанию для этого порта можно воспользоваться командой такого вида:
+
+    [hp-Ethernet0/2]port trunk pvid vlan 2
+
+Кроме режима транк можно настроить коммутируемый порт в гибридном режиме, воспользовавшись ключевым словом hybrid:
+
+    [hp-Ethernet0/2]port link-type hybrid
+
+Переключить порт в гибридный или транк-режимы можно только из режима доступа. Если порт находится в другом режиме, то будет выведено сообщение об ошибке:
+
+     Because it is a Trunk-port, Hybrid can not be specified, please set it Access first.
+
+Для переключения порта в режим доступа можно воспользоваться такой командой:
+
+    [hp-Ethernet0/2]port link-type access
+     Please wait........................................... Done.
+
+В гибридном режиме VLAN по умолчанию для входящих пакетов можно настроить следующим образом:
+
+    [hp-Ethernet0/2]port hybrid pvid vlan 2
+
+Следующим образом можно разрешить пакетам из VLAN 2 покидать порт в нетегированном режиме:
+
+    [hp-Ethernet0/2]port hybrid vlan 2 untagged 
+     Please wait... Done.
+
+Наконец, вот так можно разрешить движение через порт тегированных пакетов, принадлежащих VLAN 1:
+
+    [hp-Ethernet0/2]port hybrid vlan 1 tagged 
+     Please wait... Done.
