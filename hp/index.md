@@ -184,3 +184,97 @@ FIXME: *Первоначальную настройку маршрутизато
      Next main startup saved-configuration file: flash:/startup.cfg
      Next backup startup saved-configuration file: NULL
 
+Настройка начальных сведений о коммутаторе
+------------------------------------------
+
+Входим в режим настройки коммутатора:
+
+    <HP>system-view
+    Enter system view, return user view with Ctrl+Z.
+
+Настраиваем имя коммутатора:
+
+    [HP]sysname hp
+
+Вернуться из режима настройки в пользовательский режим можно при помощи команды return:
+
+    [hp]return
+    <hp>
+
+Настройка контактов системного администратора и местоположения коммутатора производится через команды настройки агента SNMP:
+
+    [hp]snmp-agent sys-info contact vladimir@stupin.su
+    [hp]snmp-agent sys-info location Ufa
+
+Увидеть настроенные данные можно следующим образом:
+
+<hp>display snmp-agent sys-info 
+   The contact person for this managed node: 
+           vladimir@stupin.su
+
+   The physical location of this node: 
+           Ufa
+
+   SNMP version running in the system: 
+           SNMPv3
+
+Настройка пользователей и паролей
+---------------------------------
+
+Настройка пользователей коммутатора происходит в режиме system-view:
+
+     <hp>system-view
+    [hp]
+
+Переходим к настройке локального пользователя с логином stupin:
+
+    [hp]local-user stupin 
+    New local user added.
+    [hp-luser-stupin]
+
+Как видно, на коммутаторе не было пользователя с указанным логином и он был создан, после чего коммутатор перешёл в режим настройки нового пользователя.
+
+Настраиваем локального пользователя с паролем, которому разрешаем заходить по SSH и назначаем наивысшие привилегии:
+
+    [hp-luser-stupin]password cipher $ecretP4ssw0rd
+    [hp-luser-stupin]service-type ssh 
+    [hp-luser-stupin]authorization-attribute level 3
+
+Выйти из режима настройки локального пользователя можно при помощи команды quit. Возврат в начальный режим, как обычно, происходит по команде return:
+
+    [hp-luser-stupin]quit
+    [hp]return
+    <hp>
+
+Но из режима настройки пользователя не обязательно выходить по команде quit, если вы хотите вернуться сразу в начальный режим. Вернуться в него можно напрямую - по команде return.
+
+Посмотреть список настроенных локальных пользователей можно следующим образом:
+
+    <hp>display local-user 
+    The contents of local user admin:
+     State:                    Active
+     ServiceType:              telnet/web
+     Access-limit:             Disabled          Current AccessNum: 0
+     User-group:               system
+     Bind attributes:
+     Authorization attributes:
+      User Privilege:          3
+    The contents of local user stupin:
+     State:                    Active
+     ServiceType:              ssh
+     Access-limit:             Disabled          Current AccessNum: 0
+     User-group:               system
+     Bind attributes:
+     Authorization attributes:
+      User Privilege:          3
+    Total 2 local user(s) matched.
+
+Для удаления локального пользователя можно воспользоваться командой undo local-user с именем удаляемого пользователя:
+
+    <hp>system-view 
+    System View: return to User View with Ctrl+Z.
+    [hp]undo local-user admin
+    [hp]return
+    <hp>
+
+Коммутатор позволяет удалить пользователя, даже если он используется в текущем сеансе.
