@@ -172,7 +172,7 @@ FIXME: *Первоначальную настройку маршрутизато
 
     <HP>more startup.cfg
 
-Посмотреть конфигурацию, которая будет применена при загрузке маршрутизатора, можно при помщи такой команды:
+Посмотреть конфигурацию, которая будет применена при загрузке маршрутизатора, можно при помощи такой команды:
 
     <HP>display saved-configuration
 
@@ -209,13 +209,13 @@ FIXME: *Первоначальную настройку маршрутизато
 Увидеть настроенные данные можно следующим образом:
 
 <hp>display snmp-agent sys-info 
-   The contact person for this managed node: 
+   The contact person for this managed node:
            vladimir@stupin.su
 
-   The physical location of this node: 
+   The physical location of this node:
            Ufa
 
-   SNMP version running in the system: 
+   SNMP version running in the system:
            SNMPv3
 
 Настройка пользователей и паролей
@@ -380,7 +380,7 @@ FIXME: *Первоначальную настройку маршрутизато
 Переключить порт коммутатора в режим транк можно следующим образом:
 
     [hp]interface Ethernet 0/2
-    [hp-Ethernet0/2]port link-type trunk 
+    [hp-Ethernet0/2]port link-type trunk
     [hp-Ethernet0/2]
 
 Определить список VLAN на транк-порту можно следующим образом:
@@ -415,10 +415,10 @@ FIXME: *Первоначальную настройку маршрутизато
 
 Следующим образом можно разрешить пакетам из VLAN 2 покидать порт в нетегированном режиме:
 
-    [hp-Ethernet0/2]port hybrid vlan 2 untagged 
+    [hp-Ethernet0/2]port hybrid vlan 2 untagged
      Please wait... Done.
 
 Наконец, вот так можно разрешить движение через порт тегированных пакетов, принадлежащих VLAN 1:
 
-    [hp-Ethernet0/2]port hybrid vlan 1 tagged 
+    [hp-Ethernet0/2]port hybrid vlan 1 tagged
      Please wait... Done.
