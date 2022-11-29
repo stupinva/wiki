@@ -463,3 +463,10 @@ FIXME: *Первоначальную настройку маршрутизато
 Выходим из режима настройки интерфейса:
 
     [hp-Vlan-interface2]quit
+
+Использованные материалы
+------------------------
+
+* [[HP MSR 900 Router Series Installation Guide|HP_MSR_900_Router_Series_Installation_Guide.pdf]]
+* [[HP MSR Router Series Fundamentals Command Reference (V7)|HP_MSR_Router_Series_Fundamentals_Command_Reference___40__V7__41__.pdf]]
+* [[HP A-MSR Router Series Fundamentals Configuration Guide (Mar. 2012)|HP_A-MSR_Router_Series_Fundamentals_Configuration_Guide___40__Mar._2012__41__.pdf]]
