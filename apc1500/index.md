@@ -1623,3 +1623,6 @@
 * [Карта управления AP9630](https://www.apc.com/shop/us/en/products/UPS-Network-Management-Card-2/P-AP9630)
 * [ИБП APC 1500](http://www.nix.ru/autocatalog/apc/UPS-1500VA-Smart-APC-SUA1500I-USB_9396.html)
 * [UPS Network Management Card v6.9.6 Firmware for Smart-UPS & Galaxy 3500 with AP9630/31/35](https://www.apc.com/shop/us/en/products/P-SFSUMX696) - прошивки версии 6.9.6 и пакеты языковой поддержки для карты управления 
+* [[Reference Guide Management Information Base|Reference_Guide_Management_Information_Base.pdf]]
+* [[User Guide UPS Network Management Card 2 AP9630, AP9631, AP9635|User_Guide_UPS_Network_Management_Card_2_AP9630__44___AP9631__44___AP9635.pdf]]
+* [[Command Line Interface Guide UPS Network Management Card 2 AP9630, AP9631, AP9635|Command_Line_Interface_Guide_UPS_Network_Management_Card_2_AP9630__44___AP9631__44___AP9635.pdf]]
