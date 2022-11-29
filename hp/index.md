@@ -422,3 +422,44 @@ FIXME: *Первоначальную настройку маршрутизато
 
     [hp-Ethernet0/2]port hybrid vlan 1 tagged
      Please wait... Done.
+
+Настройка IP-адреса и шлюза
+---------------------------
+
+По умолчанию на маршрутизаторе настроен интерфейс в VLAN 1 с IP-адресом 192.168.1.1 и маской сети 255.255.255.0:
+
+    <hp>display interface Vlan-interface 1
+    Vlan-interface1 current state: DOWN
+    Line protocol current state: DOWN
+    Description: Vlan-interface1 Interface
+    The Maximum Transmit Unit is 1500
+    Internet Address is 192.168.1.1/24 Primary
+    IP Packet Frame Type: PKTFMT_ETHNT_2,  Hardware Address: 7848-59da-b569
+    IPv6 Packet Frame Type: PKTFMT_ETHNT_2,  Hardware Address: 7848-59da-b569
+     Last clearing of counters:  Never
+        Last 300 seconds input rate: 0 bytes/sec, 0 bits/sec, 0 packets/sec
+        Last 300 seconds output rate: 0 bytes/sec, 0 bits/sec, 0 packets/sec
+        0 packets input, 0 bytes, 0 drops
+        0 packets output, 0 bytes, 0 drops
+
+Настроим новый интерфейс в VLAN 2. Для этого сначала перейдём в режим настройки:
+
+    <hp>system-view                                                                 
+    System View: return to User View with Ctrl+Z. 
+
+Настраиваем IP-адрес и маску на интерфейсе.
+
+    [hp]interface Vlan-interface 2
+    [hp-Vlan-interface2]ip address 192.168.254.29 24
+
+Для удаления IP-адреса с интерфейса можно воспользоваться командой undo:
+
+    [hp-Vlan-interface2]undo ip address 192.168.254.29 24
+
+Добавим описание к интерфейсу:
+
+    [hp-Vlan-interface2]description Uplink, snr.lo.ufanet.ru, port 1
+
+Выходим из режима настройки интерфейса:
+
+    [hp-Vlan-interface2]quit
