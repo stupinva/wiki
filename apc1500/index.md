@@ -1118,6 +1118,56 @@
 
 Настройка параметров отключения.
 
+Для просмотра текущих параметров предназначена опция `-all`:
+
+    apc>cfgshutdn -all
+    E000: Success
+    Shutdown Delay: 180 sec
+    Low Battery Duration: 02 min
+    Return Delay: 000 sec
+    Minimum Return State of Charge: 15 %
+    Sleep Time: 0.0 hr
+
+С помощью опции `-lo` можно настроить, за какое время до окончания заряда батареи будет отправлен сигнал на корректное завершение работы оборудования. Допустимы значения от 2 до 23 минут с шагом 3 минуты с ведущим нулём.
+
+    apc>cfgshutdn -lo 05
+    E000: Success
+    Shutdown Delay: 180 sec
+    Low Battery Duration: 05 min
+    Return Delay: 000 sec
+    Minimum Return State of Charge: 15 %
+    Sleep Time: 0.0 hr
+
+С помощью опции `-sd` можно настроить время, в течение которого будет ожидаться корректное отключение оборудования. По истечении этого времени оборудование будет отключено принудительно. Допустимы значения от 0 до 630 секунд с шагом в 90 секунд с ведущими нулями. 
+
+    apc>cfgshutdn -sd 180
+    E000: Success
+    Shutdown Delay: 180 sec
+    Low Battery Duration: 05 min
+    Return Delay: 000 sec
+    Minimum Return State of Charge: 15 %
+    Sleep Time: 0.0 hr
+
+С помощью опции `-rsc` можно настроить, при каком уровне заряда батареи питание будет снова подано на подключенное оборудование. Допустимы значения от 0 до 90% с шагом 15%.
+
+    apc>cfgshutdn -rsc 15
+    E000: Success
+    Shutdown Delay: 180 sec
+    Low Battery Duration: 05 min
+    Return Delay: 000 sec
+    Minimum Return State of Charge: 15 %
+    Sleep Time: 0.0 hr
+
+С помощью опции `-rd` можно настроить время с момента появления питания на входе ИБП перед включением нагрузки. Это может быть полезно для того, чтобы накопить заряд для корректного отключения нагрузки, если питание на входе ИБП пропадёт повторно. Допустимы значения от 0 до 420 с шагом в 6 секунд с ведущими нулями.
+
+    apc>cfgshutdn -rd 180
+    E000: Success
+    Shutdown Delay: 180 sec
+    Low Battery Duration: 05 min
+    Return Delay: 180 sec
+    Minimum Return State of Charge: 15 %
+    Sleep Time: 0.0 hr
+
 ### cfgpower
 
 Настройка порогов напряжения.
