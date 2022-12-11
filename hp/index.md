@@ -551,8 +551,9 @@ FIXME: *Первоначальную настройку маршрутизато
     [hp-ui-aux0]authentication-mode scheme
     [hp-ui-aux0]quit
 
-Для отключения веб-интерфейсов воспользуемся такими командами:
+Для отключения telnet и веб-интерфейсов воспользуемся такими командами:
 
+    [hp]undo telnet server enable
     [hp]undo ip http enable
     [hp]undo ip https enable
     Info: HTTPS server has been stopped!
