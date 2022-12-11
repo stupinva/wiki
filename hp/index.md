@@ -464,6 +464,99 @@ FIXME: *Первоначальную настройку маршрутизато
 
     [hp-Vlan-interface2]quit
 
+Добавим маршрут по умолчанию. Это будет постоянный статический маршрут через VLAN 2:
+
+    [hp]ip route-static 0.0.0.0 0 Vlan-interface 2 192.168.254.1 permanent
+
+Посмотреть текущую таблицу маршрутизации можно следующим образом:
+
+    [hp]display ip routing-table
+    Routing Tables: Public
+            Destinations : 5        Routes : 5
+    
+    Destination/Mask    Proto  Pre  Cost         NextHop         Interface
+    
+    0.0.0.0/0           Static 60   0            192.168.254.1   Vlan2
+    127.0.0.0/8         Direct 0    0            127.0.0.1       InLoop0
+    127.0.0.1/32        Direct 0    0            127.0.0.1       InLoop0
+    192.168.254.0/24    Direct 0    0            192.168.254.29  Vlan2
+    192.168.254.29/32   Direct 0    0            127.0.0.1       InLoop0
+
+Учтите, что в выводе этой команды отображаются только маршруты через активные интерфейсы. Если интерфейс неактивен, то маршрута в списке не будет.
+
+Настройка SSH, защита консоли, отключение telnet и веб-интерфейса
+-----------------------------------------------------------------
+
+Включаем SSH-сервер:
+
+    [hp]ssh server enable
+    Info: Enable SSH server.
+    [hp]
+
+После включения SSH-сервера нужно сгенерировать его ключ идентификации:
+
+    [hp]public-key local create rsa
+    The range of public key size is (512 ~ 2048).
+    NOTES: If the key modulus is greater than 512,
+    it will take a few minutes.
+    Press CTRL+C to abort.
+    Input the bits of the modulus[default = 1024]:
+    Generating Keys...
+    +++
+    +++++
+    ++
+    +++++++
+    
+    [hp]
+
+Если этого не сделать, то при попытке подключения к маршрутизатору по SSH можно получить такую ошибку:
+
+    $ ssh stupin@192.168.254.29
+    Received disconnect from 192.168.254.29 port 22:2: The connection is closed by SSH Server
+      Current FSM is SSH_Main_VersionMatch
+    Disconnected from 192.168.254.29 port 22
+
+Теперь добавим пользователя SSH-сервера, который может проходить аутентификацию по паролю и пользоваться SSH:
+
+    [hp]ssh user stupin service-type stelnet authentication-type password
+
+Посмотреть текущую конфигурацию терминалов можно следующим образом:
+
+    [hp]display user-interface aux 0[hp]display user-interface      
+      Idx  Type     Tx/Rx      Modem Privi Auth  Int
+      12   TTY 12   9600       -     0     N     Cellular0/0
+    F 80   AUX 0    9600       -     3     N     -
+      81   VTY 0               -     0     A     -
+      82   VTY 1               -     0     A     -
+      83   VTY 2               -     0     A     -
+      84   VTY 3               -     0     A     -
+      85   VTY 4               -     0     A     -
+    UI(s) not in async mode -or- with no hardware support:
+    0-11  13-80
+      +    : Current UI is active.
+      F    : Current UI is active and work in async mode.
+      Idx  : Absolute index of UIs.
+      Type : Type and relative index of UIs.
+      Privi: The privilege of UIs.
+      Auth : The authentication mode of UIs.
+      Int  : The physical location of UIs.
+      A    : Authentication use AAA.
+      L    : Authentication use local database.
+      N    : Current UI need not authentication.
+      P    : Authentication use current UI's password.
+
+Как можно заметить в столбце Auth, в конфигурации по умолчанию консоль не защищена паролем. Исправить это можно с помощью такой команды:
+
+    [hp]user-interface aux 0
+    [hp-ui-aux0]authentication-mode scheme
+    [hp-ui-aux0]quit
+
+Для отключения веб-интерфейсов воспользуемся такими командами:
+
+    [hp]undo ip http enable
+    [hp]undo ip https enable
+    Info: HTTPS server has been stopped!
+
 Использованные материалы
 ------------------------
 
