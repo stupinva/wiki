@@ -548,11 +548,13 @@ FIXME: *Каталоги можно создавать и удалять при 
     [huawei]return
     <huawei>
 
-Для отключения веб-интерфейся воспользуемся такой командой:
+Для отключения веб-интерфейсов воспользуемся такими командами:
 
     <huawei>system-view
     [huawei]undo http server enable
     Warning: The operation will stop HTTP service. Continue? [Y/N]:Y
+    [huawei]undo http secure-server enable
+    Warning: The operation will stop HTTP secure service. Continue? [Y/N]:Y
     [huawei]return
     <huawei>
 
