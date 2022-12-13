@@ -548,9 +548,11 @@ FIXME: *Каталоги можно создавать и удалять при 
     [huawei]return
     <huawei>
 
-Для отключения веб-интерфейсов воспользуемся такими командами:
+Для отключения telnet и веб-интерфейсов на уровне коммутатора в целом воспользуемся такими командами:
 
     <huawei>system-view
+    [huawei]undo telnet server enable 
+    Warning: The operation will stop the Telnet server. Continue? [Y/N]:y
     [huawei]undo http server enable
     Warning: The operation will stop HTTP service. Continue? [Y/N]:Y
     [huawei]undo http secure-server enable
