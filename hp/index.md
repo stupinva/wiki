@@ -551,7 +551,26 @@ FIXME: *Первоначальную настройку маршрутизато
     [hp-ui-aux0]authentication-mode scheme
     [hp-ui-aux0]quit
 
-Для отключения telnet и веб-интерфейсов воспользуемся такими командами:
+Посмотреть текущую конфигурацию терминалов можно следующим образом:
+
+    [hp]user-interface aux 0
+    [hp-ui-aux0]display this 
+    #
+    user-interface tty 12
+    user-interface aux 0
+     authentication-mode scheme
+    user-interface vty 0 4
+     authentication-mode scheme
+    #
+    return
+
+По умолчанию к виртуальным терминалам можно подключиться по любому протоколу. Для того, чтобы разрешить подключение только по протоколу SSH, воспользуемся такими командами:
+
+    [hp]user-interface vty 0 4
+    [hp-ui-vty0-4]protocol inbound ssh 
+    [hp-ui-vty0-4]quit
+
+Для отключения telnet и веб-интерфейсов на уровне маршрутизатора в целом воспользуемся такими командами:
 
     [hp]undo telnet server enable
     [hp]undo ip http enable
