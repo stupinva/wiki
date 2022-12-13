@@ -577,6 +577,76 @@ FIXME: *Первоначальную настройку маршрутизато
     [hp]undo ip https enable
     Info: HTTPS server has been stopped!
 
+Настройка DNS-клиента
+---------------------
+
+Для начала включим на маршрутизаторе DNS-клиента:
+
+    [hp]dns resolve
+
+Как вы догадались, отключить его можно при помощи команды undo dns resolve.
+
+Теперь укажем DNS-клиенту IP-адрес DNS-сервера:
+
+    [hp]dns server 192.168.254.2
+
+Можно настроить несколько DNS-серверов, повторяя команду dns server с IP-адресом каждого сервера.
+
+Посмотреть список настроенных DNS-серверов можно следующей командой:
+
+    [hp]display dns server 
+     Type:
+      D:Dynamic    S:Static
+    
+    DNS Server  Type  IP Address
+        1       S     192.168.254.2
+
+Удалить DNS-сервер из этого списка можно при помощи команды undo dns server, указав ей IP-адрес DNS-сервера, подлежащего удалению.
+
+Можно также указать интерфейс маршрутизатора, с которого DNS-клиент будет отправлять запросы:
+
+    [hp]dns source-interface Vlan-interface 2
+
+Чтобы иметь возможность не указывать в доменных именах правую часть домена, можно настроить один или несколько доменов по умолчанию:
+
+    [hp]dns domain lo.stupin.su
+
+Посмотреть настроенные домены по умолчанию можно при помощи следующей команды:
+
+    [hp]display dns domain 
+     Type:
+      D:Dynamic    S:Static
+    
+    No.    Type   Domain-name
+    1      S      lo.stupin.su
+    2      S      wi.stupin.su
+    3      S      vm.stupin.su
+
+Удалить домены из этого списка можно при помощи команды undo dns domain с именем удаляемго домена.
+
+Убедиться, что разрешение доменных имён в IP-адреса работает, можно, например, при помощи команды ping:
+
+    [hp]ping dnscache
+     Trying DNS resolve, press CTRL_C to break 
+     Trying DNS server (192.168.254.2) 
+     Trying DNS server (192.168.254.2) 
+     Trying DNS server (192.168.254.2) 
+      PING dnscache.vm.stupin.su (192.168.252.2):
+      56  data bytes, press CTRL_C to break
+        Reply from 192.168.252.2: bytes=56 Sequence=0 ttl=255 time=1 ms
+        Reply from 192.168.252.2: bytes=56 Sequence=1 ttl=255 time=2 ms
+        Reply from 192.168.252.2: bytes=56 Sequence=2 ttl=255 time=1 ms
+        Reply from 192.168.252.2: bytes=56 Sequence=3 ttl=255 time=1 ms
+        Reply from 192.168.252.2: bytes=56 Sequence=4 ttl=255 time=1 ms
+    
+      --- dnscache.vm.stupin.su ping statistics ---
+        5 packet(s) transmitted
+        5 packet(s) received
+        0.00% packet loss
+        round-trip min/avg/max = 1/1/2 ms
+    
+    [hp]
+
 Обновление прошивки маршрутизатора
 ----------------------------------
 
