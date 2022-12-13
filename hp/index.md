@@ -184,13 +184,16 @@ FIXME: *Первоначальную настройку маршрутизато
 
     <HP>display saved-configuration
 
-Управление конфигурацией и прошивками маршрутизатора
-----------------------------------------------------
+Управление конфигурацией маршрутизатора
+---------------------------------------
 
     <HP>display startup 
      Current startup saved-configuration file: flash:/startup.cfg
      Next main startup saved-configuration file: flash:/startup.cfg
      Next backup startup saved-configuration file: NULL
+
+Управление прошивками
+---------------------
 
 Настройка начальных сведений о маршрутизаторе
 ---------------------------------------------
