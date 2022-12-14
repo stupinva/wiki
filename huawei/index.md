@@ -123,7 +123,7 @@
     <huawei>cd dhcp/
     <huawei>cd ..
 
-FIXME: *Каталоги можно создавать и удалять при помощи команд mkdir и rmdir:*
+Каталоги можно создавать и удалять при помощи команд mkdir и rmdir:
 
     <huawei>cd testdir
     Error: Wrong path or none existent directory.
@@ -177,19 +177,41 @@ FIXME: *Каталоги можно создавать и удалять при 
 Управление конфигурацией и прошивками коммутатора
 -------------------------------------------------
 
+Посмотреть настройки загрузчика можно при помощи команды display startup. Команда отображает имена файлов прошивок, конфигурации, лицензии и заплаток, которые использовались при загрузке коммутатора или будут использованы при следующей загрузке:
+
     <huawei>display startup 
     MainBoard: 
-      Configured startup system software:        flash:/s1720-gw-v200r010c00spc600.cc
-      Startup system software:                   flash:/s1720-gw-v200r010c00spc600.cc
-      Next startup system software:              flash:/s1720-gw-v200r010c00spc600.cc
-      Startup saved-configuration file:          flash:/vrpcfg.zip
-      Next startup saved-configuration file:     flash:/vrpcfg.zip
+      Configured startup system software:        flash:/s1720-gw-v200r019c10spc500.cc
+      Startup system software:                   flash:/s1720-gw-v200r019c10spc500.cc
+      Next startup system software:              flash:/s1720-gw-v200r019c10spc500.cc
+      Startup saved-configuration file:          flash:/startup.cfg
+      Next startup saved-configuration file:     flash:/startup.cfg
       Startup paf file:                          default
       Next startup paf file:                     default
       Startup license file:                      default
       Next startup license file:                 default
-      Startup patch package:                     flash:/s1720-gw-v200r010sph008.pat
-      Next startup patch package:                flash:/s1720-gw-v200r010sph008.pat
+      Startup patch package:                     flash:/s1720-gw-v200r019sph010.pat
+      Next startup patch package:                flash:/s1720-gw-v200r019sph010.pat
+
+В строчках, начинающихся со слова Startup, отображается имя файла, который использовался при загрузке коммутатора. В строчах, начинающихся со слова Next, отображается имя файла, который будет использован при следующей загрузке коммутатора.
+
+Для изменения файла прошивки, который будет использоваться при следующей загрузке коммутатора, можно воспользоваться командой следующего вида:
+
+    <huawei>startup system-software flash:/s1720-gw-v200r010c00spc600.cc             
+    Info: Operating, please wait for a moment.....................
+    Info: Succeeded in setting the software for booting system.
+
+Для изменения файла конфигурации, который будет использоваться при следующей загрузке, можно воспользоваться такой командой:
+
+    <huawei>startup saved-configuration flash:/startup.cfg 
+    Info: Succeeded in setting the configuration for booting system.
+
+Изменить имя файла заплаток, используемых при следующей загрузке коммутатора, можно при помощи такой команды:
+
+    <huawei>startup patch flash:/s1720-gw-v200r010sph008.pat..
+    Info: Succeeded in setting main board resource file for system.
+
+Для управления лицензиями, патчами и paf-файлами предназначены также команды license, patch и paf соответственно. Для просмотра информации о лицензиях, патчах и paf-файлах предусмотрены команды display license, display patch-information и display paf.
 
 Настройка начальных сведений о коммутаторе
 ------------------------------------------
