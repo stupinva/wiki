@@ -118,3 +118,4 @@ interactive_timeout
 * [Peter Zaitsev. MySQL: What read_buffer_size Value is Optimal?](https://www.percona.com/blog/2007/09/17/mysql-what-read_buffer_size-value-is-optimal/)
 * [MySQL 5.7 C API Developer Guide / mysql_real_connect()](https://dev.mysql.com/doc/c-api/5.7/en/mysql-real-connect.html)
 * [MySQL 5.7 Reference Manual / MyISAM Startup Options](https://dev.mysql.com/doc/refman/5.7/en/myisam-start.html)
+* [Настройка MySQL: часто встречающиеся ошибки](https://netpoint-dc.com/blog/mysql-chastie-oshibki-nastroiki/)
