@@ -187,9 +187,41 @@ FIXME: *Первоначальную настройку маршрутизато
 Управление конфигурацией маршрутизатора
 ---------------------------------------
 
+Посмотреть имя файла конфигурации, который использовался при загрузке маршрутизатора или будет использоват при следующей загрузке, можно с помощью команды display startup:
+
     <HP>display startup 
      Current startup saved-configuration file: flash:/startup.cfg
      Next main startup saved-configuration file: flash:/startup.cfg
+     Next backup startup saved-configuration file: NULL
+
+В строчке, начинающейся со слова Current, отображается имя файла конфигурации, который использовался при загрузке маршрутизатора. В строчке, начинающейся со слов Next main, отображается имя файла конфигурации, который будет использоваться при следующей загрузке маршрутизатора. В строчке, начинающейся со слов Next backup, отображается имя запасного файла конфигурации, который будет использован при следующей загрузке маршутизатора, если основной файл конфигурации будет недоступен или повреждён.
+
+Для изменения файла конфигурации, который будет использоваться при следующей загрузке маршрутизатора, можно воспользоваться командой следующего вида:
+
+    <hp>startup saved-configuration startup.cfg main
+    Please wait ...
+    ... Done!
+
+Ключевое слово main в этом случае не обязательно и приведено лишь для наглядности. Для настройки запасного файла конфигурации можно воспользоваться следующей командой:
+
+    <hp>startup saved-configuration startup.cfg backup
+    Please wait ...
+    ... Done!
+
+К сожалению, очистить имя запасного файла конфигурации можно только путём одновременного сброса имён и основного и запасного файлов конфигурации с последующей установкой имени основного файла конфигурации:
+
+    <hp>undo startup saved-configuration
+     Please wait ...... Done!
+    <hp>display startup                                                             
+     Current startup saved-configuration file: flash:/startup.cfg
+     Next main startup saved-configuration file: NULL
+     Next backup startup saved-configuration file: NULL
+    <hp>startup saved-configuration startup.cfg main                                
+    Please wait ...                                                                 
+    ... Done!                                                                       
+    <hp>display startup                                                             
+     Current startup saved-configuration file: flash:/startup.cfg                   
+     Next main startup saved-configuration file: flash:/startup.cfg                 
      Next backup startup saved-configuration file: NULL
 
 Управление прошивками
@@ -661,7 +693,7 @@ FIXME: *Первоначальную настройку маршрутизато
 Обновление прошивки маршрутизатора
 ----------------------------------
 
-Свежие прошивки для коммутатора можно найти на странице [Aruba Support Portal](https://asp.arubanetworks.com/downloads/software/RmlsZToxOWQ4YmIzZS0yODRjLTExZTktODBkMi0wNzM0NjFiY2QxZTc%3D).
+Свежие прошивки для маршрутизатора можно найти на странице [Aruba Support Portal](https://asp.arubanetworks.com/downloads/software/RmlsZToxOWQ4YmIzZS0yODRjLTExZTktODBkMi0wNzM0NjFiY2QxZTc%3D).
 
 На момент написания этой документации архив с самой свежей версией прошивки имел имя MSR9XX_5.20.R2516P13.zip. Можно извлечь файлы из архива, выложить на TFTP-сервер файл с именем A_MSR9XX-CMW520-R2516P13.BIN и скачать на маршрутизатор при помощи следующих команд:
 
