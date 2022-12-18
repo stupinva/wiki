@@ -227,6 +227,32 @@ FIXME: *Первоначальную настройку маршрутизато
 Управление прошивками
 ---------------------
 
+Посмотреть имя файла прошивки, который использовался при загрузке маршрутизататора и имя файла, который будет использоваться при следующей загрузке маршрутизатора, можно следующим образом:
+
+    <hp>display boot-loader
+     The boot file used at this reboot:flash:/a_msr9xx-cmw520-r2516p13.bin attribute: main
+     The boot file used at the next reboot:flash:/a_msr9xx-cmw520-r2516p13.bin attribute: main
+     The boot file used at the next reboot:flash:/a_msr9xx-cmw520-r2209l22-ru.bin attribute: backup
+     Failed to get the secure boot file used at the next reboot!
+
+В строчке со словами this reboot указано имя файла прошивки, которая использовалась при загрузке маршрутизатора. В строчке со словами next reboot, оканчивающейся словом main, указано имя файла прошивки, который будет использоваться при следующей загрузке маршрутизатора. В строчке со словами next boot, оканчивающейся словом backup, указано имя файла запасной прошивки, которая будет использоваться при следующей загрузке маршрутизатора, если по каким-то причинам не удалось воспользоваться файлом с основной прошивкой.
+
+Изменить имя файла основной прошивки, которая будет использоваться при следующей загрузке, можно следующим образом:
+
+    <hp>boot-loader file flash:/a_msr9xx-cmw520-r2516p13.bin main
+      This command will set the boot file. Continue? [Y/N]:Y
+    
+      The specified file will be used as the main boot file at the next reboot on slot 0!
+
+Изменить имя файла запасной прошивки, которая будет использоваться при недоступности основной прошивки, можно следующим образом:
+
+    <hp>boot-loader file flash:/a_msr9xx-cmw520-r2516p13.bin backup
+      This command will set the boot file. Continue? [Y/N]:Y
+    
+      The specified file will be used as the backup boot file at the next reboot on slot 0!
+
+К сожалению, очистить имя файла запасной прошивки нельзя. Если нужно удалить файл с запасной прошивкой из флеш-памяти маршуртизатора, то следует выставить в качестве имени файла с запасной прошивкой имя файла с основной прошивкой.
+
 Настройка начальных сведений о маршрутизаторе
 ---------------------------------------------
 
