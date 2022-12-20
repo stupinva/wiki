@@ -333,6 +333,91 @@ P.S. Это руководство годится для обновления с
     SELECT name, version, installed
     FROM   pg_available_extension_versions;
 
+Просмотр прав доступа
+---------------------
+
+    api_ufanet=# \dp
+
+Удаление прав доступа к таблицам
+--------------------------------
+
+Проблема при удалении пользователя:
+
+    api_ufanet=# DROP USER api_ufanet_ro;
+    ERROR:  role "api_ufanet_ro" cannot be dropped because some objects depend on it
+    DETAIL:  privileges for schema public
+    privileges for table admin_tools_dashboard_preferences
+
+Решение:
+
+    api_ufanet=# REVOKE ALL PRIVILEGES FROM ALL TABLES IN SCHEME api_ufanet FROM api_ufanet_ro;
+    REVOKE
+
+Удаление прав доступа к последовательностям
+-------------------------------------------
+
+Проблема при удалении пользователя:
+
+    api_ufanet=# DROP USER api_ufanet_ro;
+    ERROR:  role "api_ufanet_ro" cannot be dropped because some objects depend on it
+    DETAIL:  privileges for schema public
+    privileges for sequence admin_tools_dashboard_preferences_id_seq
+
+Решение:
+
+    api_ufanet=# REVOKE ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public FROM api_ufanet_ro;
+    REVOKE
+
+Удаление прав доступа по умолчанию к таблицам
+---------------------------------------------
+
+Проблема при удалении пользователя:
+
+    api_ufanet=# DROP USER api_ufanet_ro;
+    ERROR:  role "api_ufanet_ro" cannot be dropped because some objects depend on it
+    DETAIL:  privileges for schema public
+    privileges for default privileges on new relations belonging to role postgres in schema public
+
+Решение:
+
+    api_ufanet=# ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM api_ufanet_ro;
+    ALTER DEFAULT PRIVILEGES
+
+Удаление прав доступа по умолчанию к последовательностям
+--------------------------------------------------------
+
+Проблема при удалении пользователя:
+
+    api_ufanet=# DROP USER api_ufanet_ro;
+    ERROR:  role "api_ufanet_ro" cannot be dropped because some objects depend on it
+    DETAIL:  privileges for schema public
+    privileges for default privileges on new sequences belonging to role postgres in schema public
+
+Решение:
+
+    api_ufanet=# ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON SEQUENCES FROM api_ufanet_ro;
+    ALTER DEFAULT PRIVILEGES
+
+Удаление прав доступа к схеме
+-----------------------------
+
+Проблема при удалении пользователя:
+
+    api_ufanet=# DROP USER api_ufanet_ro;
+    ERROR:  role "api_ufanet_ro" cannot be dropped because some objects depend on it
+    DETAIL:  privileges for schema public
+
+Решение:
+
+    api_ufanet=# REVOKE ALL PRIVILEGES ON SCHEMA public FROM api_ufanet_ro;
+    REVOKE
+
+Удаление пользователя
+---------------------
+
+    api_ufanet=# DROP USER api_ufanet_ro;
+    DROP ROLE
+
 Дополнительные материалы
 ------------------------
 
