@@ -84,3 +84,5 @@
     |  3 | DEPENDENT SUBQUERY | val                          | NULL       | ref    | param_id                                            | param_id             | 4       | const                                               |   492 |   100.00 | Using where                  |
     |  2 | DEPENDENT SUBQUERY | link                         | NULL       | ref    | PRIMARY,object_id                                   | PRIMARY              | 4       | bgcrm_v21.process.id                                |     2 |    11.11 | Using where                  |
     +----+--------------------+------------------------------+------------+--------+-----------------------------------------------------+----------------------+---------+-----------------------------------------------------+-------+----------+------------------------------+
+
+Подробнее о том, как подготовиться к обновлению с версии 5.6 до 5.7, можно прочитать тут: [How To Prepare For Your MySQL 5.7 Upgrade](https://www.digitalocean.com/community/tutorials/how-to-prepare-for-your-mysql-5-7-upgrade).
