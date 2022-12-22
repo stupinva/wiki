@@ -51,7 +51,15 @@
 
     SHOW GLOBAL VARIABLES WHERE Variable_name = 'optimizer_switch';
 
-Попробовал изменять отличающиеся настройки и в итоге обнаружил, что изменений одной из опций оптимизатора запроса позволяет вернуться к прежнему плану выполнения:
+В Percona Server 5.7 появились дополнительные настройки со следующими значениями:
+
+    duplicateweedout=on
+    condition_fanout_filter=on
+    derived_merge=on
+    prefer_ordering_index=on
+    favor_range_scan=off
+
+Попробовал изменять значения новых настроек и в итоге обнаружил, что изменений одной из них позволяет вернуться к прежнему плану выполнения:
 
     SET GLOBAL optimizer_switch='condition_fanout_filter=off';
 
