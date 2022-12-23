@@ -43,7 +43,7 @@
 Ускорение обновления полной резервной копии
 -------------------------------------------
 
-К счастью, для ускорения периодического резервного копирования можно воспользоваться битовыми картами для отслеживания изменённых страниц [XtraDB changed page tracking](https://www.percona.com/doc/percona-server/5.6/management/changed_page_tracking.html).
+К счастью, для ускорения периодического резервного копирования можно воспользоваться битовыми картами для отслеживания изменённых страниц, которые описаны в статьях [XtraDB changed page tracking](https://www.percona.com/doc/percona-server/5.6/management/changed_page_tracking.html) и [XtraDB changed page tracking](https://docs.percona.com/percona-server/5.7/management/changed_page_tracking.html).
 
 Для этого нужно прописать в файл конфигурации Percona Server опцию:
 
