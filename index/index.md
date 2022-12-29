@@ -41,6 +41,7 @@
 * [[Установка и настройка Dovecot|netbsd_dovecot]]
 * [[Запуск dovecot в NetBSD с помощью daemontools|netbsd_daemontools_dovecot]]
 * [[Установка и настройка Exim в NetBSD|netbsd_exim]] (черновик)
+* [[Установка greylistd в NetBSD|netbsd_greylistd]] (черновик)
 * [[Запуск exim в NetBSD с помощью daemontools|netbsd_daemontools_exim]]
 * [[Запуск xdm в NetBSD с помощью daemonotools|netbsd_daemontools_xdm]]
 * [[Настройка внешнего вида xdm в NetBSD|netbsd_xdm]]
