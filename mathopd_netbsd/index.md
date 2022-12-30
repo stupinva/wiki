@@ -174,23 +174,23 @@ mathopd не умеет самостоятельно генерировать и
     
     # Function derived from https://gist.github.com/moyashi/4063894
     function escape(s) {
-            l = length(s);
             r = "";
-            for (i = 1; i <= l; i++) {
-                    c = substr(s, i, 1);
-                    if (c ~ /[0-9A-Za-z_.\-]/) {
-                            r = r c;
-                    } else {
-                            r = r esc[c];
-                    }
+            for (i = 1; i <= length(s); i++) {
+                    r = r esc[substr(s, i, 1)];
             }
             return r;
     }
     
     BEGIN {
             for(i = 0; i <= 255; i++) {
-                    esc[sprintf("%c", i)] = sprintf("%%%02X", i)
+                    c = sprintf("%c", i);
+                    if (c ~ /[0-9A-Za-z_.\-]/) {
+                            esc[c] = c;
+                    } else {
+                            esc[c] = sprintf("%%%02X", i)
+                    }
             }
+            spaces = "                                                  ";
     
             printf "Content-Type: text/html\n"
             printf "\n";
@@ -200,30 +200,26 @@ mathopd не умеет самостоятельно генерировать и
             printf "<h1>Index of %s</h1><hr><pre><a href=\"..\">../</a>\n", ENVIRON["REQUEST_URI"];
     
             lscmd="/bin/ls -lT";
-            line = 0;
+            first = 1;
             while (lscmd | getline) {
-                    line++;
-                    if (line == 1) {
+                    if (first == 1) {
+                            first = 0;
                             continue;
                     }
     
                     filename = $0;
                     for(i = 1; i < 10; i++) {
-                            l = length($i);
-                            p = index(filename, $i);
-                            filename = substr(filename, p + l);
+                            filename = substr(filename, index(filename, $i) + length($i));
                     }
                     filename = substr(filename, 2);
     
                     printf "<a href=\"%s\">%s</a>", escape(filename), filename;
                     if (length(filename) < 50) {
-                            for(i = 0; i < 50 - length(filename); i++) {
-                                    printf " ";
-                            }
+                            printf substr(spaces, 1, 50 - length(filename));
                     }
     
                     split($8, hms, /:/);
-                    printf " %02d-%s-%04d %02d:%02d%20s\n", $7, $6, $9, hms[1], hms[2], $1 ~ /^d/ ? "-" : $5;
+                    printf " %02d-%s-%04d %02d:%02d%20s\n", $7, $6, $9, hms[1], hms[2], (substr($1, 1, 1) == "d") ? "-" : $5;
             }
     
             printf "</pre><hr></body>\n";
