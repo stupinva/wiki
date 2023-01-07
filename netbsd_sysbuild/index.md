@@ -119,7 +119,6 @@
 
     NETBSD_RELEASE_SETS="base comp etc xbase xcomp"
 
-
 #### Обновление pkgsrc через git
 
 По умолчанию обновление каталога `/var/pkg_comp/pkgsrc` происходит через систему CVS. Утилита `cvs` уже имеется в базовой системе NetBSD, а содержимое каталога `pkgsrc` занимает сравнительно мало места на диске. Но обновление файлов при использовании `cvs` идёт довольно медленно.
@@ -212,6 +211,94 @@
     
         cd $_pwd
     }
+
+#### Использование собственной ветки
+
+Иногда мне бывает нужно внести изменения в сборку какого-либо пакета: сделать настраиваемую опцию, добавить в пакет дополнительные файлы, использовать более новую версию исходных текстов и т.п. В таких случаях приходится редактировать файлы в pkgsrc. Обычно я отправляю свои наработки сопровождающим соответствующих пакетов, но иногда сопровождающие игнорируют мои предложения, а часть доработок могут иметь черновой характер и не годиться для отправки сопровождающим. В таком случае может быть полезно отделить собственные изменения от поставляемых официально в отдельную ветку. Для этого сначала создадим новую ветку stupin, идентичную существующей trunk:
+
+    # cd /var/pkg_comp/pkgsrc
+    # git checkout trunk
+    # git checkout -b stupin
+
+Далее оформим изменения в виде фиксаций:
+
+    # git add devel/shtk
+    # git commit -m "devel/shtk: added git support as option"
+
+Теперь можно обновлять ветку trunk и перебазировать поверх неё нашу новую ветку stupin:
+
+    # git checkout trunk
+    # git pull
+    # git checkout stupin
+    # git rebase trunk
+
+Аналогичным образом можно поступить и с pkgsrc wip, где официально поставляемая ветка называется master.
+
+Теперь нужно доработать файл конфигурации `/var/pkg_comp/pkg_comp.conf` так, чтобы перед обновлением веток trunk и master выполнялось переключение на них, а после обновления выполнялось переключение на ветки stupin и их перебазирование поверх обновлённых веток trunk и master. После всех доработок у меня получились такие две функции:
+
+    pre_fetch_hook()
+    {
+        if [ ! -d "$PKGSRCDIR" ] ; then
+            echo "$PKGSRCDIR not exist"
+            return
+        fi
+    
+        _pwd=$(pwd)
+        cd "$PKGSRCDIR"
+    
+        git checkout trunk
+    
+        cd $_pwd
+    }
+    
+    post_fetch_hook()
+    {
+        if [ ! -d "$PKGSRCDIR" ] ; then
+            echo "$PKGSRCDIR not exist"
+            return
+        fi
+    
+        _pwd=$(pwd)
+        cd "$PKGSRCDIR"
+    
+        git checkout stupin
+        if [ "$?" -ne "0" ] ; then
+            echo "Switching to branch stupin failed"
+            return
+        fi
+    
+        git rebase trunk
+        if [ "$?" -ne "0" ] ; then
+            echo "Rebasing branch stupin over branch trunk failed"
+            return
+        fi
+    
+        if [ ! -d wip ] ; then
+            git clone git://wip.pkgsrc.org/pkgsrc-wip.git wip
+        else
+            cd wip
+            git checkout master
+            git pull
+    
+            git checkout stupin
+            if [ "$?" -ne "0" ] ; then
+                echo "Switching to branch wip stupin failed"
+                return
+            fi
+    
+            git rebase master
+            if [ "$?" -ne "0" ] ; then
+                echo "Rebasing branch wip stupin over branch wip master failed"
+                return
+            fi
+        fi
+    
+        cd $_pwd
+    
+        rsync -a --delete --exclude '.git/*' /var/pkg_comp/pkgsrc/ /usr/pkgsrc/
+    }
+
+Команда rsync в конце копирует изменения из каталога `/var/pkg_comp/pkgsrc` в каталог `/usr/pkgsrc`, который я использую для тестирования сборки пакетов.
 
 #### Мой файл list.txt
 
