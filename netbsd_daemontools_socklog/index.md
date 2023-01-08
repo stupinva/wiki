@@ -1,6 +1,8 @@
 Запуск socklog в NetBSD с помощью daemontools
 =============================================
 
+[[!tag netbsd daemontools socklog]]
+
 Оглавление
 ----------
 
