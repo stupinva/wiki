@@ -1,6 +1,13 @@
 Установка greylistd в NetBSD
 ============================
 
+[[!tag pkgsrc greylistd]]
+
+Содержание
+----------
+
+[[!toc levels=4 startlevel=2]]
+
 Введение
 --------
 
