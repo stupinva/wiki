@@ -1,6 +1,8 @@
 Запуск Zabbix-агента в NetBSD с помощью daemontools
 ===================================================
 
+[[!tag netbsd daemontools zabbix_agent]]
+
 В этой статье предполагается, что в системе NetBSD уже установлен и настроен Zabbix-агент, который запускается с помощью скрипта `/etc/rc.d/zabbix_agentd`. Подробнее о настройке Zabbix-агента в NetBSD можно почитать в статье [[Установка и настройка агента Zabbix в NetBSD|netbsd_zabbix_agent]].
 
 Также в этой статье предполагается, что в системе уже установлен и настроен пакет `daemontools`. Установка и настройка пакета описана в главе [[Установка daemontools|netbsd_daemontools_gitea#daemontools]] статьи [[Запуск Gitea в NetBSD с помощью daemontools|netbsd_daemontools_gitea]].
