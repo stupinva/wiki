@@ -1,6 +1,8 @@
 Запуск nginx в NetBSD с помощью daemontools
 ===========================================
 
+[[!tag netbsd daemontools nginx]]
+
 Создаём каталог сервиса /service/.nginx/:
 
     # mkdir -p /service/.nginx/
