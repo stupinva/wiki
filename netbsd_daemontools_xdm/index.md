@@ -1,6 +1,13 @@
 Запуск xdm в NetBSD с помощью daemontools
 =========================================
 
+[[!tag netbsd daemontools xdm]]
+
+Содержание
+----------
+
+[[!toc levels=4 startlevel=2]]
+
 Настройка сервера X
 -------------------
 
