@@ -1,6 +1,8 @@
 Запуск OpenNTPd в NetBSD с помощью daemontools
 ==============================================
 
+[[!tag netbsd daemontools openntpd]]
+
 Создаём каталог сервиса `/service/.openntpd/:
 
     # mkdir -p /service/.openntpd/
