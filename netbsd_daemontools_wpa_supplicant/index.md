@@ -1,6 +1,8 @@
 Запуск wpa supplicant в NetBSD с помощью daemontools
 ====================================================
 
+[[!tag netbsd daemontools wpa_supplicant]]
+
 Создаём каталог сервиса `/service/.wpa_supplicant/:
 
     # mkdir -p /service/.wpa_supplicant/
