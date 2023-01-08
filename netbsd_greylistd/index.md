@@ -86,6 +86,23 @@ greylistd - это демон, написанный на языке програ
 
     REPLACE_PYTHON=         program/greylist program/greylistd program/greylistd-setup-exim4
 
+Если заглянуть в файл `program/greylistd`, то можно заметить, что для его запуска требуется Python версии 3.6 или выше:
+
+    # Ensure that we can run this program
+    if sys.version_info.major < 3 or sys.version_info.minor < 6:
+        sys.stderr.write("This program requires Python 3.6 or newer\n")
+        sys.exit(1)
+
+Проверим, какие версии Python доступны из pkgsrc:
+
+    # cd /usr/pkgsrc/lang
+    # ls -d python*
+    python    python27  python310 python311 python37  python38  python39
+
+Версии 3.7, 3.8, 3.9, 3.10, 3.11 совместимы с greylistd, а версия 2.7 - нет. Добавим в Makefile список несовместимых версий Python:
+
+    PYTHON_VERSIONS_INCOMPATIBLE=   27
+
 Для поддержки этой опции в конец `Makefile` перед прочими директивами `.include` нужно добавить ещё одну:
 
     .include "../../lang/python/application.mk"
@@ -95,13 +112,32 @@ greylistd - это демон, написанный на языке програ
     SUBST_CLASSES+=         paths
     SUBST_STAGE.paths=      pre-configure
     SUBST_MESSAGE.paths=    Fixing absolute paths.
-    SUBST_FILES.paths=      config/config program/greylist program/greylistd program/greylistd-setup-exim4
+    SUBST_FILES.paths=      config/config program/greylist program/greylistd program/greylistd-setup-exim4 doc/man8/greylistd.8
     SUBST_SED.paths=        -e 's,/etc/,${PREFIX}/etc/,g'
     SUBST_SED.paths+=       -e 's,/var/lib/greylistd/,${VARBASE}/lib/greylistd/,g'
     SUBST_SED.paths+=       -e 's,/var/run/greylistd/socket,${VARBASE}/run/greylistd.sock,g'
     SUBST_VARS.paths=       PREFIX VARBASE
 
 В указанных выше настройках есть только одна группа замен, которая называется `paths`. Выполняются замены на этапе `pre-configure`. Пути к изменяемым файлам перечислены в переменной `SUBST_FILES`. Далее следуют три правила замены, в которых используются значения переменных `PREFIX` и `VARBASE`. Имена переменных, участвующих в замене, перечислены в переменной `SUBST_VARS`.
+
+Для запуска greylistd нужны пользователь и группа greylist, т.к. они используются в качестве владельца Unix-сокета. Добавим в `Makefile` настройки:
+
+    GREYLIST_USER?=        greylist
+    GREYLIST_GROUP?=       greylist
+
+Добавим в `Makefile` опции, преписывающие создать необходимых для работы пакета группу и пользователя:
+
+    PKG_GROUPS+=           ${GREYLIST_USER}
+    PKG_USERS+=            ${GREYLIST_USER}:${GREYLIST_GROUP}
+
+И добавим в `Makefile` замену пользователя и группы владельца Unix-сокета в исходном тексте greylistd:
+
+    SUBST_CLASSES+=                user_group
+    SUBST_STAGE.user_group=        pre-configure
+    SUBST_MESSAGE.user_group=      Replacing user and group.
+    SUBST_FILES.user_group=        program/greylistd
+    SUBST_SED.user_group=          -e 's,SOCKOWNER: "greylist:greylist",SOCKOWNER: "${GREYLIST_USER}:${GREYLIST_GROUP}",g'
+    SUBST_VARS.user_group=         GREYLIST_USER GREYLIST_GROUP
 
 До полноценного пакета для NetBSD не хватает скрипта инициализации, но этот вопрос меня не интересует, т.к. я собираюсь запускать greylistd под управлением daemontools. Возможно в pkgsrc понадобится добавить ещё некоторые доработки, чтобы поменять пути к файлам конфигурации, путь к месту размещения базы данных демона и т.п.
 
