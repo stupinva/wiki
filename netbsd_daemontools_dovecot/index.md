@@ -1,6 +1,8 @@
 Запуск dovecot в NetBSD с помощью daemontools
 =============================================
 
+[[!tag netbsd daemontools dovecot]]
+
 Создаём каталог сервиса `/service/.dovecot/`:
 
     # mkdir -p /service/.dovecot/
