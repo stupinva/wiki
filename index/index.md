@@ -44,7 +44,7 @@
 * [[Установка greylistd в NetBSD|netbsd_greylistd]] (черновик)
 * [[Запуск exim в NetBSD с помощью daemontools|netbsd_daemontools_exim]]
 * [[Запуск getty в NetBSD с помощью daemontools|netbsd_daemontools_getty]]
-* [[Запуск xdm в NetBSD с помощью daemonotools|netbsd_daemontools_xdm]]
+* [[Запуск xdm в NetBSD с помощью daemontools|netbsd_daemontools_xdm]]
 * [[Настройка внешнего вида xdm в NetBSD|netbsd_xdm]]
 * [[Настройка dnscache из djbdns в NetBSD|netbsd_dnscache]]
 * [[Мониторинг dnscache из djbdns в NetBSD через Zabbix-агента|netbsd_dnscache_zabbix_agent]] (черновик)
