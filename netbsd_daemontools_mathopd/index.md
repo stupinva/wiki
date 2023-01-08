@@ -1,6 +1,8 @@
 Запуск mathopd в NetBSD с помощью daemontools
 =============================================
 
+[[!tag netbsd daemontools mathopd]]
+
 Перед тем, как приступить к настройке сервиса `daemontools`, изменим настройки журналирования в файле конфигурации `/usr/pkg/etc/mathopd.conf` самого веб-сервера `mathopd` следующим образом:
 
     ErrorLog /dev/stderr
