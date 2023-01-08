@@ -1,6 +1,8 @@
 Запуск cron в NetBSD с помощью daemontools
 ==========================================
 
+[[!tag netbsd daemontools cron]]
+
 Создаём каталог сервиса /service/.cron/:
 
     # mkdir -p /service/.cron
