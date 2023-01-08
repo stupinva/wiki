@@ -1,6 +1,8 @@
 Запуск nullmailer в NetBSD с помощью daemontools
 ================================================
 
+[[!tag netbsd daemontools nullmailer]]
+
 В этой статье предполагается, что в системе NetBSD уже установлен и настроен `nullmailer`, который запускается с помощью скрипта `/etc/rc.d/nullmailer`. Подробнее о настройке `nullmailer` в NetBSD можно почитать в статье [[Настройка nullmailer в NetBSD|netbsd_nullmailer]].
 
 Также в этой статье предполагается, что в системе уже установлен и настроен пакет `daemontools`. Установка и настройка пакета описана в главе [[Установка daemontools|netbsd_daemontools_gitea#daemontools]] статьи [[Запуск Gitea в NetBSD с помощью daemontools|netbsd_daemontools_gitea]].
