@@ -1,6 +1,8 @@
 Запуск Gitea в NetBSD с помощью daemontools
 ===========================================
 
+[[!tag netbsd daemontools gitea git]]
+
 Оглавление
 ----------
 
