@@ -1,6 +1,8 @@
 Запуск dhcpd в NetBSD с помощью daemontools
 ===========================================
 
+[[!tag netbsd daemontools dhcpd]]
+
 Создаём каталог сервиса `/service/.dhcpd/`:
 
     # mkdir /service/.dhcpd
