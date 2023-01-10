@@ -1,44 +1,39 @@
 #!/bin/sh
 
-BACKUP_PATH=/backup/db/
-INCREMENT_PATH=/backup/inc/
-EXCLUDE_TABLES=''
-GRANTS_FILE=/backup/grants.sql
-
-#RUSER=archive
-#RSERVER=archive.server.tld
-#RPATH=/archive/db.tgz
-#RKEY=/root/.ssh/archive_key
-
-DAYS=0
+CONFIG=/etc/xtrabackup2.conf
+if [ ! -f "$CONFIG" ] ; then
+	echo "Config file $CONFIG not exist!"
+	exit 1
+fi
+. "$CONFIG"
 
 remove_full() {
 	echo -n `date '+%Y-%m-%d %H:%M:%S'`
 	echo -n " Removing broken backup..."
-	rm -fR "$BACKUP_PATH"
+	rm -fR "$BACKUP_PATH/db/"
 	if [ "$?" -eq "0" ] ; then
 		echo " done"
 	else
 		echo " failed"
-		exit 1
+		exit 2
 	fi
 }
 
 purge_bitmaps() {
-	awk '/^to_lsn = / { print "PURGE CHANGED_PAGE_BITMAPS BEFORE " $3 ";"; }' "$BACKUP_PATH/xtrabackup_checkpoints" | mysql
+	awk '/^to_lsn = / { print "PURGE CHANGED_PAGE_BITMAPS BEFORE " $3 ";"; }' "$BACKUP_PATH/db/xtrabackup_checkpoints" | mysql
 }
 
 create_full() {
 	echo -n `date '+%Y-%m-%d %H:%M:%S'`
 	echo -n " Doing full backup..."
-	mkdir "$BACKUP_PATH" \
-		&& xtrabackup --backup --open-files-limit=100000 --tables-exclude="$EXCLUDE_TABLES" --target-dir="$BACKUP_PATH" 2> "$BACKUP_PATH/log"
+	mkdir "$BACKUP_PATH/db/" \
+		&& xtrabackup --backup --open-files-limit=100000 --tables-exclude="$EXCLUDE_TABLES" --target-dir="$BACKUP_PATH/db/" 2> "$BACKUP_PATH/log"
 	if [ "$?" -eq "0" ] ; then
 		echo " done"
 
 		echo -n `date '+%Y-%m-%d %H:%M:%S'`
 		echo -n " Preparing full backup..."
-		xtrabackup --prepare --apply-log-only --target-dir="$BACKUP_PATH" 2> "$BACKUP_PATH/log"
+		xtrabackup --prepare --apply-log-only --target-dir="$BACKUP_PATH/db/" 2> "$BACKUP_PATH/log"
 		if [ "$?" -eq "0" ] ; then
 			touch "$BACKUP_PATH/ok"
 			rm -f "$BACKUP_PATH/log"
@@ -46,67 +41,61 @@ create_full() {
 			echo " done"
 		else
 			echo " failed"
-			exit 2
+			exit 3
 		fi
 	else
 		echo " failed"
-		exit 3
-	fi
-}
-
-refresh_full() {
-	echo -n `date '+%Y-%m-%d %H:%M:%S'`
-	echo -n " Doing incremental backup..."
-	mkdir "$INCREMENT_PATH" \
-		&& xtrabackup --backup --open-files-limit=100000 --tables-exclude="$EXCLUDE_TABLES" --target-dir="$INCREMENT_PATH" --incremental-basedir="$BACKUP_PATH" 2> "$INCREMENT_PATH/log"
-	if [ "$?" -eq "0" ] ; then
-		echo " done"
-
-		echo -n `date '+%Y-%m-%d %H:%M:%S'`
-		echo -n " Applying incremental backup over top of full backup..."
-		xtrabackup --prepare --apply-log-only --target-dir="$BACKUP_PATH" --incremental-dir="$INCREMENT_PATH" 2> "$INCREMENT_PATH/log"
-		if [ "$?" -eq "0" ] ; then
-			touch "$BACKUP_PATH/ok"
-			purge_bitmaps
-			echo " done"
-
-			echo -n `date '+%Y-%m-%d %H:%M:%S'`
-			echo -n " Removing incremental backup..."
-			rm -fR "$INCREMENT_PATH"
-			if [ "$?" -eq "0" ] ; then
-				echo " done"
-			else
-				echo " failed"
-				exit 4
-			fi
-		else
-			rm -f "$BACKUP_PATH/ok"
-			echo " failed"
-			exit 5
-		fi
-	else
-		echo " failed"
-		exit 6
+		exit 4
 	fi
 }
 
 remove_inc() {
 	echo -n `date '+%Y-%m-%d %H:%M:%S'`
 	echo -n " Removing incremental backup..."
-	rm -fR "$INCREMENT_PATH"
+	rm -fR "$BACKUP_PATH/inc/"
 	if [ "$?" -eq "0" ] ; then
 		echo " done"
+	else
+		echo " failed"
+		exit 5
+	fi
+}
+
+refresh_full() {
+	echo -n `date '+%Y-%m-%d %H:%M:%S'`
+	echo -n " Doing incremental backup..."
+	mkdir "$BACKUP_PATH/inc/" \
+		&& xtrabackup --backup --open-files-limit=100000 --tables-exclude="$EXCLUDE_TABLES" --target-dir="$BACKUP_PATH/inc/" --incremental-basedir="$BACKUP_PATH/db/" 2> "$BACKUP_PATH/log"
+	if [ "$?" -eq "0" ] ; then
+		echo " done"
+
+		echo -n `date '+%Y-%m-%d %H:%M:%S'`
+		echo -n " Applying incremental backup over top of full backup..."
+		xtrabackup --prepare --apply-log-only --target-dir="$BACKUP_PATH/db/" --incremental-dir="$BACKUP_PATH/inc/" 2> "$BACKUP_PATH/log"
+		if [ "$?" -eq "0" ] ; then
+			touch "$BACKUP_PATH/ok"
+			rm -f "$BACKUP_PATH/log"
+			purge_bitmaps
+			echo " done"
+
+			remove_inc
+		else
+			rm -f "$BACKUP_PATH/ok"
+			echo " failed"
+			exit 6
+		fi
 	else
 		echo " failed"
 		exit 7
 	fi
 }
 
-save_grants() {
+send_archive() {
 	echo -n `date '+%Y-%m-%d %H:%M:%S'`
-	echo -n " Saving grants..."
-	pt-show-grants > "$GRANTS_FILE" \
-		&& chmod 600 "$GRANTS_FILE"
+	echo -n " Archiving to remote storage..."
+	tar -cSf - -C "$BACKUP_PATH" db \
+		| pigz \
+		| ssh -i "$RKEY" $RUSER@$RSERVER "dd of=$RPATH 2>/dev/null"
 	if [ "$?" -eq "0" ] ; then
 		echo " done"
 	else
@@ -115,15 +104,13 @@ save_grants() {
 	fi
 }
 
-send_archive() {
-	D=`dirname "$BACKUP_PATH"`
-	B=`basename "$BACKUP_PATH"`
+save_archive() {
+	S=`date '+%Y%m%d'`
 
 	echo -n `date '+%Y-%m-%d %H:%M:%S'`
-	echo -n " Archiving to remote storage..."
-	tar -cSf - -C "$D" --exclude="$B/ok" "$B" \
-		| pigz \
-		| ssh -i "$RKEY" $RUSER@$RSERVER "dd of=$RPATH 2>/dev/null"
+	echo -n " Archiving..."
+
+	tar -cSjf "$BACKUP_PATH/db_${S}.tbz" -C "$BACKUP_PATH" db
 	if [ "$?" -eq "0" ] ; then
 		echo " done"
 	else
@@ -132,51 +119,29 @@ send_archive() {
 	fi
 }
 
-save_archive() {
-	D=`dirname "$BACKUP_PATH"`
-	B=`basename "$BACKUP_PATH"`
-	S=`date '+%Y%m%d'`
-
-	echo -n `date '+%Y-%m-%d %H:%M:%S'`
-	echo -n " Archiving..."
-
-	tar -cSjf "${D}/${B}_${S}.tbz" -C "$D" --exclude="$B/ok" "$B"
-	if [ "$?" -eq "0" ] ; then
-		echo " done"
-	else
-		echo " failed"
-		exit 10
-	fi
-}
-
 remove_old_archives() {
-	D=`dirname "$BACKUP_PATH"`
-	B=`basename "$BACKUP_PATH"`
-
 	echo -n `date '+%Y-%m-%d %H:%M:%S'`
 	echo -n " Remove old archives..."
-	FULL_LIST=`find "${D}" -type f -name "${B}_*.tbz" | sort`
+	FULL_LIST=`find "$BACKUP_PATH" -type f -name "db_*.tbz" | sort`
 	NEED_LIST=`echo "$FULL_LIST" | tail -n "$DAYS"`
 	(echo "$FULL_LIST" ; echo "$NEED_LIST") \
 		| sort \
 		| uniq -u \
-		| xargs rm
+		| xargs -r rm
 	echo " done"
 }
 
-save_grants
+if [ -d "$BACKUP_PATH/inc/" ] ; then
+	remove_inc
+fi
 
 if [ -f "$BACKUP_PATH/ok" ] ; then
-	if [ -d "$INCREMENT_PATH" ] ; then
-		remove_inc
-	fi
-
 	refresh_full
 else
 	remove_full
 fi
 
-if [ ! -d "$BACKUP_PATH" ] ; then
+if [ ! -d "$BACKUP_PATH/db/" ] ; then
 	create_full
 fi
 
