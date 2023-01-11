@@ -78,6 +78,7 @@ MySQL
 * [[Настройка реплики MySQL с помощью mysqldump|mysql_slave_mysqldump]]
 * [[Перенос базы данных с одного сервера MySQL на другой с помощью xtrabackup|mysql_migration_xtrabackup]]
 * [[Периодическое резервное копирование MySQL с помощью xtrabackup|mysql_periodic_xtrabackup]]
+* [[Архивация периодических таблиц MySQL|mysql_archive_tables]]
 * [[Мониторинг MySQL с помощью Zabbix|mysql_zabbix]]
 * [[Игнорирование ошибок репликации MySQL|mysql_slave_ignore_errors]]
 * [[Исправление ошибок в таблице InnoDB|mysql_recovery_innodb_table]]
