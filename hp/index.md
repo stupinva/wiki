@@ -292,7 +292,8 @@ FIXME: *Первоначальную настройку маршрутизато
 
 Настройка пользователей маршрутизатора происходит в режиме system-view:
 
-     <hp>system-view
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]
 
 Переходим к настройке локального пользователя с логином stupin:
@@ -379,7 +380,7 @@ FIXME: *Первоначальную настройку маршрутизато
 
 Посмотреть список портов и VLAN на них можно при помощи команд display vlan all:
 
-    [hp]display vlan all 
+    <hp>display vlan all 
      VLAN ID: 1
      VLAN Type: static
      Route Interface: configured
@@ -535,11 +536,13 @@ FIXME: *Первоначальную настройку маршрутизато
 
 Добавим маршрут по умолчанию. Это будет постоянный статический маршрут через VLAN 2:
 
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]ip route-static 0.0.0.0 0 Vlan-interface 2 192.168.254.1 permanent
 
 Посмотреть текущую таблицу маршрутизации можно следующим образом:
 
-    [hp]display ip routing-table
+    <hp>display ip routing-table
     Routing Tables: Public
             Destinations : 5        Routes : 5
     
@@ -558,12 +561,17 @@ FIXME: *Первоначальную настройку маршрутизато
 
 Включаем SSH-сервер:
 
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]ssh server enable
     Info: Enable SSH server.
-    [hp]
+    [hp]return
+    <hp>
 
 После включения SSH-сервера нужно сгенерировать его ключ идентификации:
 
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]public-key local create rsa
     The range of public key size is (512 ~ 2048).
     NOTES: If the key modulus is greater than 512,
@@ -576,7 +584,8 @@ FIXME: *Первоначальную настройку маршрутизато
     ++
     +++++++
     
-    [hp]
+    [hp]return
+    <hp>
 
 Если этого не сделать, то при попытке подключения к маршрутизатору по SSH можно получить такую ошибку:
 
@@ -587,11 +596,15 @@ FIXME: *Первоначальную настройку маршрутизато
 
 Теперь добавим пользователя SSH-сервера, который может проходить аутентификацию по паролю и пользоваться SSH:
 
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]ssh user stupin service-type stelnet authentication-type password
+    [hp]return
+    <hp>
 
 Посмотреть текущую конфигурацию терминалов можно следующим образом:
 
-    [hp]display user-interface aux 0[hp]display user-interface      
+    <hp>display user-interface      
       Idx  Type     Tx/Rx      Modem Privi Auth  Int
       12   TTY 12   9600       -     0     N     Cellular0/0
     F 80   AUX 0    9600       -     3     N     -
@@ -616,12 +629,18 @@ FIXME: *Первоначальную настройку маршрутизато
 
 Как можно заметить в столбце Auth, в конфигурации по умолчанию консоль не защищена паролем. Исправить это можно с помощью такой команды:
 
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]user-interface aux 0
     [hp-ui-aux0]authentication-mode scheme
     [hp-ui-aux0]quit
+    [hp]return
+    <hp>
 
 Посмотреть текущую конфигурацию терминалов можно следующим образом:
 
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]user-interface aux 0
     [hp-ui-aux0]display this 
     #
@@ -632,38 +651,56 @@ FIXME: *Первоначальную настройку маршрутизато
      authentication-mode scheme
     #
     return
+    [hp]return
+    <hp>
 
 По умолчанию к виртуальным терминалам можно подключиться по любому протоколу. Для того, чтобы разрешить подключение только по протоколу SSH, воспользуемся такими командами:
 
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]user-interface vty 0 4
     [hp-ui-vty0-4]protocol inbound ssh 
     [hp-ui-vty0-4]quit
+    [hp]return
+    <hp>
 
 Для отключения telnet и веб-интерфейсов на уровне маршрутизатора в целом воспользуемся такими командами:
 
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]undo telnet server enable
     [hp]undo ip http enable
     [hp]undo ip https enable
     Info: HTTPS server has been stopped!
+    [hp]return
+    <hp>
 
 Настройка DNS-клиента
 ---------------------
 
 Для начала включим на маршрутизаторе DNS-клиента:
 
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]dns resolve
+    [hp]return
+    <hp>
 
 Как вы догадались, отключить его можно при помощи команды undo dns resolve.
 
 Теперь укажем DNS-клиенту IP-адрес DNS-сервера:
 
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]dns server 192.168.254.2
+    [hp]return
+    <hp>
 
 Можно настроить несколько DNS-серверов, повторяя команду dns server с IP-адресом каждого сервера.
 
 Посмотреть список настроенных DNS-серверов можно следующей командой:
 
-    [hp]display dns server 
+    <hp>display dns server 
      Type:
       D:Dynamic    S:Static
     
@@ -674,15 +711,23 @@ FIXME: *Первоначальную настройку маршрутизато
 
 Можно также указать интерфейс маршрутизатора, с которого DNS-клиент будет отправлять запросы:
 
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]dns source-interface Vlan-interface 2
+    [hp]return
+    <hp>
 
 Чтобы иметь возможность не указывать в доменных именах правую часть домена, можно настроить один или несколько доменов по умолчанию:
 
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]dns domain lo.stupin.su
+    [hp]return
+    <hp>
 
 Посмотреть настроенные домены по умолчанию можно при помощи следующей команды:
 
-    [hp]display dns domain 
+    <hp>display dns domain 
      Type:
       D:Dynamic    S:Static
     
@@ -695,7 +740,7 @@ FIXME: *Первоначальную настройку маршрутизато
 
 Убедиться, что разрешение доменных имён в IP-адреса работает, можно, например, при помощи команды ping:
 
-    [hp]ping dnscache
+    <hp>ping dnscache
      Trying DNS resolve, press CTRL_C to break 
      Trying DNS server (192.168.254.2) 
      Trying DNS server (192.168.254.2) 
@@ -714,7 +759,7 @@ FIXME: *Первоначальную настройку маршрутизато
         0.00% packet loss
         round-trip min/avg/max = 1/1/2 ms
     
-    [hp]
+    <hp>
 
 Настройка часов маршрутизатора
 ------------------------------
@@ -723,31 +768,79 @@ FIXME: *Первоначальную настройку маршрутизато
 
 Для настройки часового пояса можно воспользоваться командой следующего вида:
 
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]clock timezone Asia/Yekaterinburg add 05:00:00
-    [hp]
-    #Jan  6 03:18:29:706 2007 hp SYSMIB/4/CLKCHANGE:
-    Trap 1.3.6.1.4.1.25506.2.3.2.1: System clock changed.
+    [hp]return
+    <hp>
 
 Именем часового пояса может быть произвольный текст длиной от одного до 32 символов. Я воспользовался стандартным для Unix-систем именем Asia/Yekaterinburg, настроив смещение на 5 часов относительно универсального скоординированного времени.
 
 В конфигурации по умолчанию на коммутаторе отключен переход на летнее время. Но на всякий случай, если на коммутаторе до этого оно было настроено, можно сбросить его при помощи следующей команды:
 
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]undo clock summer-time
-    [hp]
-    #Jan  6 03:18:57:930 2007 hp SYSMIB/4/CLKCHANGE:
-    Trap 1.3.6.1.4.1.25506.2.3.2.1: System clock changed.
+    [hp]return
+    <hp>
 
 Для настройки часов можно воспользоваться командой следующего вида:
 
     <hp>clock datetime 22:56:40 2023/01/11
-    <hp>
-    #Jan 11 22:56:40:244 2023 hp SYSMIB/4/CLKCHANGE:
-    Trap 1.3.6.1.4.1.25506.2.3.2.1: System clock changed.
 
 Чтобы посмотреть текущее время, воспользуемся следующей командой:
 
     <hp>display clock
     22:57:45 Asia/Yekaterinburg Wed 01/11/2023
+    Time Zone : Asia/Yekaterinburg add 05:00:00
+
+Настройка синхронизации времени с серверами NTP
+===============================================
+
+Включаем использование NTP-сервера для синхронизации часов маршрутизатора:
+
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
+    [hp]ntp-service unicast-peer 192.168.254.2
+    [hp]return
+    <hp>
+
+Указать интерфейс, с которого будут отправляться исходящие NTP-запросы, можно следующим образом:
+
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
+    [hp]ntp-service source-interface Vlan-interface 2                                                                       
+    [hp]return
+    <hp>
+
+Посмотреть сеансы связи с NTP-серверами можно следующим образом:
+
+    <hp>display ntp-service sessions
+           source          reference       stra reach poll  now offset  delay disper
+    ********************************************************************************
+    [12345]192.168.254.2   192.36.143.130     2    15   64   20  -26.4    2.1    0.8
+    note: 1 source(master),2 source(peer),3 selected,4 candidate,5 configured
+    Total associations :  1
+
+Состояние сервиса NTP на коммутаторе можно увидеть такой командой:
+
+    <hp>display ntp-service status
+     Clock status: synchronized
+     Clock stratum: 3
+     Reference clock ID: 192.168.254.2
+     Nominal frequency: 100.0000 Hz
+     Actual frequency: 100.0000 Hz
+     Clock precision: 2^18
+     Clock offset: -11.5570 ms
+     Root delay: 44.49 ms
+     Root dispersion: 4.68 ms
+     Peer dispersion: 0.00 ms
+     Reference time: 17:21:34.269 UTC Jan 12 2023(E76AC01E.44DDF86E)
+
+Наконец, после успешной синхронизации времени можно посмотреть на часы:
+
+    <hp>display clock
+    22:28:52 Asia/Yekaterinburg Thu 01/12/2023
     Time Zone : Asia/Yekaterinburg add 05:00:00
 
 Обновление прошивки маршрутизатора
