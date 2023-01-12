@@ -100,13 +100,13 @@ FIXME: *Первоначальную настройку маршрутизато
 
 Просмотр состояния слота 0:
 
-  <HP>display device slot 0
-   Slot 0
-    Status:   Normal
-    Type:     A-MSR900 RPU Board
-    Hardware:  3.0
-    Driver:    1.0
-    CPLD:      1.0
+    <HP>display device slot 0
+     Slot 0
+      Status:   Normal
+      Type:     A-MSR900 RPU Board
+      Hardware:  3.0
+      Driver:    1.0
+      CPLD:      1.0
 
 Управление файлами
 ------------------
@@ -842,6 +842,104 @@ FIXME: *Первоначальную настройку маршрутизато
     <hp>display clock
     22:28:52 Asia/Yekaterinburg Thu 01/12/2023
     Time Zone : Asia/Yekaterinburg add 05:00:00
+
+Настройка журналирования
+------------------------
+
+Посмотреть в локальный журнал коммутатора можно следующим образом:
+
+    <hp>display logbuffer
+    Logging buffer configuration and contents:enabled
+    Allowed max buffer size : 1024
+    Actual buffer size : 512
+    Channel number : 4 , Channel name : logbuffer
+    Dropped messages : 0
+    Overwritten messages : 0
+    Current messages : 81
+    
+    %Jan  1 00:00:02:282 2007 hp IC/6/SYS_RESTART: System restarted --
+    HPE Platform Software.
+    %Jan  1 00:01:18:374 2007 hp IFNET/3/LINK_UPDOWN: Aux0 link status is UP.
+    %Jan  1 00:01:37:519 2007 hp DRVICOUT/1/DrvIcOutStr:
+    System returned to ROM By Power-up. Software Version, Release 2516P13
+
+Включаем службу журналирования:
+
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
+    [hp]info-center enable
+    Info: Information center is enabled.
+    [hp]return
+    <hp>
+
+Включаем отправку журналов из logbuffer на syslog-сервер:
+
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
+    [hp]info-center loghost 192.168.254.2 channel logbuffer
+    [hp]return
+    <hp>
+
+Для настройки rsyslog на приём syslog-пакетов от коммутатора и на запись в отдельный журнал, создадим файл /etc/rsyslog.d/hp.conf со следующими настройками:
+
+    $ModLoad imudp
+    $UDPServerRun 514
+    :FROMHOST, isequal, "169.254.254.29" /var/log/hp.log
+    :FROMHOST, isequal, "169.254.254.29" ~
+
+После этого перезапустим rsyslogd:
+
+    # systemctl restart rsyslog
+
+Если UDP-порт 512 закрыт сетевым фильтром, не забудьте его открыть.
+
+Чтобы настроить ротацию журнала /var/log/hp.log, можно настроить logrotate. Для этого создадим файл /etc/logrotate.d/hp со следующим содержимым:
+
+    /var/log/hp.log {
+            weekly
+            missingok
+            rotate 10
+            compress
+            delaycompress
+            notifempty
+            create 640 root root
+    }
+
+Однако в настоящее время вместо rsyslogd я использую socklog, запущенный под управлением daemontoos, как это описано в статье [[Запуск socklog в NetBSD с помощью daemontools|netbsd_daemontools_socklog]]. После дополнения файл конфигурации /service/socklog-inet/log/run принял следующий вид:
+
+    #!/bin/sh
+    
+    exec \
+    setuidgid multilog \
+    multilog t \
+            '+*' \
+            '-* 192.168.254.6:*' \
+            '-* 192.168.254.24:*' \
+            '-* 192.168.254.28:*' \
+            '-* 192.168.254.29:*' \
+            '-* 192.168.254.8:*' \
+            '-* 192.168.254.9:*' \
+            '-* 192.168.254.31:*' /var/log/socklog-inet/ \
+            '-*' '+* 192.168.254.6:*' /var/log/socklog-inet-dlink/ \
+            '-*' '+* 192.168.254.24:*' /var/log/socklog-inet-snr/ \
+            '-*' '+* 192.168.254.28:*' /var/log/socklog-inet-huawei/ \
+            '-*' '+* 192.168.254.29:*' /var/log/socklog-inet-hp/ \
+            '-*' '+* 192.168.254.8:*' /var/log/socklog-inet-ata1/ \
+            '-*' '+* 192.168.254.9:*' /var/log/socklog-inet-ata2/ \
+            '-*' '+* 192.168.253.31:*' /var/log/socklog-inet-ubiquiti/
+
+Можно попробовать заглянуть в журнал при помощи указанной ниже команды:
+
+    # tail -f /var/log/socklog-inet-hp/current | tai64nlocal
+
+В журнале я увидел следующие строки:
+
+    2023-01-12 22:56:58.416096500 192.168.254.29: local7.info: Jan 12 22:56:58 2023 hp %%10SHELL/6/SHELL_CMD(l): -Task=au0-IPAddr=**-User=stupin; Command is return
+    2023-01-12 22:57:00.688673500 192.168.254.29: local7.info: Jan 12 22:57:00 2023 hp %%10SHELL/6/SHELL_CMD(l): -Task=au0-IPAddr=**-User=stupin; Command is save
+    2023-01-12 22:57:09.205490500 192.168.254.29: local7.notice: Jan 12 22:57:09 2023 hp %%10CFGMAN/5/CFGMAN_CFGCHANGED(l): -EventIndex=8-CommandSource=1-ConfigSource=2-ConfigDestination=4; Configuration is changed.
+    2023-01-12 22:57:09.206269500 192.168.254.29: local7.notice: Jan 12 22:57:09 2023 hp %%10CFM/5/CFM_SAVECONFIG_SUCCESSFULLY(l): Configuration is saved successfully.
+    2023-01-12 23:00:07.309048500 192.168.254.29: local7.notice: Jan 12 23:00:07 2023 hp %%10NTP/5/NTP_CHANGE_LEAP(l): System Leap Indicator changed from 0 to 3 after clock update.
+    2023-01-12 23:00:07.310028500 192.168.254.29: local7.notice: Jan 12 23:00:07 2023 hp %%10NTP/5/NTP_CHANGE_STRATUM(l): System stratum changed from 4 to 3 after clock update.
 
 Обновление прошивки маршрутизатора
 ----------------------------------
