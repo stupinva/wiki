@@ -776,7 +776,7 @@ FIXME: *Первоначальную настройку маршрутизато
 
 Именем часового пояса может быть произвольный текст длиной от одного до 32 символов. Я воспользовался стандартным для Unix-систем именем Asia/Yekaterinburg, настроив смещение на 5 часов относительно универсального скоординированного времени.
 
-В конфигурации по умолчанию на коммутаторе отключен переход на летнее время. Но на всякий случай, если на коммутаторе до этого оно было настроено, можно сбросить его при помощи следующей команды:
+В конфигурации по умолчанию на маршрутизаторе отключен переход на летнее время. Но на всякий случай, если на маршрутизаторе до этого оно было настроено, можно сбросить его при помощи следующей команды:
 
     <hp>system-view
     System View: return to User View with Ctrl+Z.
@@ -822,7 +822,7 @@ FIXME: *Первоначальную настройку маршрутизато
     note: 1 source(master),2 source(peer),3 selected,4 candidate,5 configured
     Total associations :  1
 
-Состояние сервиса NTP на коммутаторе можно увидеть такой командой:
+Состояние сервиса NTP на маршрутизаторе можно увидеть такой командой:
 
     <hp>display ntp-service status
      Clock status: synchronized
@@ -846,7 +846,7 @@ FIXME: *Первоначальную настройку маршрутизато
 Настройка журналирования
 ------------------------
 
-Посмотреть в локальный журнал коммутатора можно следующим образом:
+Посмотреть в локальный журнал маршрутизатора можно следующим образом:
 
     <hp>display logbuffer
     Logging buffer configuration and contents:enabled
@@ -880,7 +880,7 @@ FIXME: *Первоначальную настройку маршрутизато
     [hp]return
     <hp>
 
-Для настройки rsyslog на приём syslog-пакетов от коммутатора и на запись в отдельный журнал, создадим файл /etc/rsyslog.d/hp.conf со следующими настройками:
+Для настройки rsyslog на приём syslog-пакетов от маршрутизатора и на запись в отдельный журнал, создадим файл /etc/rsyslog.d/hp.conf со следующими настройками:
 
     $ModLoad imudp
     $UDPServerRun 514
@@ -940,6 +940,56 @@ FIXME: *Первоначальную настройку маршрутизато
     2023-01-12 22:57:09.206269500 192.168.254.29: local7.notice: Jan 12 22:57:09 2023 hp %%10CFM/5/CFM_SAVECONFIG_SUCCESSFULLY(l): Configuration is saved successfully.
     2023-01-12 23:00:07.309048500 192.168.254.29: local7.notice: Jan 12 23:00:07 2023 hp %%10NTP/5/NTP_CHANGE_LEAP(l): System Leap Indicator changed from 0 to 3 after clock update.
     2023-01-12 23:00:07.310028500 192.168.254.29: local7.notice: Jan 12 23:00:07 2023 hp %%10NTP/5/NTP_CHANGE_STRATUM(l): System stratum changed from 4 to 3 after clock update.
+
+Настройка SNMP
+--------------
+
+### Включение SNMP и RMON
+
+Включить доступность SNMP-агента по отдельным версиям протокола можно при помощи команды следующего вида:
+
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
+    [hp]snmp-agent sys-info version v2c 
+    [hp]return
+    <hp>
+
+Вместо версии v2c можно указать v1, v3 или all.
+
+Для просмотра включенных в SNMP-агенте версий протокола SNMP можно воспользоваться следующей командой:
+
+    <hp>display snmp-agent sys-info version
+       SNMP version running in the system:
+               SNMPv2c SNMPv3
+
+Для отключения отдельных версий протоколов или можно воспользоваться командой включения, указав перед ней слово undo:
+
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
+    [hp]undo snmp-agent sys-info version v3
+    [hp]return
+    <hp>
+
+Для включения статистики [RMON](http://www.circitor.fr/Mibs/Html/R/RMON-MIB.php) по интерфейсам необходимо войти на каждый из интерфейсов и включить сбор статистики следующим образом:
+
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
+    [hp]interface Ethernet 0/0
+    [hp-Ethernet0/0]interface Ethernet 0/0
+    [hp-Ethernet0/0]rmon statistics 1 owner stupin
+    [hp-Ethernet0/0]interface Ethernet 0/1
+    [hp-Ethernet0/1]rmon statistics 2 owner stupin
+    [hp-Ethernet0/1]interface Ethernet 0/2
+    [hp-Ethernet0/2]rmon statistics 3 owner stupin
+    [hp-Ethernet0/2]interface Ethernet 0/3
+    [hp-Ethernet0/3]rmon statistics 4 owner stupin
+    [hp-Ethernet0/3]interface Ethernet 0/4
+    [hp-Ethernet0/4]rmon statistics 5 owner stupin
+    [hp-Ethernet0/4]interface Ethernet 0/5
+    [hp-Ethernet0/5]rmon statistics 6 owner stupin
+    [hp-Ethernet0/5]quit
+    [hp]return
+    <hp>
 
 Обновление прошивки маршрутизатора
 ----------------------------------
