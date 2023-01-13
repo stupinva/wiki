@@ -838,24 +838,31 @@
 
 Включить доступность SNMP-агента по отдельным версиям протокола можно при помощи команды следующего вида:
 
+    <huawei>system-view
     [huawei]snmp-agent sys-info version v2c 
     Warning: SNMPv1/SNMPv2c is not secure, and it is recommended to use SNMPv3.
+    [huawei]return
+    <huawei>
 
 Вместо версии v2c можно указать v1, v3 или all.
 
 Для просмотра включенных в SNMP-агенте версий протокола SNMP можно воспользоваться следующей командой:
 
-    [huawei]display snmp-agent sys-info version
+    <huawei>display snmp-agent sys-info version
        SNMP version running in the system:
                SNMPv2c SNMPv3
 
 Для отключения отдельных версий протоколов или можно воспользоваться командой включения, указав перед ней слово undo:
 
+    <huawei>system-view
     [huawei]undo snmp-agent sys-info version all
     Warning: All SNMP versions will be disabled. Continue? [Y/N]:Y
+    [huawei]return
+    <huawei>
 
 Для включения статистики [RMON](http://www.circitor.fr/Mibs/Html/R/RMON-MIB.php) по интерфейсам необходимо войти на каждый из интерфейсов и включить сбор статистики следующим образом:
 
+    <huawei>system-view
     [huawei]interface GigabitEthernet 0/0/1
     [huawei-GigabitEthernet0/0/1]rmon-statistics enable
     [huawei-GigabitEthernet0/0/1]rmon statistics 1 owner stupin
@@ -865,10 +872,13 @@
     [huawei-GigabitEthernet0/0/1]interface GigabitEthernet 0/0/2
     [huawei-GigabitEthernet0/0/2]rmon-statistics enable
     [huawei-GigabitEthernet0/0/2]rmon statistics 2 owner stupin
+    [huawei-GigabitEthernet0/0/2]quit
+    [huawei]return
+    <huawei>
 
 После включения сбора статистики RMON, её можно будет увидеть на самом коммутаторе при помощи команды следующего вида:
 
-    [huawei-GigabitEthernet0/0/10]display rmon statistics GigabitEthernet 0/0/1
+    <huawei>display rmon statistics GigabitEthernet 0/0/1
     Statistics entry 1 owned by stupin is valid.
       Interface : GigabitEthernet0/0/1<ifIndex.5>
       Received  :
