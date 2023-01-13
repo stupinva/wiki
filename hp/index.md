@@ -277,15 +277,15 @@ FIXME: *Первоначальную настройку маршрутизато
 
 Увидеть настроенные данные можно следующим образом:
 
-<hp>display snmp-agent sys-info 
-   The contact person for this managed node:
-           vladimir@stupin.su
-
-   The physical location of this node:
-           Ufa
-
-   SNMP version running in the system:
-           SNMPv3
+    <hp>display snmp-agent sys-info
+       The contact person for this managed node:
+               vladimir@stupin.su
+    
+       The physical location of this node:
+               Ufa
+    
+       SNMP version running in the system:
+               SNMPv3
 
 Настройка пользователей и паролей
 ---------------------------------
