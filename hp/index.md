@@ -991,6 +991,22 @@ FIXME: *Первоначальную настройку маршрутизато
     [hp]return
     <hp>
 
+После включения сбора статистики RMON, её можно будет увидеть на самом коммутаторе при помощи команды следующего вида:
+
+    <hp>display rmon statistics Ethernet 0/3
+    EtherStatsEntry 4 owned by stupin is VALID.
+      Interface : Ethernet0/3<ifIndex.6>
+      etherStatsOctets         : 63687986  , etherStatsPkts          : 324938
+      etherStatsBroadcastPkts  : 76248     , etherStatsMulticastPkts : 245969
+      etherStatsUndersizePkts  : 0         , etherStatsOversizePkts  : 0
+      etherStatsFragments      : 0         , etherStatsJabbers       : 0
+      etherStatsCRCAlignErrors : 0         , etherStatsCollisions    : 0
+      etherStatsDropEvents (insufficient resources): 0
+      Packets received according to length:
+      64     : 67407     ,  65-127  : 123639    ,  128-255  : 24679
+      256-511: 105863    ,  512-1023: 2144      ,  1024-1518: 1206
+    <hp>
+
 Обновление прошивки маршрутизатора
 ----------------------------------
 
