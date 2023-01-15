@@ -1007,6 +1007,35 @@ FIXME: *Первоначальную настройку маршрутизато
       256-511: 105863    ,  512-1023: 2144      ,  1024-1518: 1206
     <hp>
 
+### Настройка представлений SNMP
+
+Представление SNMP позволяет ограничить доступ к определённым веткам OID. Создадим представление ro с единственным правилом, разрешающим доступ к ветке OID 1.3.6.1:
+
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
+    [hp]snmp-agent mib-view included ro 1.3.6.1
+    [hp]return
+    <hp>
+
+Если представление должно разрешать доступ к нескольким веткам, то команду можно повторить, указывая правила с другими ветками OID. При необходимости исключить из представления определённую ветку, вместо ключевого слова include в правиле можно указать exclude.
+
+Маршрутизатор не позволяет удалить из представления отдельные ветки. Удалить всё представление целиком можно следующим образом:
+
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
+    [hp]undo snmp-agent mib-view ro 
+    [hp]return
+    <hp>
+
+По умолчанию на маршрутизаторе уже есть одно представление ViewDefault, удалить которое (но лишь до следующей перезагрузки) можно следующим образом:
+
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
+    [hp]undo snmp-agent mib-view ViewDefault
+       Note: The default MIB view has been deleted, and it will be restored after the system reboots.
+    [hp]return
+    <hp>
+
 Обновление прошивки маршрутизатора
 ----------------------------------
 
