@@ -1095,6 +1095,7 @@ FIXME: *Первоначальную настройку маршрутизато
     [hp-acl-basic-2000]rule 2 permit source 192.168.252.3 0
     [hp-acl-basic-2000]quit
     [hp]return
+    <hp>
 
 Посмотреть все списка управления доступом можно следующим образом:
 
@@ -1103,6 +1104,53 @@ FIXME: *Первоначальную настройку маршрутизато
     ACL's step is 5
      rule 1 permit source 192.168.254.1 0
      rule 2 permit source 192.168.252.3 0
+
+### Настройка групп SNMP
+
+Создаём группу с именем ro:
+
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
+    [hp]snmp-agent group v2c ro read-view ro acl 2000
+
+Этой командой мы:
+
+- добавляем группу с именем ro,
+- которая будет работать по протоколу SNMP версии 3 с секретами для аутентификации и шифрования,
+- которой разрешаем доступ к OID'ам из представления ro на чтение,
+- у которой нет OID'ов, доступных на запись,
+- у которой нет OID'ов, доступных для отсылки трапов.
+- которой разрешаем доступ с IP-адресов из списка управления доступом №2000.
+
+Создаём группу с именем rw, которая аналогична ro, но будет иметь доступ на чтение и изменение значений OID'ов из представления rw:
+
+    [hp]snmp-agent group v2c rw read-view rw write-view rw acl 2000
+
+Для удаления группы можно воспользоваться командой такого вида:
+
+    [hp]undo snmp-agent group v2c rw 
+    [hp]return
+    <hp>
+
+Посмотреть список настроенных групп SNMP можно следующим образом:
+
+    <hp>display snmp-agent group 
+    
+       Group name: ro
+           Security model: v2c noAuthnoPriv
+           Readview: ro
+           Writeview: <no specified>
+           Notifyview: <no specified>
+           Storage-type: nonVolatile
+           Acl:2000
+    
+       Group name: rw
+           Security model: v2c noAuthnoPriv
+           Readview: rw
+           Writeview: rw
+           Notifyview: <no specified>
+           Storage-type: nonVolatile
+           Acl:2000
 
 Обновление прошивки маршрутизатора
 ----------------------------------
