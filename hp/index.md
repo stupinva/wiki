@@ -1152,6 +1152,40 @@ FIXME: *Первоначальную настройку маршрутизато
            Storage-type: nonVolatile
            Acl:2000
 
+### Настройка сообществ SNMP
+
+Для настройки сообщества SNMP с именем $ecretC0mmunity, которое будет использовать представление ro только для чтения и будет иметь возможность делать запросы с IP-адресов, разрешённых списком доступа 2000, можно воспользоваться командой следующего вида:
+
+    [hp]snmp-agent community read cipher $ecretC0mmunity mib-view ro acl 2000
+
+Добавленные таким образом сообщества не отображаются в списке сообществ командой display snmp-agent community. Увидеть их можно только в конфигурации маршрутизатора, например, следующим образом:
+
+    [hp]display this | include snmp-agent community
+     snmp-agent community read cipher $c$3$cZhIYsD+o3osT0Odidteg5BZOO/O2fIaajrWA0Yg/Ts1yg==  mib-view ro acl 2000
+
+Для того, чтобы сообщество отображалось в открытом виде командой display snmp-agent community, создавать его нужно без функции шифрования, следующим образом:
+
+    [hp]snmp-agent community read $ecretC0mmunity mib-view ro acl 2000
+
+В таком случае ранее настроенная строка сообщества будет заменена:
+
+    [hp]display this | include snmp-agent community
+     snmp-agent community read $ecretC0mmunity  mib-view ro acl 2000
+
+Удалить сообщество по его строке, можно следующим образом:
+
+    [hp]undo snmp-agent community read $ecretC0mmunity
+    [hp]return
+    <hp>
+
+Посмотреть строки сообщества, добавленные без шифрования, можно следующим образом:
+
+    <hp>display snmp-agent community 
+       Community name: $ecretC0mmunity
+           Group name: $ecretC0mmunity
+           Acl:2000
+           Storage-type: nonVolatile
+
 Обновление прошивки маршрутизатора
 ----------------------------------
 
