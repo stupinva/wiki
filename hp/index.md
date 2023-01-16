@@ -1036,6 +1036,74 @@ FIXME: *Первоначальную настройку маршрутизато
     [hp]return
     <hp>
 
+Посмотреть список представлений и действующих в них правил в них можно при помощи команды display snmp-agent mib-view:
+
+    <hp>display snmp-agent mib-view
+       View name: ro
+           MIB Subtree: internet
+           Subtree mask:
+           Storage-type: nonVolatile
+           View Type: included
+           View status: active
+    
+       View name: ViewDefault
+           MIB Subtree: iso
+           Subtree mask:
+           Storage-type: nonVolatile
+           View Type: included
+           View status: active
+    
+       View name: ViewDefault
+           MIB Subtree: snmpUsmMIB
+           Subtree mask:
+           Storage-type: nonVolatile
+           View Type: excluded
+           View status: active
+    
+       View name: ViewDefault
+           MIB Subtree: snmpVacmMIB
+           Subtree mask:
+           Storage-type: nonVolatile
+           View Type: excluded
+           View status: active
+    
+       View name: ViewDefault
+           MIB Subtree: snmpModules.18
+           Subtree mask:
+           Storage-type: nonVolatile
+           View Type: excluded
+           View status: active
+    
+       View name: ViewDefault
+           MIB Subtree: hh3cLI
+           Subtree mask:
+           Storage-type: nonVolatile
+           View Type: excluded
+           View status: active
+
+### Список контроля доступа
+
+Для того, чтобы разрешить доступ к SNMP-агенту только определённым IP-адресам, создадим список управления доступом под номером 2000:
+
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
+    [hp]acl number 2000 match-order config
+
+Добавим в этот список два правила:
+
+    [hp-acl-basic-2000]rule 1 permit source 192.168.254.1 0
+    [hp-acl-basic-2000]rule 2 permit source 192.168.252.3 0
+    [hp-acl-basic-2000]quit
+    [hp]return
+
+Посмотреть все списка управления доступом можно следующим образом:
+
+    <hp>display acl all
+    Basic ACL  2000, named -none-, 2 rules,
+    ACL's step is 5
+     rule 1 permit source 192.168.254.1 0
+     rule 2 permit source 192.168.252.3 0
+
 Обновление прошивки маршрутизатора
 ----------------------------------
 
