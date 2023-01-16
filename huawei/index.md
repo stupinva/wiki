@@ -1020,6 +1020,10 @@
 Создаём группу с именем rw, которая аналогична ro, но будет иметь доступ на чтение и изменение значений OID'ов из представляения rw: 
 
     [huawei]snmp-agent group v3 rw privacy read-view rw write-view rw acl 2000
+
+Для удаления группы можно воспользоваться командой такого вида:
+
+    [huawei]undo snmp-agent group v3 rw privacy
     [huawei]return
     <huawei>
 
@@ -1041,10 +1045,6 @@
            Notifyview :<no specified>  
            Storage-type: nonVolatile 
            Acl:2000
-
-Для удаления группы можно воспользоваться командой такого вида:
-
-    [huawei]undo snmp-agent group v3 rw privacy
 
 ### Настройка сообществ SNMP
 
