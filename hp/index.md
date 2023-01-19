@@ -975,7 +975,6 @@ FIXME: *Первоначальную настройку маршрутизато
     <hp>system-view
     System View: return to User View with Ctrl+Z.
     [hp]interface Ethernet 0/0
-    [hp-Ethernet0/0]interface Ethernet 0/0
     [hp-Ethernet0/0]rmon statistics 1 owner stupin
     [hp-Ethernet0/0]interface Ethernet 0/1
     [hp-Ethernet0/1]rmon statistics 2 owner stupin
@@ -1006,6 +1005,18 @@ FIXME: *Первоначальную настройку маршрутизато
       64     : 67407     ,  65-127  : 123639    ,  128-255  : 24679
       256-511: 105863    ,  512-1023: 2144      ,  1024-1518: 1206
     <hp>
+
+Номер элемента статистики будет соответствовать индексу интерфейса в таблице, доступной по протоколу SNMP. Проверить правильность настройки можно, например, при помощи команды snmpwalk из пакета net-snmp:
+
+    $ snmpwalk -v 2c -c '$ecretC0mmunity' hp.lo.stupin.su 1.3.6.1.2.1.16.1.1.1.8
+    RMON-MIB::etherStatsCRCAlignErrors.1 = Counter32: 0 Packets
+    RMON-MIB::etherStatsCRCAlignErrors.2 = Counter32: 0 Packets
+    RMON-MIB::etherStatsCRCAlignErrors.3 = Counter32: 0 Packets
+    RMON-MIB::etherStatsCRCAlignErrors.4 = Counter32: 0 Packets
+    RMON-MIB::etherStatsCRCAlignErrors.5 = Counter32: 0 Packets
+    RMON-MIB::etherStatsCRCAlignErrors.6 = Counter32: 0 Packets
+
+Значение RMON-MIB::etherStatsCRCAlignErrors.1 в этой таблице соответствуют строчке CRC alignment errors в выводе команды, выполненной на коммутаторе до этого.
 
 ### Настройка представлений SNMP
 
@@ -1185,6 +1196,11 @@ FIXME: *Первоначальную настройку маршрутизато
            Group name: $ecretC0mmunity
            Acl:2000
            Storage-type: nonVolatile
+
+Проверить доступность коммутатора по протоколу SNMP версии 2c с настроенной строкой сообщества можно при помощи утилит из пакета net-snmp:
+
+    $ snmpget -v 2c -c '$ecretC0mmunity' hp.lo.stupin.su sysObjectID.0
+    SNMPv2-MIB::sysObjectID.0 = OID: SNMPv2-SMI::enterprises.25506.11.2.1
 
 Обновление прошивки маршрутизатора
 ----------------------------------
