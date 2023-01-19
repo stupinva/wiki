@@ -1050,6 +1050,7 @@
 
 Для настройки сообщества SNMP с именем $ecretC0mmunity, которое будет использовать представление ro только для чтения и будет иметь возможность делать запросы с IP-адресов, разрешённых списком доступа 2000, можно воспользоваться командой следующего вида: 
 
+    <huawei>system-view
     [huawei]snmp-agent community read cipher $ecretC0mmunity acl 2000 mib-view ro
 
 Посмотреть список настроенных сообществ можно следующим образом:  
@@ -1063,10 +1064,12 @@
 Посмотреть, какая именно строка используется сообществом, таким образом нельзя. Имя сообщества и группы тоже ни о чём не говорят, отличить одно сообщество от другого может быть довольно сложно. Но к счастью у команды есть дополнительная опция, позволяющая назначить сообществу псевдоним:
 
     [huawei]snmp-agent community read cipher $ecretC0mmunity acl 2000 mib-view ro alias ro_2000
+    [huawei]return
+    <huawei>
 
 Теперь это сообщество можно легко найти в списке по псевдониму ro_2000:
 
-    [huawei]display snmp-agent community 
+    <huawei>display snmp-agent community 
        Community name:%^%#G48%)LZ^e)O"t{IGD_,4ASvIH>9A72|"W&De*LFYeE$s!'Vr5BT'/a1()`+O\O4o<B4+CB$@aMY9b<$O%^%# 
            Group name:%^%#G48%)LZ^e)O"t{IGD_,4ASvIH>9A72|"W&De*LFYeE$s!'Vr5BT'/a1()`+O\O4o<B4+CB$@aMY9b<$O%^%# 
            Alias name:ro_2000 
@@ -1075,11 +1078,14 @@
 
 К сожалению удалить сообщество по его псевдониму нельзя. Можно удалить его по имени, указанному в строчках Community name и Group name:
 
+    <huawei>system-view
     [huawei]undo snmp-agent community %^%#G48%)LZ^e)O"t{IGD_,4ASvIH>9A72|"W&De*LFYeE$s!'Vr5BT'/a1()`+O\O4o<B4+CB$@aMY9b<$O%^%# 
 
 Либо можно удалить сообщество по его строке, если она вам известна:
 
     [huawei]undo snmp-agent community $ecretC0mmunity
+    [huawei]return
+    <huawei>
 
 Проверить доступность коммутатора по протоколу SNMP версии 2c с настроенной строкой сообщества можно при помощи утилит из пакета net-snmp:
 
@@ -1090,6 +1096,7 @@
 
 Добавляем пользователя SNMP с именем mon:
 
+    <huawei>system-view
     [huawei]snmp-agent usm-user v3 mon group ro acl 2000
 
 Добавленный пользователь будет использовать права группы ro, будет использовать протокол SNMP версии 3 и делать запросы с IP-адресов, разрешённых списком доступа 2000. У группы ro настроен уровень безопасности, предполагающий использование секретов для аутентификации и шифрования, которые для этого пользователя пока не настроены. Настроим их.
@@ -1115,6 +1122,12 @@
     [huawei]snmp-agent usm-user v3 mon privacy-mode aes128
     Error: Please configure the authentication password first.
 
+Удалить настроенного пользователя можно при помощи такой команды:
+
+    [huawei]undo snmp-agent usm-user v3 mon
+    [huawei]return
+    <huawei>
+
 Посмотреть список настроенных пользователей можно следующим образом:
 
     <huawei>display snmp-agent usm-user 
@@ -1124,10 +1137,6 @@
            Privacy Protocol: aes128 
            Group name: ro 
            Acl: 2000
-
-Удалить настроенного пользователя можно при помощи такой команды:
-
-    [huawei]undo snmp-agent usm-user v3 mon
 
 Проверить доступность коммутатора по протоколу SNMPv3 для пользователя mon можно при помощи такой команды из пакета net-snmp:
 
