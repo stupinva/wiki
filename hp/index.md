@@ -1167,6 +1167,8 @@ FIXME: *Первоначальную настройку маршрутизато
 
 Для настройки сообщества SNMP с именем $ecretC0mmunity, которое будет использовать представление ro только для чтения и будет иметь возможность делать запросы с IP-адресов, разрешённых списком доступа 2000, можно воспользоваться командой следующего вида:
 
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
     [hp]snmp-agent community read cipher $ecretC0mmunity mib-view ro acl 2000
 
 Добавленные таким образом сообщества не отображаются в списке сообществ командой display snmp-agent community. Увидеть их можно только в конфигурации маршрутизатора, например, следующим образом:
@@ -1201,6 +1203,47 @@ FIXME: *Первоначальную настройку маршрутизато
 
     $ snmpget -v 2c -c '$ecretC0mmunity' hp.lo.stupin.su sysObjectID.0
     SNMPv2-MIB::sysObjectID.0 = OID: SNMPv2-SMI::enterprises.25506.11.2.1
+
+### Настройка пользователей SNMPv3
+
+Добавляем пользователя SNMP с именем mon:
+
+    <hp>system-view
+    System View: return to User View with Ctrl+Z.
+    [hp]snmp-agent usm-user v3 mon ro authentication-mode sha Authentic4ti0n$ecret privacy-mode aes128 Encrypti0n$ecret acl 2000
+    [hp]return
+    <hp>
+
+Добавленный пользователь будет использовать права группы ro, будет использовать протокол SNMP версии 3 и делать запросы с IP-адресов, разрешённых списоком доступа 2000. В качестве секрета для аутентификации будет использоваться строка Authentic4ti0n$ecret и алгоритм хэширования SHA, а в качестве секрета для шифрования будет использоваться строка Encrypti0n$ecret и алгоритм AES128.
+
+Маршрутизатор предоставляет на выбор алгоритмы аутентификации md5 и sha и алгоритмы шифрования: des56, 3des, aes128. Алгоритм аутентификации md5 в настоящее время считается слабым и не рекомендуется к использованию. Алгоритм des56 в настоящее время считается не алгоритмом шифрования, а алгоритмом скремблирования, т.к. легко взламывается на современном широко распространённом оборудовании. Из остальных алгоритмов стандартом RFC утверждён только алгоритм AES128, о чём можно прочитать на странице проекта net-snmp: [Strong Authentication or Encryption](http://www.net-snmp.org/wiki/index.php/Strong_Authentication_or_Encryption).
+
+Удалить настроенного пользователя можно при помощи такой команды:
+
+    [hp]undo snmp-agent usm-user v3 mon ro local
+
+Посмотреть список настроенных пользователей можно следующим образом:
+
+    <hp>display snmp-agent usm-user
+       User name: mon
+       Group name: ro
+           Engine ID: 800063A203784859DAB566
+           Storage-type: nonVolatile
+           UserStatus: active
+           Acl: 2000
+
+К сожалению, в выводе этой команды не указываются ни настроенные секреты, что логично, ни выбранные алгоритмы аутентификации и шифрования, что не совсем удобно. Увидеть выбранные алгоритмы можно путём просмотра конфигурации маршрутизатора, например, следующим образом:
+
+    [hp]display this | include snmp-agent usm-user
+     snmp-agent usm-user v3 mon ro cipher authentication-mode sha $c$3$zfF0rXHnIIwULX6NOcNTUOhQWXAh/Y+Fdl0nBqOzf/Et+tjl7vk= privacy-mode aes128 $c$3$0dQ2Simr+peJ4GhsHprT+kq0qhy37Zv5fmpTFiBpsORtMQ== acl 2000
+    [hp]
+
+Проверить доступность коммутатора по протоколу SNMPv3 для пользователя mon можно при помощи такой команды из пакета net-snmp:
+
+    $ snmpget -v 3 -l authPriv -u mon -a SHA -A 'Authentic4ti0n$ecret' -x AES -X 'Encrypti0n$ecret' hp.lo.stupin.su sysObjectID.0
+    SNMPv2-MIB::sysObjectID.0 = OID: SNMPv2-SMI::enterprises.25506.11.2.1
+
+### Проблемы с SNMP
 
 Обновление прошивки маршрутизатора
 ----------------------------------
