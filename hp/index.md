@@ -1489,3 +1489,15 @@ FIXME: *Первоначальную настройку маршрутизато
 * [[HP MSR 900 Router Series Installation Guide|HP_MSR_900_Router_Series_Installation_Guide.pdf]]
 * [[HP MSR Router Series Fundamentals Command Reference (V7)|HP_MSR_Router_Series_Fundamentals_Command_Reference___40__V7__41__.pdf]]
 * [[HP A-MSR Router Series Fundamentals Configuration Guide (Mar. 2012)|HP_A-MSR_Router_Series_Fundamentals_Configuration_Guide___40__Mar._2012__41__.pdf]]
+
+Дополнительные материалы
+------------------------
+
+* [Александр Альчиков. Базовые настройки маршрутизаторов HP MSR](http://alexipnetwork.blogspot.com/2011/03/hp-msr.html)
+* [Александр Альчиков. Технология DVPN (Dynamic VPN) на маршрутизаторах HP MSR](http://alexipnetwork.blogspot.com/2011/03/dvpn-dynamic-vpn-hp-msr.html)
+* [Александр Альчиков. IPSEC между роутерами Cisco и HP MSR](http://alexipnetwork.blogspot.com/2011/03/ipsec-cisco-hp-msr.html)
+* [Александр Альчиков. Туннель IPSec между HP MSR 900 и D-Link DFL200](http://alexipnetwork.blogspot.com/2011/05/ipsec-hp-msr-900-d-link-dfl200.html)
+* [Александр Альчиков. Автоматическое резервирование выхода в интернет](http://alexipnetwork.blogspot.com/2011/06/blog-post.html)
+* [Александр Альчиков. Voice-функционал маршрутизаторов HP MSR](http://alexipnetwork.blogspot.com/2011/07/voice-hp-msr.html)
+* [Александр Альчиков. Фильтрация трафика по URL на HP MSR для разных групп пользователей](http://alexipnetwork.blogspot.com/2011/07/url-hp-msr.html)
+* [Александр Альчиков. Настройка L2TP сервера на MSR900 посредством Web-интерфейса](http://alexipnetwork.blogspot.com/2011/07/l2tp-msr900-web.html)
