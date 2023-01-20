@@ -20,6 +20,7 @@
     fi
     
     exec \
+    setuidgid greylist \
     /usr/pkg/sbin/ntpd -d -s -f /usr/pkg/etc/ntpd.conf
 
 И сделаем его исполняемым:
