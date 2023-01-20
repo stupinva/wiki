@@ -1243,8 +1243,6 @@ FIXME: *Первоначальную настройку маршрутизато
     $ snmpget -v 3 -l authPriv -u mon -a SHA -A 'Authentic4ti0n$ecret' -x AES -X 'Encrypti0n$ecret' hp.lo.stupin.su sysObjectID.0
     SNMPv2-MIB::sysObjectID.0 = OID: SNMPv2-SMI::enterprises.25506.11.2.1
 
-### Проблемы с SNMP
-
 Обновление прошивки маршрутизатора
 ----------------------------------
 
