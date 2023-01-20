@@ -396,6 +396,41 @@
 
 Затем можно принудительно завершить выполнение этих процессов, указав их идентификаторы команде `kill`, после чего можно попробовать снова удалить сообщения из очереди.
 
+Настройка грейлистинга
+----------------------
+
+Для грейлистинга воспользуемся демоном `greylistd`, написанном на Python. Этот демон не настолько сложен, как `milter-greylist`, которым я воспользовался для настройки грейлистинга в Postfix, однако его простота с лихвой компенсируется возможностями Exim. К сожалению, в pkgsrc нет greylistd, поэтому пришлось [[подготовить его самостоятельно|netbsd_greylistd]].
+
+Установим пакет greylistd:
+
+    # cd /usr/pkgsrc/mail/greylistd
+    # make install
+
+Для запуска greylistd я воспользовался daemontools так, как это описано в статье [[Запуск greylistd в NetBSD с помощью daemontools|netbsd_daemontools_greylistd]].
+
+greylistd предоставляет механизм, а политику можно определить в конфигурации Exim. Я придерживаюсь политики подвергать грейлистингу те узлы, которые оказались в чёрном списке. Для того, чтобы включить грейлистинг, нужно в самый конец списка управления доступом `acl_check_rcpt` до финального правила `deny` добавить следующую проверку:
+
+    defer message = Greylisting in action, try later
+          !senders = :
+          !hosts = ${if exists{/usr/pkg/etc/greylistd/whitelist-hosts}\
+                              {/usr/pkg/etc/greylistd/whitelist-hosts}{}} : \
+                   ${if exists{/var/db/greylistd/whitelist-hosts}\
+                              {/var/db/greylistd/whitelist-hosts}{}}
+          dnslists = zen.spamhaus.org
+          condition = ${readsocket{/var/run/greylistd.sock}\
+                                  {--grey $sender_host_address $sender_address $local_part@$domain}\
+                                  {5s}{}{false}}
+
+В поле `!senders` можно прописать адреса тех отправителей, которые не должны подвергаться грейлистингу. Соответственно, чтобы узел с определённым IP-адресом не подвергался грейлистингу, его можно добавить в файл `/usr/pkg/etc/greylistd/whitelist-hosts`.
+
+Включим пользователя mail в группу greylist, чтобы Exim имел доступ к сокету и файлам `greylistd`:
+
+    # usermod -G greylist mail
+
+Осталось попросить Exim перезагрузить файл конфигурации, чтобы новые настройки вступили в силу:
+
+    # /etc/rc.d/exim4 reload
+
 Другие материалы
 ----------------
 
