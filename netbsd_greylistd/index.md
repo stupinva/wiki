@@ -121,7 +121,7 @@ greylistd - это демон, написанный на языке програ
     SUBST_MESSAGE.paths=    Fixing absolute paths.
     SUBST_FILES.paths=      config/config program/greylist program/greylistd program/greylistd-setup-exim4 doc/man8/greylistd.8
     SUBST_SED.paths=        -e 's,/etc/,${PREFIX}/etc/,g'
-    SUBST_SED.paths+=       -e 's,/var/lib/greylistd/,${VARBASE}/lib/greylistd/,g'
+    SUBST_SED.paths+=       -e 's,/var/lib/greylistd/,${VARBASE}/db/greylistd/,g'
     SUBST_SED.paths+=       -e 's,/var/run/greylistd/socket,${VARBASE}/run/greylistd.sock,g'
     SUBST_VARS.paths=       PREFIX VARBASE
 
