@@ -129,4 +129,8 @@
 
 В этом случае отключать опцию глобально я не стал, а просто добавил в запрос подсказку использовать более выгодный индекс с помощью выражения `USE INDEX`.
 
-Подробнее о том, как подготовиться к обновлению с версии 5.6 до 5.7, можно прочитать тут: [How To Prepare For Your MySQL 5.7 Upgrade](https://www.digitalocean.com/community/tutorials/how-to-prepare-for-your-mysql-5-7-upgrade).
+Дополнительные материалы
+------------------------
+
+* [How To Prepare For Your MySQL 5.7 Upgrade](https://www.digitalocean.com/community/tutorials/how-to-prepare-for-your-mysql-5-7-upgrade) - как подготовиться к обновлению с версии 5.6 до 5.7
+* [Sergey Glukhov. New optimizer hint for changing the session system variable](https://dev.mysql.com/blog-archive/new-optimizer-hint-for-changing-the-session-system-variable/)
