@@ -366,6 +366,7 @@
 * `make distclean` - удалить архив с исходными текстами.
 * `make package-clean` - удалить пакет.
 * `make distinfo` или `make mdi` - обновить файл `distinfo`, содержащий хэш-суммы файлов, если у вас новый `distfile` или заплатка.
+* `make makepatchsum` - обновить хэш-суммы заплаток в файле `distinfo`.
 * `make print-PLIST` - сгенерировать файл `PLIST` из файлов, найденных в каталоге `work/.destdir`.
 
 Использованные материалы
