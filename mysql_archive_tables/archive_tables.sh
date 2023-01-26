@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# GRANT SELECT, DROP, ALTER ON `bgbilling`.* TO 'archive'@'192.168.164.7'
+# GRANT SELECT, INSERT, CREATE, DROP, ALTER ON `bgbilling`.* TO 'archive'@'192.168.164.7'
 
 CONFIG=/etc/archive_tables.conf
 if [ ! -f "$CONFIG" ] ; then
@@ -29,7 +29,7 @@ wait_wsrep() {
 				fi
 
 				#echo "There still writesets in queue, sleeping..."
-				sleep 15
+				sleep 30
 			done
 		done
 }
@@ -137,13 +137,37 @@ archive_table() {
 		#echo "DROP TABLE $TABLE;"
 		$MYSQL "$DB" -BNe "DROP TABLE $TABLE;"
 	else
-		wait_wsrep
-		#echo "TRUNCATE TABLE $TABLE;"
-		$MYSQL "$DB" -BNe "TRUNCATE TABLE $TABLE;"
+		COUNT=`$MYSQL "$DB" -BNe "SELECT COUNT(*) FROM $TABLE;"`
+		if [ "$COUNT" -ne "0" ] ; then
+			case "$TRUNCATE_MODE" in
+				"truncate")
+					wait_wsrep
+					#echo "TRUNCATE TABLE $TABLE;"
+					$MYSQL "$DB" -BNe "TRUNCATE TABLE $TABLE;"
+					;;
+				"truncate_alter")
+					wait_wsrep
+					#echo "TRUNCATE TABLE $TABLE;"
+					$MYSQL "$DB" -BNe "TRUNCATE TABLE $TABLE;"
 
-		wait_wsrep
-		#echo "ALTER TABLE $TABLE ENGINE=InnoDB;"
-		$MYSQL "$DB" -BNe "ALTER TABLE $TABLE ENGINE=InnoDB;"
+					wait_wsrep
+					#echo "ALTER TABLE $TABLE ENGINE=InnoDB;"
+					$MYSQL "$DB" -BNe "ALTER TABLE $TABLE ENGINE=InnoDB;"
+					;;
+				"create_drop_rename")
+					wait_wsrep
+					#echo "CREATE TABLE _$TABLE LIKE $TABLE;"
+					$MYSQL "$DB" -BNe "CREATE TABLE _$TABLE LIKE $TABLE;"
+					#echo "DROP TABLE $TABLE;"
+					$MYSQL "$DB" -BNe "DROP TABLE $TABLE;"
+					#echo "RENAME TABLE _$TABLE TO $TABLE;"
+					$MYSQL "$DB" -BNe "RENAME TABLE _$TABLE TO $TABLE;"
+					;;
+				*)
+					echo "Wrong value of TRUNCATE_MODE"
+					;;
+			esac
+		fi
 	fi
 }
 
