@@ -37,6 +37,7 @@
 * [Maxime Villard. The strongest KASLR, ever?](https://blog.netbsd.org/tnf/entry/the_strongest_kaslr_ever)
 * [A Few NetBSD Tips for the FreeBSD User](https://srobb.net/netbsd.html) - на сайте есть много других интересных статей
 * <del>[Stefan Schaeckeler. NetBSD Tips and Tricks](http://students.engr.scu.edu/~sschaeck/netbsd/index.html)</del>
+* [Some quick info about MPLS](https://wiki.netbsd.org/users/kefren/mpls/)
 * [NetBSD tips](https://silas.net.br/tech/netbsd/netbsd-tips.html)
 * [Jonathan Perkin. pkgsrc on SmartOS - creating new packages](https://www.perkin.org.uk/posts/pkgsrc-on-smartos-creating-new-packages.html)
 * <del>[Julio Merino. Keeping NetBSD up-to-date with pkg_comp 2.0](https://jmmv.dev/2017/02/pkg_comp-2.0-tutorial-netbsd.html)</del>
