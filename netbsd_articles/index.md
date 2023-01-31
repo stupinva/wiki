@@ -18,7 +18,7 @@
 * <del>[Jason R. Thorpe. A Machine-Independent DMA Framework for NetBSD](https://www.usenix.org/legacy/publications/library/proceedings/usenix98/freenix/thorpe_dma.pdf)</del>
 * <del>[Frank van der Linden. Porting NetBSD to the AMD x86-641: a case study in OS portability](https://static.usenix.org/events/bsdcon/full_papers/linden/linden_html/)</del>
 * [Luke Mewburn, Matthew Green. build.sh: Cross-building NetBSD](https://www.usenix.org/legacy/events/bsdcon03/tech/full_papers/mewburn/mewburn_html/index.html)
-* [Yuuki Enomoto, Ken'ichi Fukamachi. Design, Implementation and Operation ofNetBSD Base System Packaging](https://www.netbsd.org/gallery/presentations/yuuki/2018_AsiaBSDCon/AsiaBSDCon2018-basepkg-paper.pdf)
+* [Yuuki Enomoto, Ken'ichi Fukamachi. Design, Implementation and Operation of NetBSD Base System Packaging](https://www.netbsd.org/gallery/presentations/yuuki/2018_AsiaBSDCon/AsiaBSDCon2018-basepkg-paper.pdf)
 * [Nathan J. Williams. An Implementation of Scheduler Activations on the NetBSD Operating System](http://web.mit.edu/nathanw/www/usenix/freenix-sa/freenix-sa.html)
 * [Luke Mewburn. The Design and Implementation of the NetBSD rc.d system](https://www.usenix.org/legacy/events/usenix01/freenix01/full_papers/mewburn/mewburn_html/index.html)
 * [Alistair Crooks. Package Views - a more flexible infrastructure for third-party software](https://netbsd.org/docs/software/pkgviews.pdf)
