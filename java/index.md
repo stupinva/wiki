@@ -4,11 +4,26 @@ Java
 Использование Java-плагина
 --------------------------
 
-Установка:
+Для запуска Java-апплетов в Debian нужно установить один из пакетов:
 
-    # apt-get install icedtea-8-plugin
+Версия Debian|Кодовое имя Debian|Пакет с плагином для браузера|Пакет с javaws
+-------------|------------------|-----------------------------|--------------
+6            |Squeeze           |icedtea6-plugin              |-             
+7            |Wheezy            |icedtea6-plugin              |-             
+8            |Jessie            |icedtea7-plugin              |icedtea-netx  
+9            |Stretch           |-                            |icedtea-netx  
+10           |Buster            |-                            |icedtea-netx  
+11           |Bullseye          |-                            |icedtea-netx  
 
-Запуск:
+Для запуска из браузера удобнее воспользоваться пакетом с плагином:
+
+    # apt-get install icedtea7-plugin
+
+Если пакета с плагином нет, то придётся воспользоваться пакетом `icedtea-netx`:
+
+    # apt-get install icedtea-netx
+
+В этом случае нужно скачать через браузер файл Java-апплета с расширением jnlp и запустить его следующим образом:
 
     $ javaws --jnlp application.jnlp
 
@@ -64,7 +79,7 @@ Hello world на Java
 
     Hello, world!
 
-Хорошее объяснение, почемку главная функция программы должна быть объявлена именно таким образом, можно найти в статье [public static void main(String[] args) – Java main method](https://www.journaldev.com/12552/public-static-void-main-string-args-java-main-method).
+Хорошее объяснение, почему главная функция программы должна быть объявлена именно таким образом, можно найти в статье [public static void main(String[] args) – Java main method](https://www.journaldev.com/12552/public-static-void-main-string-args-java-main-method).
 
 Типы переменных
 ---------------
@@ -167,11 +182,11 @@ Hello world на Java
 |               |Ленивое логическое ИЛИ            |a = a !! b  |a !!= b       |                |                 |
 |               |Логическое И                      |a = a & b   |a &= b        |                |                 |
 |               |Логическое ИЛИ                    |a = a ! b   |a != b        |                |                 |
-|               |Логическое исключающиее ИЛИ       |a = a ^ b   |a ^= b        |                |                 |
+|               |Логическое исключающее ИЛИ        |a = a ^ b   |a ^= b        |                |                 |
 |Побитовые      |Побитовое НЕ                      |a = ~a      |              |                |                 |
 |               |Побитовое И                       |a = a & b   |a &= b        |                |                 |
 |               |Побитовое ИЛИ                     |a = a ! b   |a != b        |                |                 |
-|               |Побитовое исключающиее ИЛИ        |a = a ^ b   |a ^= b        |                |                 |
+|               |Побитовое исключающее ИЛИ         |a = a ^ b   |a ^= b        |                |                 |
 |               |Побитовый сдвиг влево             |a = a << b  |a <<= b       |                |                 |
 |               |Побитовый сдвиг вправо            |a = a >> b  |a >>= b       |                |                 |
 |               |Беззнаковый побитовый сдвиг вправо|a = a >>> b |a >>>= b      |                |                 |
