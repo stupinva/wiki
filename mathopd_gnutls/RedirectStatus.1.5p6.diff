@@ -1,0 +1,206 @@
+diff -ru mathopd-1.5p6/doc/CHANGES mathopd-1.5af/doc/CHANGES
+--- mathopd-1.5p6/doc/CHANGES	2007-07-21 00:04:08.000000000 +1000
++++ mathopd-1.5af/doc/CHANGES	2007-09-02 14:28:18.000000000 +1000
+@@ -75,6 +75,7 @@
+ 		Clobber
+ 		Wait [!]
+ 		SanitizePath
++		RedirectStatus
+ 
+ 	The following keywords have been removed:-
+ 
+@@ -230,6 +231,11 @@
+ 	paths. Thanks for Peter Pentchev for suggesting this and providing
+ 	initial patches.
+ 
++	The 302 status text changed from "Moved" to "Found". [RFC2616]
++
++	Mathopd can now return status codes other than 302 for a redirect. 
++	See the RedirectStatus keyword for details.
++
+ stub.c:
+ 
+ 	This is a new file that contains code to pass data from and to
+diff -ru mathopd-1.5p6/doc/config.txt mathopd-1.5af/doc/config.txt
+--- mathopd-1.5p6/doc/config.txt	2007-07-21 00:04:08.000000000 +1000
++++ mathopd-1.5af/doc/config.txt	2007-09-02 16:56:28.000000000 +1000
+@@ -733,6 +733,16 @@
+          error responses. Its value may be displayed by a web browser in
+          a login dialog.
+ 
++Keyword: RedirectStatus
++Where:   Control
++Type:    Integer
++Desc:    Used in conjunction with the Location redirect syntax, this sets
++         the status code returned. The default is a "302", but can be set
++         to anything in the range 3xx. Valid codes are defined by RFC2616
++         and should be adhered to. This can be useful, for example, to
++         prevent the "duplicate content" penalty imposed by some search 
++         engines.
++
+ Keyword: Referer
+ Where:   LogFormat
+ Desc:    The value of the 'Referer:' header sent by the client. Sometimes
+diff -ru mathopd-1.5p6/doc/syntax.txt mathopd-1.5af/doc/syntax.txt
+--- mathopd-1.5p6/doc/syntax.txt	2007-07-21 00:04:08.000000000 +1000
++++ mathopd-1.5af/doc/syntax.txt	2007-09-02 14:48:58.000000000 +1000
+@@ -90,6 +90,7 @@
+ 	"PathInfo" flag
+ 	"AutoIndexCommand" string
+ 	"SanitizePath" flag
++	"RedirectStatus" integer
+ 
+ server-item:
+ 	"Port" integer
+diff -ru mathopd-1.5p6/src/config.c mathopd-1.5af/src/config.c
+--- mathopd-1.5p6/src/config.c	2007-07-21 00:04:15.000000000 +1000
++++ mathopd-1.5af/src/config.c	2007-09-02 16:52:42.000000000 +1000
+@@ -132,6 +132,7 @@
+ static const char c_putenv[] =			"PutEnv";
+ static const char c_query_string[] =		"QueryString";
+ static const char c_realm[] =			"Realm";
++static const char c_redirect_status[] =		"RedirectStatus";
+ static const char c_referer[] =			"Referer";
+ static const char c_remote_address[] =		"RemoteAddress";
+ static const char c_remote_port[] =		"RemotePort";
+@@ -173,6 +174,7 @@
+ static const char e_noinput[] =		"no input";
+ static const char e_user_invalid[] =	"invalid user";
+ static const char e_user_unknown[] =	"user unknown";
++static const char e_outside_range[] =	"value outside allowed range";
+ 
+ static const char t_close[] =		"unexpected closing brace";
+ static const char t_eof[] =		"unexpected end of file";
+@@ -346,6 +348,20 @@
+ 	return 0;
+ }
+ 
++static const char *config_smallint_in_range(struct configuration *p, int *i, int min, int max)
++{
++	unsigned long u;
++	const char *t;
++	
++	t = config_int(p, &u);
++	if (t)
++		return t;
++	if((u < min) || (u > max))
++		return e_outside_range;
++	*i = u;
++	return 0;
++}
++
+ static const char *config_flag(struct configuration *p, int *i)
+ {
+ 	const char *t;
+@@ -671,6 +687,7 @@
+ 		a->path_info_ok = b->path_info_ok;
+ 		a->auto_index_command = b->auto_index_command;
+ 		a->sanitize_path = b->sanitize_path;
++		a->redirect_status = b->redirect_status;
+ 	} else {
+ 		a->index_names = 0;
+ 		a->accesses = 0;
+@@ -694,6 +711,7 @@
+ 		a->path_info_ok = 1;
+ 		a->auto_index_command = 0;
+ 		a->sanitize_path = 0;
++		a->redirect_status = 0;
+ 	}
+ 	a->next = *as;
+ 	*as = a;
+@@ -777,6 +795,8 @@
+ 			t = config_string(p, &a->auto_index_command);
+ 		else if (!strcasecmp(p->tokbuf, c_sanitize_path))
+ 			t = config_flag(p, &a->sanitize_path);
++		else if (!strcasecmp(p->tokbuf, c_redirect_status))
++			t = config_smallint_in_range(p, &a->redirect_status, 300, 399);
+ 		else
+ 			t = e_keyword;
+ 		if (t)
+diff -ru mathopd-1.5p6/src/mathopd.h mathopd-1.5af/src/mathopd.h
+--- mathopd-1.5p6/src/mathopd.h	2007-07-21 00:28:04.000000000 +1000
++++ mathopd-1.5af/src/mathopd.h	2007-09-02 16:38:38.000000000 +1000
+@@ -182,6 +182,7 @@
+ 	int path_info_ok;
+ 	char *auto_index_command;
+ 	int sanitize_path;
++	int redirect_status;
+ };
+ 
+ struct virtual {
+diff -ru mathopd-1.5p6/src/request.c mathopd-1.5af/src/request.c
+--- mathopd-1.5p6/src/request.c	2007-07-21 20:48:00.000000000 +1000
++++ mathopd-1.5af/src/request.c	2007-09-11 04:42:03.000000000 +1000
+@@ -925,7 +925,10 @@
+ 		r->location = r->path_translated;
+ 		if (debug)
+ 			log_d("redirecting");
+-		r->status = 302;
++		if(r->c && r->c->redirect_status)
++			r->status = r->c->redirect_status;
++		else
++			r->status = 302;
+ 		return 0;
+ 	}
+ 	if (get_path_info(r) == -1) {
+@@ -1409,10 +1412,16 @@
+ 		return "204 No Content";
+ 	case 206:
+ 		return "206 Partial Content";
++	case 301:
++		return "301 Moved Permanently";
+ 	case 302:
+-		return "302 Moved";
++		return "302 Found";
++	case 303:
++		return "303 See Other";
+ 	case 304:
+ 		return "304 Not Modified";
++	case 307:
++		return "307 Temporary Redirect";
+ 	case 400:
+ 		return "400 Bad Request";
+ 	case 401:
+@@ -1496,10 +1505,19 @@
+ 		if (pool_print(p, "Content-Range: bytes %ju-%ju/%ju\r\n", r->range_floor, r->range_ceiling, r->range_total) == -1)
+ 			return -1;
+ 		break;
++	case 301:
+ 	case 302:
+-		if (r->location)
+-			if (pool_print(p, "Location: %s\r\n", r->location) == -1)
+-				return -1;
++	case 303:
++	case 307:
++		if (r->location) {
++			if (r->args) {
++				if (pool_print(p, "Location: %s?%s\r\n", r->location, r->args) == -1)
++					return -1;
++			} else {
++				if (pool_print(p, "Location: %s\r\n", r->location) == -1)
++					return -1;
++			}
++		}
+ 		break;
+ 	case 401:
+ 		if (r->c && r->c->realm)
+@@ -1551,9 +1569,17 @@
+ 	if (pool_print(p, "<title>%s</title>\n<h1>%s</h1>\n", status_line, status_line) == -1)
+ 		return -1;
+ 	switch (r->status) {
++	case 301:
+ 	case 302:
+-		if (pool_print(p, "This document has moved to URL <a href=\"%s\">%s</a>.\n", r->location, r->location) == -1)
+-			return -1;
++	case 303:
++	case 307:
++		if (r->args) {
++			if (pool_print(p, "This document has moved to URL <a href=\"%s?%s\">%s?%s</a>.\n", r->location, r->args, r->location, r->args) == -1)
++				return -1;
++		} else {
++			if (pool_print(p, "This document has moved to URL <a href=\"%s\">%s</a>.\n", r->location, r->location) == -1)
++				return -1;
++		}
+ 		break;
+ 	case 401:
+ 		if (pool_print(p, "You need proper authorization to use this resource.\n") == -1)

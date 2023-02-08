@@ -1,0 +1,38 @@
+diff -ru mathopd-1.6b9/src/request.c mathopd-1.6qs/src/request.c
+--- mathopd-1.6b9/src/request.c	2007-07-21 20:41:13.000000000 +1000
++++ mathopd-1.6qs/src/request.c	2007-09-21 23:41:51.373216130 +1000
+@@ -1482,9 +1482,15 @@
+ 			return -1;
+ 		break;
+ 	case 302:
+-		if (r->location)
+-			if (pool_print(p, "Location: %s\r\n", r->location) == -1)
+-				return -1;
++		if (r->location) {
++			if (r->args) {
++				if (pool_print(p, "Location: %s?%s\r\n", r->location, r->args) == -1)
++					return -1;
++			} else {
++				if (pool_print(p, "Location: %s\r\n", r->location) == -1)
++					return -1;
++			}
++		}
+ 		break;
+ 	case 401:
+ 		if (r->c && r->c->realm)
+@@ -1543,8 +1549,13 @@
+ 		return -1;
+ 	switch (r->status) {
+ 	case 302:
+-		if (pool_print(p, "This document has moved to URL <a href=\"%s\">%s</a>.\n", r->location, r->location) == -1)
+-			return -1;
++		if (r->args) {
++			if (pool_print(p, "This document has moved to URL <a href=\"%s?%s\">%s?%s</a>.\n", r->location, r->args, r->location, r->args) == -1)
++				return -1;
++		} else {
++			if (pool_print(p, "This document has moved to URL <a href=\"%s\">%s</a>.\n", r->location, r->location) == -1)
++				return -1;
++		}
+ 		break;
+ 	case 401:
+ 		if (pool_print(p, "You need proper authorization to use this resource.\n") == -1)
