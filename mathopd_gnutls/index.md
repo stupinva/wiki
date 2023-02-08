@@ -1,6 +1,9 @@
 Поддержка TLS в Mathopd
 =======================
 
+Письмо 1
+--------
+
 Mr Allwyn Fernandes Sun, 23 Sep 2007 21:43:56 -0700
 
 Hi all,
@@ -56,7 +59,47 @@ Stobor Pty Ltd
 Mobile: + 61 430 436 758
 LinkedIn: http://www.linkedin.com/in/AllwynFernandes
 
-Источник
+Письмо 2
 --------
 
+Hi again,
+
+I've updated this patch, and it's somewhat better now:
+
+* Can now use either GnuTLS or OpenSSL as your TLS library.
+* TLS now works even if *_SENDFILE is defined. Sendfile is used for non-TLS sockets, while traditional IO is used for TLS sockets.
+* There's some documentation for the TLS configuration options. See config.txt and tls.txt.
+
+OpenSSL support works, and is functional. OpenSSL CRL support is NOT implemented, because I can't figure out how to make it work yet. 
+
+GnuTLS support works, and is functional. GnuTLS CRL support is implemented.
+
+Please, please specify a DH Params file if you're doing repeated testing. DH params generation at startup can take a long time otherwise... 
+
+Patch: [[http://opensource.stobor.net/mathopd/tls.1.5p6.diff|tls.1.5p6.diff]] (or see attached).
+
+As usual, apply using: 
+
+/tmp/mathopd-1.5p6$ gunzip tls.1.5p6.diff.gz | patch -p1
+
+Further details will follow at http://opensource.stobor.net/mathopd/#TLS
+
+As always, if you have any problems, questions or comments, please don't hesitate to get back to me.
+
+Cheers,
+
+Allwyn.
+
+-- 
+Allwyn Fernandes
+Director
+Stobor Pty Ltd
+
+Mobile: + 61 430 436 758
+LinkedIn: http://www.linkedin.com/in/AllwynFernandes
+
+Источники
+---------
+
 * [[PATCH] Add (alpha) GnuTLS support to Mathopd](https://www.mail-archive.com/mathopd%40mathopd.org/msg00355.html)
+* [[PATCH] Add TLS support to Mathopd](https://www.mail-archive.com/mathopd@mathopd.org/msg00357.html)
