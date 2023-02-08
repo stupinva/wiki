@@ -50,6 +50,31 @@ Java
       procyon "$class" > "$java";
     done
 
+Решение проблем с SSL/TLS
+-------------------------
+
+Если Java-приложение отказывается работать, ссылаясь на неподдерживаемую версию SSL/TLS.
+
+Например, если сервер умеет работать только с TLS 1.0, а свежая Java требует поддержки TLS 1.1 или 1.2, то разрешить использовать TLS 1 можно путём редактирования файла `/etc/java-11-openjdk/security/java.security`. Нас интересует такая строчка:
+
+    jdk.tls.disabledAlgorithms=SSLv3, TLSv1, TLSv1.1, RC4, DES, MD5withRSA, \
+        DH keySize < 1024, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, \
+        include jdk.disabled.namedCurves
+
+В данном случае из неё нужно удалить запрет использовать TLSv1 и TLSv1.1, вот так:
+
+    jdk.tls.disabledAlgorithms=SSLv3, RC4, DES, MD5withRSA, \
+        DH keySize < 1024, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, \
+        include jdk.disabled.namedCurves
+
+Для того, чтобы разрешить использовать все имеющиеся реализации алгоритмов для любых целей, можно прописать такие опции:
+
+    jdk.certpath.disabledAlgorithms=None
+    jdk.security.legacyAlgorithms=None
+    jdk.jar.disabledAlgorithms=None
+    jdk.tls.disabledAlgorithms=None
+    jdk.tls.legacyAlgorithms=None
+
 Hello world на Java
 -------------------
 
