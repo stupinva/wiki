@@ -61,11 +61,23 @@ Java
         DH keySize < 1024, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, \
         include jdk.disabled.namedCurves
 
-В данном случае из неё нужно удалить запрет использовать TLSv1 и TLSv1.1, вот так:
+В данном случае из неё нужно удалить запрет использовать протоколы TLS версий 1 и 1.1, вот так:
 
     jdk.tls.disabledAlgorithms=SSLv3, RC4, DES, MD5withRSA, \
         DH keySize < 1024, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, \
         include jdk.disabled.namedCurves
+
+Если апплет не запускается и сообщает об ошибке верификации JAR-файлов, то может потребоваться изменить вот такую строчку:
+
+    jdk.jar.disabledAlgorithms=MD2, MD5, RSA keySize < 1024, \
+          DSA keySize < 1024, SHA1 denyAfter 2019-01-01, \
+          include jdk.disabled.namedCurves
+
+В моём случае оказалось достаточно разрешить использовать алгоритм хэширования SHA1:
+
+    jdk.jar.disabledAlgorithms=MD2, MD5, RSA keySize < 1024, \
+          DSA keySize < 1024, \
+          include jdk.disabled.namedCurves
 
 Для того, чтобы разрешить использовать все имеющиеся реализации алгоритмов для любых целей, можно прописать такие опции:
 
