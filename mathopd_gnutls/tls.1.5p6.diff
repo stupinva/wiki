@@ -1,0 +1,1236 @@
+=== local/doc/CHANGES
+==================================================================
+--- local/doc/CHANGES	(revision 319)
++++ local/doc/CHANGES	(local)
+@@ -57,6 +57,9 @@
+ 	The ChildLog is now strftime-expanded, just like the
+ 	other logs.
+ 
++	The HTTPS environment variable is set when a connection is
++	TLS/SSL encrypted.
++
+ config.c:
+ 
+ 	The following keywords have been added:-
+@@ -75,6 +78,14 @@
+ 		Clobber
+ 		Wait [!]
+ 		SanitizePath
++		RedirectStatus
++		TLS
++		CACertFile
++		CertFile
++		CRLFile
++		DHBits
++		DHParamsFile
++		KeyFile
+ 
+ 	The following keywords have been removed:-
+ 
+@@ -118,6 +129,8 @@
+ 	There is a separate timeout for connections that are idling in
+ 	a keep-alive state between requests, via the "Wait" keyword. [!]
+ 
++	Connections to servers which have TLS credentials are encrypted.
++
+ dump.c:
+ 
+ 	Some extra statistics counters were added. The per-server
+@@ -161,6 +174,12 @@
+ 	The second argument to the listen() call is now dynamic via
+ 	the Backlog keyword.
+ 
++	Logs are opened before servers are started. This means that
++	debug information can be logged during server startup.
++
++	Added OpenSSL and GnuTLS support for TLS/SSL encrypted
++	servers.
++
+ request.c:
+ 
+ 	The "Range" and "If-Range" headers are now handled properly.
+@@ -230,6 +249,11 @@
+ 	paths. Thanks for Peter Pentchev for suggesting this and providing
+ 	initial patches.
+ 
++	The 302 status text changed from "Moved" to "Found". [RFC2616]
++
++	Mathopd can now return status codes other than 302 for a redirect. 
++	See the RedirectStatus keyword for details.
++
+ stub.c:
+ 
+ 	This is a new file that contains code to pass data from and to
+=== local/doc/cgi.txt
+==================================================================
+--- local/doc/cgi.txt	(revision 319)
++++ local/doc/cgi.txt	(local)
+@@ -155,6 +155,11 @@
+     this variable contains the IP address of the local end
+     of the TCP connection to the client.
+ 
++  HTTPS
++
++    this variable is set to "on" if the connection is TLS 
++    encrypted.
++
+ Note that variables that have a zero-length value are not passed
+ in the environment. For example, if a CGI script is invoked from
+ a Request-URI that did not contain a query, then there will be
+=== local/doc/config.txt
+==================================================================
+--- local/doc/config.txt	(revision 319)
++++ local/doc/config.txt	(local)
+@@ -149,6 +149,17 @@
+          If a network error occurs after a successful send operation,
+          the logged number of bytes sent will be too big.
+ 
++Keyword: CACertFile
++Where:   TLS
++Type:    String
++Desc:    The PEM-encoded file containing the CA Certificate Chain.
++
++Keyword: CertFile
++Where:   TLS
++Type:    String
++Desc:    The PEM-encoded file containing the Certificate which identifies
++         this Server.
++
+ Keyword: ChildLog
+ Where:   Control
+ Type:    String
+@@ -238,6 +249,11 @@
+          started by root it will never dump core for security reasons, so
+          this feature is a bit useless.
+ 
++Keyword: CRLFile
++Where:   TLS
++Type:    String
++Desc:    The PEM-encoded file containing the CA Certificate Revocation List.
++
+ Keyword: Ctime
+ Where:   LogFormat
+ Desc:    The current time in 'C' format (e.g. Sun Mar 30 21:44:52 2003.)
+@@ -246,6 +262,18 @@
+ Where:   Access
+ Type:    Network
+ 
++Keyword: DHBits
++Where:   TLS
++Type:    Integer
++Default: 1024
++Desc:    The number of bits desired for the DH prime.
++
++Keyword: DHParamsFile
++Where:   TLS
++Type:    String
++Desc:    The PKCS#3-encoded file containing the DH parameters (prime
++         and generator).
++
+ Keyword: EncryptedUserFile
+ Where:   Control
+ Type:    Flag
+@@ -428,6 +456,12 @@
+          headers. Usually the default value of 2048 is sufficient and does
+          not need to be changed.
+ 
++Keyword: KeyFile
++Where:   TLS
++Type:    String
++Default: Inherit from CertFile parameter.
++Desc:    The PEM-encoded file containing the Private Key for the server.
++
+ Keyword: LocalAddress
+ Where:   LogFormat
+ Desc:    The local Internet address of the connection.
+@@ -733,6 +767,16 @@
+          error responses. Its value may be displayed by a web browser in
+          a login dialog.
+ 
++Keyword: RedirectStatus
++Where:   Control
++Type:    Integer
++Desc:    Used in conjunction with the Location redirect syntax, this sets
++         the status code returned. The default is a "302", but can be set
++         to anything in the range 3xx. Valid codes are defined by RFC2616
++         and should be adhered to. This can be useful, for example, to
++         prevent the "duplicate content" penalty imposed by some search 
++         engines.
++
+ Keyword: Referer
+ Where:   LogFormat
+ Desc:    The value of the 'Referer:' header sent by the client. Sometimes
+@@ -911,6 +955,12 @@
+          measured from the first meaningful byte received from the client,
+          or the time the client connected.
+ 
++Keyword: TLS
++Where:   Server
++Type:    Block
++Desc:    Settings for TLS/SSL encryption can be specified here. A TLS 
++         block REQUIRES a CertFile to be specified.
++
+ Keyword: Tuning
+ Where:   Global
+ Type:    Block
+=== local/doc/syntax.txt
+==================================================================
+--- local/doc/syntax.txt	(revision 319)
++++ local/doc/syntax.txt	(local)
+@@ -90,6 +90,7 @@
+ 	"PathInfo" flag
+ 	"AutoIndexCommand" string
+ 	"SanitizePath" flag
++	"RedirectStatus" integer
+ 
+ server-item:
+ 	"Port" integer
+@@ -97,6 +98,7 @@
+ 	"Virtual" virtual-block
+ 	"Control" control-block
+ 	"Backlog" integer
++	"TLS" tls-block
+ 
+ virtual-item:
+ 	"Host" string
+@@ -136,6 +138,14 @@
+         "TimeTaken"
+ 	"MicroTime"
+ 
++tls-item:
++	"CACertFile" string
++	"CertFile" string
++	"CRLFile" string
++	"DHBits" integer
++	"DHParamsFile" string
++	"KeyFile" string
++
+ flag:
+ 	"On"
+ 	"Off"
+=== local/doc/tls.txt
+==================================================================
+--- local/doc/tls.txt	(revision 319)
++++ local/doc/tls.txt	(local)
+@@ -0,0 +1,104 @@
++Mathopd and TLS/SSL.
++
++Mathopd now has (alpha) support for TLSv1/SSLv3.
++
++OpenSSL or GnuTLS can be used to provide support.
++
++Mathopd+OpenSSL does not currently support CRLs.
++
++Mathopd+GnuTLS CRL support is implemented but untested.
++
++CertFile is a required parameter.
++
++If KeyFile is not supplied, then the key MUST be in the CertFile.
++
++DHBits defaults to 1024. Valid values for GnuTLS are 768, 1024, 
++2048, 3072 or 4096.
++http://www.gnu.org/software/gnutls/manual/html_node/Core-functions.html#gnutls_005fdh_005fparams_005fgenerate2
++
++DHParamsFile is optional but strongly recommended, as it speeds
++Mathopd's starting time. If DHParamsFile is not used, the TLS
++library must generate the DH Params every restart, and that can 
++take hours on some machines. Generate a DH Params file with: 
++
++GnuTLS:
++bash$ certtool --generate-dh-params --outfile dhparams.pem
++or OpenSSL:
++bash$ openssl dhparam -out dhparams.pem
++
++DH Params can be contained in the same file as a Cert and Key.
++
++If anyone knows a good HTTPS testsuite, please let me know.
++
++Example configuration:
++
++Server {
++	TLS {
++		#A file containing the Certificate Authority's
++		#Certificate, plus any chain certificates needed.
++		CACertFile ca-cert.pem
++
++		#A file containing the Certificate Revocation List.
++		CRLFile crl.pem
++
++		# the CertFile parameter is Required!
++		CertFile cert.pem
++		KeyFile key.pem
++
++
++		DHBits 1024
++		DHParamsFile dh.pem
++	}
++	Virtual {
++		AnyHost
++		Control {
++			Alias /
++			Location /var/www/
++		}
++	}
++}
++
++TLS configuration options extracted from config.txt:
++
++Keyword: TLS
++Where:   Server
++Type:    Block
++Desc:    Settings for TLS/SSL encryption can be specified here. A TLS 
++         block REQUIRES a CertFile to be specified.
++
++A TLS block can contain the following configuration options:
++
++Keyword: CACertFile
++Where:   TLS
++Type:    String
++Desc:    The PEM-encoded file containing the CA Certificate Chain.
++
++Keyword: CertFile
++Where:   TLS
++Type:    String
++Desc:    The PEM-encoded file containing the Certificate which identifies
++         this Server.
++
++Keyword: CRLFile
++Where:   TLS
++Type:    String
++Desc:    The PEM-encoded file containing the CA Certificate Revocation List.
++
++Keyword: DHBits
++Where:   TLS
++Type:    Integer
++Default: 1024
++Desc:    The number of bits desired for the DH prime.
++
++Keyword: DHParamsFile
++Where:   TLS
++Type:    String
++Desc:    The PKCS#3-encoded file containing the DH parameters (prime
++         and generator).
++
++For more information, please consult: 
++
++http://opensource.stobor.net/mathopd/#GnuTLS
++http://www.gnu.org/software/gnutls/manual/index.html
++http://www.openssl.org/docs/
++
+=== local/src/Makefile
+==================================================================
+--- local/src/Makefile	(revision 319)
++++ local/src/Makefile	(local)
+@@ -33,6 +33,14 @@
+ # Unomment the following if your system has a working vfork() function
+ # CPPFLAGS += -DHAVE_VFORK
+ 
++# Uncomment the following to use OpenSSL
++# CPPFLAGS += -DUSE_SSL_OPENSSL
++# LDFLAGS += -lssl
++
++# Uncomment the following to use GnuTLS
++# CPPFLAGS += -DUSE_SSL_GNUTLS
++# LDFLAGS += -lgnutls
++
+ # Currently, sendfile support is available in two flavours: Linux and FreeBSD
+ # Uncomment one of the following two to enable sendfile() support
+ # CPPFLAGS += -DLINUX_SENDFILE
+=== local/src/cgi.c
+==================================================================
+--- local/src/cgi.c	(revision 319)
++++ local/src/cgi.c	(local)
+@@ -264,6 +264,12 @@
+ 	sprintf(t, "HTTP/%d.%d", r->protocol_major, r->protocol_minor);
+ 	if (add("SERVER_PROTOCOL", t, 0, cp) == -1)
+ 		return -1;
++#if defined USE_SSL_GNUTLS || defined USE_SSL_OPENSSL
++	if(r->cn->s->tls_ssl) {
++		if (add("HTTPS", "on", 0, cp) == -1)
++			return -1;
++	}
++#endif
+ 	e = r->c->exports;
+ 	while (e) {
+ 		if (add(e->name, getenv(e->name), 0, cp) == -1)
+=== local/src/config.c
+==================================================================
+--- local/src/config.c	(revision 319)
++++ local/src/config.c	(local)
+@@ -91,14 +91,19 @@
+ static const char c_buf_size[] =		"BufSize";
+ static const char c_bytes_read[] =		"BytesRead";
+ static const char c_bytes_written[] =		"BytesWritten";
++static const char c_ca_cert_file[] =		"CACertFile";
++static const char c_cert_file[] =		"CertFile";
+ static const char c_child_log[] =		"ChildLog";
+ static const char c_clients[] =			"Clients";
+ static const char c_clobber[] =			"Clobber";
+ static const char c_content_length[] =		"ContentLength";
+ static const char c_control[] =			"Control";
+ static const char c_core_directory[] =		"CoreDirectory";
++static const char c_crl_file[] =		"CRLFile";
+ static const char c_ctime[] =			"Ctime";
+ static const char c_deny[] =			"Deny";
++static const char c_dh_bits[] =			"DHBits";
++static const char c_dh_params_file[] =		"DHParamsFile";
+ static const char c_encrypted_user_file[] =	"EncryptedUserFile";
+ static const char c_error_log[] =		"ErrorLog";
+ static const char c_error_401_file[] =		"Error401File";
+@@ -111,6 +116,7 @@
+ static const char c_host[] =			"Host";
+ static const char c_index_names[] =		"IndexNames";
+ static const char c_input_buf_size[] =		"InputBufSize";
++static const char c_key_file[] =		"KeyFile";
+ static const char c_local_address[] =		"LocalAddress";
+ static const char c_local_port[] =		"LocalPort";
+ static const char c_location[] =		"Location";
+@@ -132,6 +138,7 @@
+ static const char c_putenv[] =			"PutEnv";
+ static const char c_query_string[] =		"QueryString";
+ static const char c_realm[] =			"Realm";
++static const char c_redirect_status[] =		"RedirectStatus";
+ static const char c_referer[] =			"Referer";
+ static const char c_remote_address[] =		"RemoteAddress";
+ static const char c_remote_port[] =		"RemotePort";
+@@ -149,6 +156,7 @@
+ static const char c_stay_root[] =		"StayRoot";
+ static const char c_timeout[] =			"Timeout";
+ static const char c_time_taken[] =		"TimeTaken";
++static const char c_tls_ssl[] =			"TLS";
+ static const char c_tuning[] =			"Tuning";
+ static const char c_types[] =			"Types";
+ static const char c_virtual[] =			"Virtual";
+@@ -163,6 +171,7 @@
+ 
+ static const char e_bad_addr[] =	"bad address";
+ static const char e_bad_alias[] =	"alias without matching location";
++static const char e_bad_certfile[] =	"tls block missing certfile";
+ static const char e_bad_mask[] =	"mask does not match address";
+ static const char e_bad_network[] =	"bad network";
+ static const char e_help[] =		"unknown error (help)";
+@@ -173,6 +182,7 @@
+ static const char e_noinput[] =		"no input";
+ static const char e_user_invalid[] =	"invalid user";
+ static const char e_user_unknown[] =	"user unknown";
++static const char e_outside_range[] =	"value outside allowed range";
+ 
+ static const char t_close[] =		"unexpected closing brace";
+ static const char t_eof[] =		"unexpected end of file";
+@@ -346,6 +356,34 @@
+ 	return 0;
+ }
+ 
++static const char *config_smallint(struct configuration *p, int *i)
++{
++	unsigned long u;
++	const char *t;
++	
++	t = config_int(p, &u);
++	if (t)
++		return t;
++	if((u < INT_MIN) || (u > INT_MAX))
++		return e_outside_range;
++	*i = u;
++	return 0;
++}
++
++static const char *config_smallint_in_range(struct configuration *p, int *i, int min, int max)
++{
++	unsigned long u;
++	const char *t;
++	
++	t = config_int(p, &u);
++	if (t)
++		return t;
++	if((u < min) || (u > max))
++		return e_outside_range;
++	*i = u;
++	return 0;
++}
++
+ static const char *config_flag(struct configuration *p, int *i)
+ {
+ 	const char *t;
+@@ -671,6 +709,7 @@
+ 		a->path_info_ok = b->path_info_ok;
+ 		a->auto_index_command = b->auto_index_command;
+ 		a->sanitize_path = b->sanitize_path;
++		a->redirect_status = b->redirect_status;
+ 	} else {
+ 		a->index_names = 0;
+ 		a->accesses = 0;
+@@ -694,6 +733,7 @@
+ 		a->path_info_ok = 1;
+ 		a->auto_index_command = 0;
+ 		a->sanitize_path = 0;
++		a->redirect_status = 0;
+ 	}
+ 	a->next = *as;
+ 	*as = a;
+@@ -777,6 +817,8 @@
+ 			t = config_string(p, &a->auto_index_command);
+ 		else if (!strcasecmp(p->tokbuf, c_sanitize_path))
+ 			t = config_flag(p, &a->sanitize_path);
++		else if (!strcasecmp(p->tokbuf, c_redirect_status))
++			t = config_smallint_in_range(p, &a->redirect_status, 300, 399);
+ 		else
+ 			t = e_keyword;
+ 		if (t)
+@@ -848,6 +890,51 @@
+ 	return 0;
+ }
+ 
++#if defined USE_SSL_GNUTLS || defined USE_SSL_OPENSSL
++static const char *config_tls_ssl(struct configuration *p, struct server *s)
++{
++	struct tls_info *tls;
++	const char *t;
++
++	if ((tls = malloc(sizeof *tls)) == 0)
++		return e_memory;
++	tls->ca_cert_file = NULL;
++	tls->crl_file = NULL;
++	tls->cert_file = NULL;
++	tls->key_file = NULL;
++	tls->dh_bits = 1024;
++	if ((t = gettoken(p)) != t_open)
++		return t;
++	while ((t = gettoken(p)) != t_close) {
++		if (t != t_string)
++			return t;
++		if (!strcasecmp(p->tokbuf, c_ca_cert_file))
++			t = config_string(p, &tls->ca_cert_file);
++		else if (!strcasecmp(p->tokbuf, c_cert_file))
++			t = config_string(p, &tls->cert_file);
++		else if (!strcasecmp(p->tokbuf, c_crl_file))
++			t = config_string(p, &tls->crl_file);
++		else if (!strcasecmp(p->tokbuf, c_dh_bits))
++			t = config_smallint(p, &tls->dh_bits);
++		else if (!strcasecmp(p->tokbuf, c_dh_params_file))
++			t = config_string(p, &tls->dh_params_file);
++		else if (!strcasecmp(p->tokbuf, c_key_file))
++			t = config_string(p, &tls->key_file);
++		else
++			t = e_keyword;
++		if (t)
++			return t;
++	}
++	if(tls->cert_file == 0)
++		return e_bad_certfile;
++	if(tls->key_file == 0)
++		tls->key_file = tls->cert_file;
++	s->tls_ssl = tls;
++	require_ssl = 1;
++	return 0;
++}
++#endif
++
+ static const char *config_server(struct configuration *p, struct server **ss)
+ {
+ 	struct server *s;
+@@ -860,7 +947,10 @@
+ 	s->children = virtuals;
+ 	s->vservers = vservers;
+ 	s->controls = controls;
++	s->read = (&read_socket);
++	s->write = (&write_socket);
+ 	s->backlog = DEFAULT_BACKLOG;
++	s->tls_ssl = NULL;
+ 	if ((t = gettoken(p)) != t_open)
+ 		return t;
+ 	while ((t = gettoken(p)) != t_close) {
+@@ -876,6 +966,10 @@
+ 			t = config_control(p, &s->controls);
+ 		else if (!strcasecmp(p->tokbuf, c_backlog))
+ 			t = config_int(p, &s->backlog);
++#if defined USE_SSL_GNUTLS || defined USE_SSL_OPENSSL
++		else if (!strcasecmp(p->tokbuf, c_tls_ssl))
++			t = config_tls_ssl(p, s);
++#endif
+ 		else
+ 			t = e_keyword;
+ 		if (t)
+=== local/src/core.c
+==================================================================
+--- local/src/core.c	(revision 319)
++++ local/src/core.c	(local)
+@@ -187,7 +187,16 @@
+ 	--stats.nconnections;
+ 	if (debug)
+ 		log_d("close_connection: %d", cn->fd);
++#ifdef USE_SSL_OPENSSL
++	if(cn->openssl_connection)
++		SSL_shutdown (cn->openssl_connection);
++#endif
+ 	close(cn->fd);
++#ifdef USE_SSL_OPENSSL
++	if(cn->openssl_connection)
++		SSL_free (cn->openssl_connection);
++#endif
++
+ 	if (cn->rfd != -1) {
+ 		close(cn->rfd);
+ 		cn->rfd = -1;
+@@ -203,6 +212,14 @@
+ 	while (s) {
+ 		if (s->fd != -1) {
+ 			close(s->fd);
++#ifdef USE_SSL_GNUTLS
++			if(s->tls_ssl)
++				gnutls_certificate_free_credentials ((s->tls_ssl->credentials));
++#endif
++#ifdef USE_SSL_OPENSSL
++			if(s->tls_ssl)
++				SSL_CTX_free (s->tls_ssl->openssl_ctx);
++#endif
+ 			s->fd = -1;
+ 		}
+ 		s = s->next;
+@@ -248,18 +265,92 @@
+ 	return 0;
+ }
+ 
++
++#ifdef USE_SSL_GNUTLS
++int init_tls_session(struct server *s, struct connection *cn, int fd)
++{
++	int ret;
++
++	if ((cn->gnutls_session = malloc(sizeof *(cn->gnutls_session))) == 0) {
++		lerror("malloc: init_gnutls_session");
++		log_d("Malloc failed!");
++		return -1;
++	}
++	gnutls_init (cn->gnutls_session, GNUTLS_SERVER);
++	gnutls_set_default_priority (*(cn->gnutls_session));
++	gnutls_credentials_set (*(cn->gnutls_session), GNUTLS_CRD_CERTIFICATE, s->tls_ssl->credentials);
++	gnutls_certificate_server_set_request (*(cn->gnutls_session), GNUTLS_CERT_REQUEST);
++	gnutls_dh_set_prime_bits (*(cn->gnutls_session), s->tls_ssl->dh_bits);
++	gnutls_transport_set_ptr (*(cn->gnutls_session), (gnutls_transport_ptr_t) fd);
++	do { 
++		ret = gnutls_handshake(*(cn->gnutls_session));
++		if (debug)
++			log_d("gnutls_handshake returned %d: %s", ret, gnutls_strerror(ret));
++	} while ( (ret == GNUTLS_E_AGAIN) || (ret == GNUTLS_E_INTERRUPTED));
++	if (ret < 0) {
++		lerror("gnutls_handshake");
++		gnutls_deinit(*(cn->gnutls_session));
++		log_d("GnuTLS handshake failed: %s", gnutls_strerror(ret));
++		return -1;
++	}
++	return 0;
++}
++
++#endif
++
++
++#ifdef USE_SSL_OPENSSL
++int init_tls_session(struct server *s, struct connection *cn, int fd)
++{
++	SSL *ssl;
++	BIO *socket_bio,*ssl_bio, *buffer_bio;
++	int ret;
++
++	socket_bio=BIO_new_socket(fd,BIO_NOCLOSE);
++	ssl=SSL_new(s->tls_ssl->openssl_ctx);
++	SSL_set_bio(ssl,socket_bio,socket_bio);
++
++	do {
++		ret = SSL_accept(ssl);
++		if (debug)
++			log_d("SSL_accept returned %d: %s", ret, ERR_error_string(SSL_get_error(ssl, ret), NULL));
++	} while ((ret <= 0) && BIO_sock_should_retry(ret));
++
++	if(ret<=0){
++		lerror("openssl_handshake");
++		log_d("OpenSSL handshake failed: %s", ERR_error_string(SSL_get_error(ssl, ret), NULL));
++		SSL_free(ssl);
++		return -1;
++	}
++    
++	ssl_bio=BIO_new(BIO_f_ssl());
++	BIO_set_ssl(ssl_bio,ssl,BIO_CLOSE);
++
++	buffer_bio=BIO_new(BIO_f_buffer());
++	BIO_push(buffer_bio,ssl_bio);
++
++	cn->openssl_bio = buffer_bio;
++	cn->openssl_connection = ssl;
++	return 0;
++}
++
++#endif
++
++
+ static int accept_connection(struct server *s)
+ {
+ 	struct sockaddr_in sa_remote, sa_local;
+ 	socklen_t l;
+ 	int fd;
+ 	struct connection *cn;
++	int ret;
+ 
+ 	do {
+ 		cn = find_connection();
+ 		if (cn == 0)
+ 			return 0;
+ 		l = sizeof sa_remote;
++
+ 		fd = accept(s->fd, (struct sockaddr *) &sa_remote, &l);
+ 		if (fd == -1)
+ 			switch (errno) {
+@@ -293,6 +384,17 @@
+ 				log_d("clobbering connection to %s[%hu]", inet_ntoa(cn->peer.sin_addr), ntohs(cn->peer.sin_port));
+ 			close_connection(cn);
+ 		}
++#if defined USE_SSL_GNUTLS || defined USE_SSL_OPENSSL
++		if(s->tls_ssl){
++			ret = init_tls_session(s, cn, fd);
++			if (ret) {
++				lerror("init_tls_session");
++				close(fd);
++				log_d("Init TLS session failed");
++				break;
++			}
++		}
++#endif
+ 		cn->s = s;
+ 		cn->fd = fd;
+ 		cn->rfd = -1;
+@@ -311,7 +413,7 @@
+ 	return 0;
+ }
+ 
+-#if ! (defined LINUX_SENDFILE || defined FREEBSD_SENDFILE)
++#if defined USE_SSL_GNUTLS || defined USE_SSL_OPENSSL || ! (defined LINUX_SENDFILE || defined FREEBSD_SENDFILE)
+ static int fill_connection(struct connection *cn)
+ {
+ 	struct pool *p;
+@@ -360,6 +462,43 @@
+ 		close_connection(cn);
+ }
+ 
++ssize_t read_socket(struct connection* cn, void * data, size_t sizeofdata)
++{
++	return read(cn->fd, data, sizeofdata);
++}
++
++ssize_t write_socket(struct connection* cn, const void * data, size_t sizeofdata)
++{
++	return write(cn->fd, data, sizeofdata);
++}
++
++#ifdef USE_SSL_GNUTLS
++ssize_t read_gnutls_socket(struct connection* cn, void * data, size_t sizeofdata)
++{
++	return gnutls_record_recv(*(cn->gnutls_session), data, sizeofdata);
++}
++
++ssize_t write_gnutls_socket(struct connection* cn, const void * data, size_t sizeofdata)
++{
++	return gnutls_record_send(*(cn->gnutls_session), data, sizeofdata);
++}
++#endif
++
++#ifdef USE_SSL_OPENSSL
++ssize_t read_openssl_socket(struct connection* cn, void * data, size_t sizeofdata)
++{
++	return BIO_read(cn->openssl_bio, data, sizeofdata);
++}
++
++ssize_t write_openssl_socket(struct connection* cn, const void * data, size_t sizeofdata)
++{
++	ssize_t ret;
++	ret = BIO_write(cn->openssl_bio, data, sizeofdata);
++	BIO_flush(cn->openssl_bio);
++	return ret;
++}
++#endif
++
+ static void write_connection(struct connection *cn)
+ {
+ 	struct pool *p;
+@@ -370,14 +509,20 @@
+ 		n = p->end - p->start;
+ 		if (n == 0) {
+ #if defined LINUX_SENDFILE || defined FREEBSD_SENDFILE
+-			if (sendfile_connection(cn) == -1) {
+-				close_connection(cn);
++#if defined USE_SSL_GNUTLS || defined USE_SSL_OPENSSL
++			if(!(cn->s->tls_ssl))
++#endif
++			{
++				if (sendfile_connection(cn) == -1) {
++					close_connection(cn);
++					return;
++				}
++				if (cn->left == 0)
++					end_response(cn);
+ 				return;
+ 			}
+-			if (cn->left == 0)
+-		       		end_response(cn);
+-			return;
+-#else
++#endif
++#if defined USE_SSL_GNUTLS || defined USE_SSL_OPENSSL || ! (defined LINUX_SENDFILE || defined FREEBSD_SENDFILE)
+ 			p->start = p->end = p->floor;
+ 			n = fill_connection(cn);
+ 			if (n == -1) {
+@@ -388,9 +533,9 @@
+ 				end_response(cn);
+ 				return;
+ 			}
+-#endif
++#endif 
+ 		}
+-		m = write(cn->fd, p->start, n);
++		m = cn->s->write(cn, p->start, n);
+ 		if (debug)
+ 			log_d("write_connection: %d %zd %d %d", cn->fd, p->start - p->floor, n, m);
+ 		if (m == -1) {
+@@ -427,7 +572,7 @@
+ 		cn->header_input.end -= offset;
+ 		bytestoread = cn->header_input.ceiling - cn->header_input.end;
+ 	}
+-	nr = read(cn->fd, cn->header_input.end, bytestoread);
++	nr = cn->s->read(cn, cn->header_input.end, bytestoread);
+ 	if (debug)
+ 		log_d("read_connection: %d %zd %zu %zd", cn->fd, cn->header_input.end - cn->header_input.floor, bytestoread, nr);
+ 	if (nr == -1) {
+@@ -926,6 +1071,7 @@
+ 		}
+ 	}
+ 	log_d("*** shutting down");
++	close_servers();
+ }
+ 
+ int init_pollfds(size_t n)
+=== local/src/main.c
+==================================================================
+--- local/src/main.c	(revision 319)
++++ local/src/main.c	(local)
+@@ -69,6 +69,9 @@
+ int amroot;
+ volatile int my_pid;
+ int nfiles;
++#if defined USE_SSL_GNUTLS || defined USE_SSL_OPENSSL
++int require_ssl = 0;
++#endif
+ 
+ static int am_daemon;
+ static char *progname;
+@@ -101,6 +104,136 @@
+ 	exit(1);
+ }
+ 
++#ifdef USE_SSL_GNUTLS
++static void initialise_server_tls(struct server *s) {
++	int ret;
++	gnutls_datum_t datum;
++	int dh_params_fd;
++	unsigned char tmpdata[DEFAULT_BUF_SIZE];
++
++	if(!s->tls_ssl)
++		return;
++
++	gnutls_certificate_allocate_credentials (&s->tls_ssl->credentials);
++
++	if(s->tls_ssl->ca_cert_file){
++		ret = gnutls_certificate_set_x509_trust_file ((s->tls_ssl->credentials), s->tls_ssl->ca_cert_file, GNUTLS_X509_FMT_PEM);
++		if (ret < 0) 
++			die("ca_cert_file", "GnuTLS initialisation failed attempting to read CA Cert File %s: %s", s->tls_ssl->ca_cert_file, gnutls_strerror(ret));
++	}
++
++	if(s->tls_ssl->crl_file) {
++		ret = gnutls_certificate_set_x509_crl_file ((s->tls_ssl->credentials), s->tls_ssl->crl_file, GNUTLS_X509_FMT_PEM);
++		if (ret < 0)
++			die("crl_file", "GnuTLS initialisation failed attempting to read CRL File %s: %s", s->tls_ssl->crl_file, gnutls_strerror(ret));
++	}
++
++	gnutls_dh_params_init(&s->tls_ssl->dh_params);
++	if(s->tls_ssl->dh_params_file) {
++		dh_params_fd = open(s->tls_ssl->dh_params_file, O_RDONLY);
++		if (dh_params_fd < 0)
++			die("dh_params", "Cannot open DH params file %s\n", s->tls_ssl->dh_params_file);
++		ret = read(dh_params_fd, tmpdata, DEFAULT_BUF_SIZE-1);
++		if (ret < 0)
++			die("dh_params", "GnuTLS initialisation failed attempting to read DH params File %s", s->tls_ssl->dh_params_file);
++		close(dh_params_fd);
++		datum.data = tmpdata;
++		datum.size = ret;
++
++		ret = gnutls_dh_params_import_pkcs3 (s->tls_ssl->dh_params, &datum, GNUTLS_X509_FMT_PEM);
++		if (ret < 0)
++			die("dh_params", "GnuTLS initialisation failed attempting to import DH params File %s", s->tls_ssl->dh_params_file);
++
++	} else {
++		gnutls_dh_params_generate2 (s->tls_ssl->dh_params, s->tls_ssl->dh_bits);
++	}
++	gnutls_certificate_set_dh_params((s->tls_ssl->credentials), s->tls_ssl->dh_params);
++
++	ret = gnutls_certificate_set_x509_key_file ((s->tls_ssl->credentials), s->tls_ssl->cert_file, s->tls_ssl->key_file, GNUTLS_X509_FMT_PEM);
++	if (ret < 0) 
++		die("key_file", "GnuTLS initialisation failed attempting to read Cert File %s (with Key File %s): %s", s->tls_ssl->cert_file, s->tls_ssl->key_file, gnutls_strerror(ret));
++	s->read = (&read_gnutls_socket);
++	s->write = (&write_gnutls_socket);
++}
++#endif
++
++#ifdef USE_SSL_OPENSSL
++static void dh_generator_debug_callback(int p, int n, void*cb)
++{
++	char c[]="-\0";
++
++	if(((p==0) && ((n%10) != 0)))
++		return;
++
++	if (p == 0) c[0]='.';
++	if (p == 1) c[0]='+';
++	if (p == 2) c[0]='*';
++	if (p == 3) c[0]='\n';
++	putc(*c, stderr);
++}
++
++static void initialise_server_tls(struct server *s) {
++	int ret;
++	FILE* dh_params_fp;
++	DH * dh_tmp;
++
++	if(!s->tls_ssl)
++		return;
++
++	s->tls_ssl->openssl_ctx = SSL_CTX_new(SSLv23_server_method());
++
++	if(s->tls_ssl->ca_cert_file){
++		ret = SSL_CTX_load_verify_locations ((s->tls_ssl->openssl_ctx), s->tls_ssl->ca_cert_file, NULL);
++		if (ret < 0) 
++			die("ca_cert_file", "OpenSSL initialisation failed attempting to read CA Cert File %s: %s", s->tls_ssl->ca_cert_file, ERR_error_string(ERR_get_error(), NULL));
++	}
++
++	if(s->tls_ssl->crl_file) {
++		//ret =  (s->tls_ssl->openssl_ctx, s->tls_ssl->crl_file, GNUTLS_X509_FMT_PEM);
++		//if (ret < 0)
++		//	die("crl_file", "OpenSSL initialisation failed attempting to read CRL File %s: %s", s->tls_ssl->crl_file, ERR_error_string(ERR_get_error(), NULL));
++		log_d("crl_file", "CRL Files not yet supported with OpenSSL");
++	}
++
++	if(s->tls_ssl->dh_params_file) {
++		dh_params_fp = fopen(s->tls_ssl->dh_params_file, "rb");
++		if (dh_params_fp < 0)
++			die("dh_params", "Cannot open DH params file %s\n", s->tls_ssl->dh_params_file);
++		ret = SSL_CTX_set_tmp_dh(s->tls_ssl->openssl_ctx, PEM_read_DHparams(dh_params_fp, NULL, NULL, NULL) );
++		if (ret == 0)
++			die("dh_params", "OpenSSL initialisation failed attempting to import DH params File %s", s->tls_ssl->dh_params_file);
++		fclose(dh_params_fp);
++	
++	} else {
++		if (debug)
++			log_d("Starting generation of DH primes... This may take some time...");
++		dh_tmp = DH_generate_parameters (s->tls_ssl->dh_bits, 2,(debug) ? (&dh_generator_debug_callback) : NULL, NULL);
++		if (debug)
++			DHparams_print_fp(stderr, dh_tmp);
++		ret = SSL_CTX_set_tmp_dh(s->tls_ssl->openssl_ctx, dh_tmp ); 
++		if (ret == 0)
++			die("dh_params", "OpenSSL initialisation failed attempting to generate %d bits", s->tls_ssl->dh_bits);
++		if (debug)
++			log_d("DH primes generated!");
++	}
++	
++	ret = SSL_CTX_use_certificate_chain_file (s->tls_ssl->openssl_ctx, s->tls_ssl->cert_file);
++	if (ret < 0) 
++		die("cert_file", "OpenSSL initialisation failed attempting to read Cert File %s: %s", s->tls_ssl->cert_file, ERR_error_string(ERR_get_error(), NULL));
++	
++	ret = SSL_CTX_use_PrivateKey_file(s->tls_ssl->openssl_ctx, s->tls_ssl->key_file, SSL_FILETYPE_PEM);
++	if (ret < 0) 
++		die("key_file", "OpenSSL initialisation failed attempting to read Key File %s: %s", s->tls_ssl->key_file, ERR_error_string(ERR_get_error(), NULL));
++	
++	if (!SSL_CTX_check_private_key(s->tls_ssl->openssl_ctx))
++		die("key_file", "Private key does not match the certificate public key\n");
++
++	s->read = (&read_openssl_socket);
++	s->write = (&write_openssl_socket);
++}
++
++#endif
++
+ static void startup_server(struct server *s)
+ {
+ 	int onoff;
+@@ -118,6 +251,9 @@
+ 	sa.sin_family = AF_INET;
+ 	sa.sin_addr = s->addr;
+ 	sa.sin_port = htons(s->port);
++#if defined USE_SSL_GNUTLS || defined USE_SSL_OPENSSL
++	initialise_server_tls(s);
++#endif
+ 	if (bind(s->fd, (struct sockaddr *) &sa, sizeof sa) == -1)
+ 		die("bind", "cannot start up server at %s port %lu", inet_ntoa(s->addr), s->port);
+ 	if (listen(s->fd, s->backlog) == -1)
+@@ -224,6 +360,21 @@
+ 	message = config(config_filename);
+ 	if (message)
+ 		die(0, "%s", message);
++#ifdef USE_SSL_GNUTLS
++	if(require_ssl)
++		gnutls_global_init();
++#endif
++#ifdef USE_SSL_OPENSSL
++	if(require_ssl) {
++		SSL_load_error_strings();
++		SSL_library_init();
++	}
++#endif
++	current_time = time(0);
++	if (init_logs(tee) == -1)
++		die("open", "Cannot open log files");
++	if (debug)
++		log_d("Log files opened");
+ 	s = servers;
+ 	while (s) {
+ 		startup_server(s);
+@@ -272,8 +423,6 @@
+ 	} else
+ 		pid_fd = -1;
+ 	current_time = time(0);
+-	if (init_logs(tee) == -1)
+-		die("open", "Cannot open log files");
+ 	dup2(null_fd, 0);
+ 	dup2(null_fd, 1);
+ 	dup2(null_fd, 2);
+@@ -304,6 +453,14 @@
+ 	if (init_buffers() == -1)
+ 		return 1;
+ 	httpd_main();
++#ifdef USE_SSL_GNUTLS
++	if(require_ssl)
++		gnutls_global_deinit();
++#endif
++#ifdef USE_SSL_OPENSSL
++//	if(require_ssl)
++//		SSL_deinit();
++#endif
+ 	return 0;
+ }
+ 
+=== local/src/mathopd.h
+==================================================================
+--- local/src/mathopd.h	(revision 319)
++++ local/src/mathopd.h	(local)
+@@ -45,6 +45,19 @@
+ #include <signal.h>
+ #include <stdint.h> /* (u)intmax_t */
+ 
++#if defined USE_SSL_GNUTLS && defined USE_SSL_OPENSSL
++#error "Cannot use both GnuTLS and OpenSSL simultaneously"
++#endif
++
++#if defined USE_SSL_GNUTLS
++#include <gnutls/gnutls.h>
++#endif
++
++#if defined USE_SSL_OPENSSL
++#include <openssl/err.h>
++#include <openssl/ssl.h>
++#endif
++
+ #ifndef __GNUC__
+ #define __attribute__(x)
+ #endif
+@@ -182,6 +195,7 @@
+ 	int path_info_ok;
+ 	char *auto_index_command;
+ 	int sanitize_path;
++	int redirect_status;
+ };
+ 
+ struct virtual {
+@@ -196,17 +210,6 @@
+ 	struct vserver *next;
+ };
+ 
+-struct server {
+-	int fd;
+-	unsigned long port;
+-	struct in_addr addr;
+-	struct virtual *children;
+-	struct control *controls;
+-	struct server *next;
+-	int pollno;
+-	struct vserver *vservers;
+-	unsigned long backlog;
+-};
+ 
+ struct request_header {
+ 	const char *rh_name;
+@@ -310,8 +313,50 @@
+ 	struct pipe_params pipe_params;
+ 	off_t file_offset;
+ 	int havefile;
++#if defined USE_SSL_GNUTLS
++	gnutls_session_t *gnutls_session;
++#endif
++#if defined USE_SSL_OPENSSL
++	SSL *openssl_connection;
++	BIO *openssl_bio;
++#endif
+ };
+ 
++#if defined USE_SSL_GNUTLS || defined USE_SSL_OPENSSL
++struct tls_info {
++	char *ca_cert_file;
++	char *cert_file;
++	char *crl_file;
++	char *dh_params_file;
++	char *key_file;
++	int dh_bits;
++#if defined USE_SSL_GNUTLS
++	gnutls_certificate_credentials_t credentials;
++	gnutls_dh_params_t dh_params;
++#endif
++#if defined USE_SSL_OPENSSL
++	SSL_CTX *openssl_ctx;
++#endif
++};
++#endif
++
++struct server {
++	int fd;
++	unsigned long port;
++	struct in_addr addr;
++	struct virtual *children;
++	struct control *controls;
++	struct server *next;
++	int pollno;
++	struct vserver *vservers;
++	unsigned long backlog;
++	ssize_t (*read)(struct connection *cn, void * data, size_t sizeofdata );
++	ssize_t (*write)(struct connection *cn, const void * data, size_t sizeofdata );
++#if defined USE_SSL_GNUTLS || defined USE_SSL_OPENSSL
++	struct tls_info *tls_ssl;
++#endif
++};
++
+ struct connection_list {
+ 	struct connection *head;
+ 	struct connection *tail;
+@@ -357,6 +402,9 @@
+ extern volatile int my_pid;
+ extern int nfiles;
+ extern pid_t spawn(const char *, char *const[], char *const[], int, int, uid_t, gid_t, const char *);
++#if defined USE_SSL_GNUTLS || defined USE_SSL_OPENSSL
++extern int require_ssl;
++#endif
+ 
+ /* config */
+ 
+@@ -389,6 +437,18 @@
+ extern int init_pollfds(size_t);
+ extern int init_connections(size_t);
+ 
++extern ssize_t read_socket(struct connection* cn, void * data, size_t sizeofdata);
++extern ssize_t write_socket(struct connection* cn, const void * data, size_t sizeofdata);
++
++#if defined USE_SSL_GNUTLS
++extern ssize_t read_gnutls_socket(struct connection* cn, void * data, size_t sizeofdata);
++extern ssize_t write_gnutls_socket(struct connection* cn, const void * data, size_t sizeofdata);
++#endif
++#if defined USE_SSL_OPENSSL
++extern ssize_t read_openssl_socket(struct connection* cn, void * data, size_t sizeofdata);
++extern ssize_t write_openssl_socket(struct connection* cn, const void * data, size_t sizeofdata);
++#endif
++
+ /* request */
+ 
+ extern char *rfctime(time_t, char *);
+=== local/src/request.c
+==================================================================
+--- local/src/request.c	(revision 319)
++++ local/src/request.c	(local)
+@@ -925,7 +925,10 @@
+ 		r->location = r->path_translated;
+ 		if (debug)
+ 			log_d("redirecting");
+-		r->status = 302;
++		if(r->c && r->c->redirect_status)
++			r->status = r->c->redirect_status;
++		else
++			r->status = 302;
+ 		return 0;
+ 	}
+ 	if (get_path_info(r) == -1) {
+@@ -1409,10 +1412,16 @@
+ 		return "204 No Content";
+ 	case 206:
+ 		return "206 Partial Content";
++	case 301:
++		return "301 Moved Permanently";
+ 	case 302:
+-		return "302 Moved";
++		return "302 Found";
++	case 303:
++		return "303 See Other";
+ 	case 304:
+ 		return "304 Not Modified";
++	case 307:
++		return "307 Temporary Redirect";
+ 	case 400:
+ 		return "400 Bad Request";
+ 	case 401:
+@@ -1496,10 +1505,19 @@
+ 		if (pool_print(p, "Content-Range: bytes %ju-%ju/%ju\r\n", r->range_floor, r->range_ceiling, r->range_total) == -1)
+ 			return -1;
+ 		break;
++	case 301:
+ 	case 302:
+-		if (r->location)
+-			if (pool_print(p, "Location: %s\r\n", r->location) == -1)
+-				return -1;
++	case 303:
++	case 307:
++		if (r->location) {
++			if (r->args) {
++				if (pool_print(p, "Location: %s?%s\r\n", r->location, r->args) == -1)
++					return -1;
++			} else {
++				if (pool_print(p, "Location: %s\r\n", r->location) == -1)
++					return -1;
++			}
++		}
+ 		break;
+ 	case 401:
+ 		if (r->c && r->c->realm)
+@@ -1551,9 +1569,17 @@
+ 	if (pool_print(p, "<title>%s</title>\n<h1>%s</h1>\n", status_line, status_line) == -1)
+ 		return -1;
+ 	switch (r->status) {
++	case 301:
+ 	case 302:
+-		if (pool_print(p, "This document has moved to URL <a href=\"%s\">%s</a>.\n", r->location, r->location) == -1)
+-			return -1;
++	case 303:
++	case 307:
++		if (r->args) {
++			if (pool_print(p, "This document has moved to URL <a href=\"%s?%s\">%s?%s</a>.\n", r->location, r->args, r->location, r->args) == -1)
++				return -1;
++		} else {
++			if (pool_print(p, "This document has moved to URL <a href=\"%s\">%s</a>.\n", r->location, r->location) == -1)
++				return -1;
++		}
+ 		break;
+ 	case 401:
+ 		if (pool_print(p, "You need proper authorization to use this resource.\n") == -1)
+=== local/src/stub.c
+==================================================================
+--- local/src/stub.c	(revision 319)
++++ local/src/stub.c	(local)
+@@ -384,7 +384,7 @@
+ 		log_d("writetoclient: bytestowrite is zero!");
+ 		return 0;
+ 	}
+-	r = write(p->fd, p->output.start, bytestowrite);
++	r = p->s->write(p, p->output.start, bytestowrite);
+ 	if (debug)
+ 		log_d("writetoclient: %d %zd %zu %zd", p->fd, p->output.start - p->output.floor, bytestowrite, r);
+ 	switch (r) {
