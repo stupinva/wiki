@@ -146,6 +146,18 @@ greylistd - это демон, написанный на языке програ
     SUBST_SED.user_group=          -e 's,SOCKOWNER: "greylist:greylist",SOCKOWNER: "${GREYLIST_USER}:${GREYLIST_GROUP}",g'
     SUBST_VARS.user_group=         GREYLIST_USER GREYLIST_GROUP
 
+Для работы greylistd нужен доступ в каталог `/var/db/greylistd`, в котором он хранит статистику, белые, чёрные и серые списки. Для создания этого каталога с соответсвующими правами доступа добавим в файл `Makefile` такую строку:
+
+    OWN_DIRS_PERMS=                 ${VARBASE}/db/greylistd/ ${GREYLIST_USER} ${GREYLIST_GROUP} 0700
+
+Кроме этого, как оказалось, при запуске greylistd от имени пользователя greylist, ему не удаётся создать Unix-сокет в каталоге `/var/run/` из-за нехватки прав. Поэтому изменим путь к Unix-сокету, переместив его в каталог с файлами данных greylistd. Для этого найдём ранее добавленную в `Makefile` строчку:
+
+    SUBST_SED.paths+=       -e 's,/var/run/greylistd/socket,${VARBASE}/run/greylistd.sock,g'
+
+И заменим её на такую строчку:
+
+    SUBST_SED.paths+=       -e 's,/var/run/greylistd/socket,${VARBASE}/db/greylistd/socket,g'
+
 До полноценного пакета для NetBSD не хватает скрипта инициализации, но этот вопрос меня не интересует, т.к. я собираюсь запускать greylistd под управлением daemontools. Возможно в pkgsrc понадобится добавить ещё некоторые доработки, чтобы поменять пути к файлам конфигурации, путь к месту размещения базы данных демона и т.п.
 
 Я добавил получившийся порт для сборки на свой [сборочный сервер](https://stupin.su/wiki/netbsd_sysbuild/), чтобы в дальнейшем готовый пакет можно было установить с помощью pkgin из репозитория.
