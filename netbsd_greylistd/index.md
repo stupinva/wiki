@@ -158,6 +158,47 @@ greylistd - это демон, написанный на языке програ
 
     SUBST_SED.paths+=       -e 's,/var/run/greylistd/socket,${VARBASE}/db/greylistd/socket,g'
 
+В системе pkgsrc для корректной работы с файлами конфигурации предусмотрена опция `CONF_FILES`. Она позволяет устанавливать файлы конфигурации при установке пакета в соответствующий каталог `etc`, если этих файлов ещё нет, и автоматически удалять не изменившиеся файлы при удалении пакета. К сожалению, нельзя просто указать, какие из устанавливаемых файлов являются файлами конфигурации - возможно только указать путь к примерам файлов конфигурации и к месту их установки. В нашем случае это может выглядеть, например, следующим образом:
+
+    CONF_FILES+=                   ${PREFIX}/share/examples/greylistd/config ${PKG_SYSCONFDIR}/greylistd/config
+    CONF_FILES+=                   ${PREFIX}/share/examples/greylistd/whitelist-hosts ${PKG_SYSCONFDIR}/greylistd/whitelist-hosts
+
+Остаётся только положить в каталог `${PREFIX}/share/examples/greylistd/` нужные файлы. Но в нашем случае в этом каталоге уже лежит файл `whitelist-hosts` и он отличается от нужного, т.к. происходит из файла `${WRKSRC}/doc/examples/whitelist-hosts`. Этот файл предназначен для использования с Exim, поэтому переименуем его в `exim4-whitelist-hosts`, добавив в правило `post-extract` действие по переименованию этого файла:
+
+    ${MV} ${WRKSRC}/doc/examples/whitelist-hosts ${WRKSRC}/doc/examples/exim4-whitelist-hosts
+
+Вернёмся к файлу `files/setup.py`, с которого мы начинали сборку пакета, и поменяем место установки файлов конфигруации так, чтобы они устанавливались в каталог с примерами файлов конфигурации:
+
+      data_files=[('bin', ['program/greylist']),
+                  ('sbin', ['program/greylistd-setup-exim4',
+                            'program/greylistd']),
+                  ('share/examples/greylistd', ['doc/examples/exim4-acl-example.txt',
+                                                'doc/examples/exim4-whitelist-hosts',
+                                                'config/config',
+                                                'config/whitelist-hosts']),
+                  ('man/man1', ['doc/man1/greylist.1']),
+                  ('man/man8', ['doc/man8/greylistd.8',
+                                'doc/man8/greylistd-setup-exim4.8']),
+                  ]
+
+И добавим ещё одно правило для создания каталога для файлов конфигурации:
+
+    OWN_DIRS_PERMS+=               ${PKG_SYSCONFDIR}/greylistd/ ${GREYLIST_USER} ${GREYLIST_GROUP} 0766
+
+Так как после изменений, внесённых в файлы `Makefile` и `files/setup.py`, изменилось место установки файлов конфигруации, нужно обновить и файл `PLIST`. Для этого снова выполним две команды:
+
+    $ make package
+    $ make print-PLIST > PLIST
+
+Внесём ещё одно небольшое изменение. Пакет использует для хранения собственых файлов каталог `${VARBASE}/db/greylistd/`, для размещения файлов конфигруации каталог `${PKG_SYSCONFDIR}/greylistd/`, а для размещения примеров файлов конфигурации - каталог ` ${PREFIX}/share/examples/greylistd/`. Как видно, самый последний подкаталог имеет имя `greylistd`. Гипотетически может произойти так, что появится две несовместимые между собой версии `greylistd`, которые может потребоваться использовать одновременно, как, например, это происходило с различными версиями apache, php-fpm и т.п. Согласен, звучит натянуто, однако чисто теоретически это возможно. В таких случаях принято вместо жёстко прописанного имени использовать переменную `${PKGBASE}`. Заменим в файле `Makefile` все эти каталоги с учётом возможности использования `${PKGBASE}`. Изменить придётся не так много строк:
+
+    SUBST_SED.paths+=              -e 's,/var/lib/greylistd/,${VARBASE}/db/${PKGBASE}/,g'
+    SUBST_SED.paths+=              -e 's,/var/run/greylistd/socket,${VARBASE}/db/${PKGBASE}/socket,g'
+    CONF_FILES+=                   ${PREFIX}/share/examples/${PKGBASE}/config ${PKG_SYSCONFDIR}/${PKGBASE}/config
+    CONF_FILES+=                   ${PREFIX}/share/examples/${PKGBASE}/whitelist-hosts ${PKG_SYSCONFDIR}/${PKGBASE}/whitelist-hosts
+    OWN_DIRS_PERMS+=               ${VARBASE}/db/${PKGBASE}/ ${GREYLIST_USER} ${GREYLIST_GROUP} 0766
+    OWN_DIRS_PERMS+=               ${PKG_SYSCONFDIR}/${PKGBASE}/ ${GREYLIST_USER} ${GREYLIST_GROUP} 0766
+
 До полноценного пакета для NetBSD не хватает скрипта инициализации, но этот вопрос меня не интересует, т.к. я собираюсь запускать greylistd под управлением daemontools. Возможно в pkgsrc понадобится добавить ещё некоторые доработки, чтобы поменять пути к файлам конфигурации, путь к месту размещения базы данных демона и т.п.
 
 Я добавил получившийся порт для сборки на свой [сборочный сервер](https://stupin.su/wiki/netbsd_sysbuild/), чтобы в дальнейшем готовый пакет можно было установить с помощью pkgin из репозитория.
