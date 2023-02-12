@@ -134,7 +134,7 @@ greylistd - это демон, написанный на языке програ
 
 Добавим в `Makefile` опции, преписывающие создать необходимых для работы пакета группу и пользователя:
 
-    PKG_GROUPS+=           ${GREYLIST_USER}
+    PKG_GROUPS+=           ${GREYLIST_GROUP}
     PKG_USERS+=            ${GREYLIST_USER}:${GREYLIST_GROUP}
 
 И добавим в `Makefile` замену пользователя и группы владельца Unix-сокета в исходном тексте greylistd:
@@ -148,7 +148,7 @@ greylistd - это демон, написанный на языке програ
 
 Для работы greylistd нужен доступ в каталог `/var/db/greylistd`, в котором он хранит статистику, белые, чёрные и серые списки. Для создания этого каталога с соответсвующими правами доступа добавим в файл `Makefile` такую строку:
 
-    OWN_DIRS_PERMS=                 ${VARBASE}/db/greylistd/ ${GREYLIST_USER} ${GREYLIST_GROUP} 0766
+    OWN_DIRS_PERMS+=               ${VARBASE}/db/greylistd/ ${GREYLIST_USER} ${GREYLIST_GROUP} 0766
 
 Кроме этого, как оказалось, при запуске greylistd от имени пользователя greylist, ему не удаётся создать Unix-сокет в каталоге `/var/run/` из-за нехватки прав. Поэтому изменим путь к Unix-сокету, переместив его в каталог с файлами данных greylistd. Для этого найдём ранее добавленную в `Makefile` строчку:
 
