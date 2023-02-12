@@ -16,7 +16,11 @@ greylistd - это демон, написанный на языке програ
 Написание pkgsrc
 ----------------
 
-Т.к. до этого я пользовался greylistd в Debian, то решил собрать такую же версию, которая есть в официальных репозиториях Debian. На момент написания этой заметки это была версия 0.9.0.2. Оказалось, что сейчас разработка greylistd ведётся одним из разработчиков Debian и [git-репозиторий проекта находится на GitLab-сервере Debian](https://salsa.debian.org/debian/greylistd/). Нашёл ссылку на скачивание [архива исходных текстов версии 0.9.0.2](https://salsa.debian.org/debian/greylistd/-/archive/master/greylistd-master.tar.bz2) и с помощью утилиты `url2pkg` сгенерировал заготовку:
+Т.к. до этого я пользовался greylistd в Debian, то решил собрать такую же версию, которая есть в официальных репозиториях Debian. На момент написания этой заметки это была версия 0.9.0.2.
+
+### Получение исходных текстов
+
+Оказалось, что сейчас разработка greylistd ведётся одним из разработчиков Debian и [git-репозиторий проекта находится на GitLab-сервере Debian](https://salsa.debian.org/debian/greylistd/). Нашёл ссылку на скачивание [архива исходных текстов версии 0.9.0.2](https://salsa.debian.org/debian/greylistd/-/archive/master/greylistd-master.tar.bz2) и с помощью утилиты `url2pkg` сгенерировал заготовку:
 
     $ url2pkg https://salsa.debian.org/debian/greylistd/-/archive/master/greylistd-master.tar.bz2
 
@@ -36,6 +40,8 @@ greylistd - это демон, написанный на языке програ
     Greylisting daemon for use with Exim 4
 
 На этом этапе можно было выполнить распаковку проекта с помощью команды `make extract`, но сборка не выполнялась, т.к. для сборки проектов на Python требуется файл `setup.py`, которого не оказалось в исходных текстах, т.к. разработчики Debian собирают сразу пакет для Debian.
+
+### Сборка
 
 Вооружившись [статьёй, в которой описано, как писать файлы `setup.py`](https://docs.python.org/3/distutils/setupscript.html), написал такой файл:
 
@@ -78,10 +84,14 @@ greylistd - это демон, написанный на языке програ
 
 Теперь сборка командой `make` выполнилась успешно.
 
+### Сборка пакета
+
 Осталось наполнить файл `PLIST` правильным списком файлов, входящих в состав пакета. Для этого я выполнил две команды:
 
     $ make package
     $ make print-PLIST > PLIST
+
+### Запуск скриптов на Python
 
 В получившемся пакете исполняемые файлы не имеют бита исполнимости. Чтобы исправить это, добавим в правило `post-extract` в `Makefile` дополнительные команды:
 
@@ -114,6 +124,8 @@ greylistd - это демон, написанный на языке програ
 
     .include "../../lang/python/application.mk"
 
+### Исправление путей
+
 В исполняемых файлах и файлах конфигурации указаны пути к файлам конфигурации, к Unix-сокету, к файлам базы данных демона. Нужно откорректировать пути ко всем этим файлам так, чтобы они соответствовали настройкам, заданным при сборке пакета из pkgsrc. Для этого воспользуемся функционалом `SUBST` из pkgsrc и пропишем в `Makefile` следующие настройки:
 
     SUBST_CLASSES+=         paths
@@ -126,6 +138,8 @@ greylistd - это демон, написанный на языке програ
     SUBST_VARS.paths=       PREFIX VARBASE
 
 В указанных выше настройках есть только одна группа замен, которая называется `paths`. Выполняются замены на этапе `pre-configure`. Пути к изменяемым файлам перечислены в переменной `SUBST_FILES`. Далее следуют три правила замены, в которых используются значения переменных `PREFIX` и `VARBASE`. Имена переменных, участвующих в замене, перечислены в переменной `SUBST_VARS`.
+
+### Пользователь и группа
 
 Для запуска greylistd нужны пользователь и группа greylist, т.к. они используются в качестве владельца Unix-сокета. Добавим в `Makefile` настройки:
 
@@ -146,6 +160,8 @@ greylistd - это демон, написанный на языке програ
     SUBST_SED.user_group=          -e 's,SOCKOWNER: "greylist:greylist",SOCKOWNER: "${GREYLIST_USER}:${GREYLIST_GROUP}",g'
     SUBST_VARS.user_group=         GREYLIST_USER GREYLIST_GROUP
 
+### Права доступа
+
 Для работы greylistd нужен доступ в каталог `/var/db/greylistd`, в котором он хранит статистику, белые, чёрные и серые списки. Для создания этого каталога с соответсвующими правами доступа добавим в файл `Makefile` такую строку:
 
     OWN_DIRS_PERMS+=               ${VARBASE}/db/greylistd/ ${GREYLIST_USER} ${GREYLIST_GROUP} 0766
@@ -158,6 +174,8 @@ greylistd - это демон, написанный на языке програ
 
     SUBST_SED.paths+=       -e 's,/var/run/greylistd/socket,${VARBASE}/db/greylistd/socket,g'
 
+### Файлы конфигурации
+
 В системе pkgsrc для корректной работы с файлами конфигурации предусмотрена опция `CONF_FILES`. Она позволяет устанавливать файлы конфигурации при установке пакета в соответствующий каталог `etc`, если этих файлов ещё нет, и автоматически удалять не изменившиеся файлы при удалении пакета. К сожалению, нельзя просто указать, какие из устанавливаемых файлов являются файлами конфигурации - возможно только указать путь к примерам файлов конфигурации и к месту их установки. В нашем случае это может выглядеть, например, следующим образом:
 
     CONF_FILES+=                   ${PREFIX}/share/examples/greylistd/config ${PKG_SYSCONFDIR}/greylistd/config
@@ -169,17 +187,17 @@ greylistd - это демон, написанный на языке програ
 
 Вернёмся к файлу `files/setup.py`, с которого мы начинали сборку пакета, и поменяем место установки файлов конфигруации так, чтобы они устанавливались в каталог с примерами файлов конфигурации:
 
-      data_files=[('bin', ['program/greylist']),
-                  ('sbin', ['program/greylistd-setup-exim4',
-                            'program/greylistd']),
-                  ('share/examples/greylistd', ['doc/examples/exim4-acl-example.txt',
-                                                'doc/examples/exim4-whitelist-hosts',
-                                                'config/config',
-                                                'config/whitelist-hosts']),
-                  ('man/man1', ['doc/man1/greylist.1']),
-                  ('man/man8', ['doc/man8/greylistd.8',
-                                'doc/man8/greylistd-setup-exim4.8']),
-                  ]
+    data_files=[('bin', ['program/greylist']),
+                ('sbin', ['program/greylistd-setup-exim4',
+                          'program/greylistd']),
+                ('share/examples/greylistd', ['doc/examples/exim4-acl-example.txt',
+                                              'doc/examples/exim4-whitelist-hosts',
+                                              'config/config',
+                                              'config/whitelist-hosts']),
+                ('man/man1', ['doc/man1/greylist.1']),
+                ('man/man8', ['doc/man8/greylistd.8',
+                              'doc/man8/greylistd-setup-exim4.8']),
+                ]
 
 И добавим ещё одно правило для создания каталога для файлов конфигурации:
 
@@ -190,6 +208,8 @@ greylistd - это демон, написанный на языке програ
     $ make package
     $ make print-PLIST > PLIST
 
+### Использование PKGBASE
+
 Внесём ещё одно небольшое изменение. Пакет использует для хранения собственых файлов каталог `${VARBASE}/db/greylistd/`, для размещения файлов конфигруации каталог `${PKG_SYSCONFDIR}/greylistd/`, а для размещения примеров файлов конфигурации - каталог ` ${PREFIX}/share/examples/greylistd/`. Как видно, самый последний подкаталог имеет имя `greylistd`. Гипотетически может произойти так, что появится две несовместимые между собой версии `greylistd`, которые может потребоваться использовать одновременно, как, например, это происходило с различными версиями apache, php-fpm и т.п. Согласен, звучит натянуто, однако чисто теоретически это возможно. В таких случаях принято вместо жёстко прописанного имени использовать переменную `${PKGBASE}`. Заменим в файле `Makefile` все эти каталоги с учётом возможности использования `${PKGBASE}`. Изменить придётся не так много строк:
 
     SUBST_SED.paths+=              -e 's,/var/lib/greylistd/,${VARBASE}/db/${PKGBASE}/,g'
@@ -198,6 +218,91 @@ greylistd - это демон, написанный на языке програ
     CONF_FILES+=                   ${PREFIX}/share/examples/${PKGBASE}/whitelist-hosts ${PKG_SYSCONFDIR}/${PKGBASE}/whitelist-hosts
     OWN_DIRS_PERMS+=               ${VARBASE}/db/${PKGBASE}/ ${GREYLIST_USER} ${GREYLIST_GROUP} 0766
     OWN_DIRS_PERMS+=               ${PKG_SYSCONFDIR}/${PKGBASE}/ ${GREYLIST_USER} ${GREYLIST_GROUP} 0766
+
+### Вывод журналов на stderr
+
+greylistd умеет выводить сообщения об ошибках на стандартный поток диагностических сообщений - stderr или отправлять их демону syslog. Но выбрать, куда нужно отправлять сообщения, нельзя: если greylistd запущен из терминала, то сообщения направляются на stderr, а в противном случае сообщения отправляются в syslog. Я собираюсь запускать greylistd под управлением daemontools и мне было бы удобнее, чтобы сообщения отправлялись на stderr. Для того, чтобы оставить поведение по умолчанию, но добавить возможность выбора, я подготовил небольшую заплатку, которая добавляет в greylistd опцию `logmode` в секции `[daemon]`.
+
+Заплатку для исправления исходных текстов самого демона я поместил в файл `patches/patch-program_greylistd`, выглядит она следующим образом:
+
+    $NetBSD$
+    
+    --- program/greylistd.orig      2020-11-10 09:16:46.000000000 +0000
+    +++ program/greylistd
+    @@ -39,6 +39,9 @@ if sys.version_info.major < 3 or sys.ver
+     
+     
+     # Configuration file sections, items
+    +(DAEMON, LOGMODE) = (
+    +    "daemon", "logmode")
+    +
+     (DATA, STATEFILE, TRIPLETFILE, SAVETRIPLETS, UPDATEINTERVAL,
+      SINGLECHECK, SINGLEUPDATE) = (
+          "data", "statefile", "tripletfile", "savetriplets", "update",
+    @@ -54,7 +57,9 @@ if sys.version_info.major < 3 or sys.ver
+     # Defaults for various configuration items
+     conffile = "/etc/greylistd/config"
+     
+    -config = {DATA: {STATEFILE: "/var/lib/greylistd/states",
+    +config = {DAEMON: {LOGMODE: "auto"},
+    +
+    +          DATA: {STATEFILE: "/var/lib/greylistd/states",
+                      TRIPLETFILE: "/var/lib/greylistd/triplets",
+                      SAVETRIPLETS: True,
+                      SINGLECHECK: False,
+    @@ -124,7 +129,11 @@ def listStatus(searchkey):
+     
+     
+     def log(message, priority=LOG_NOTICE):
+    -    if os.isatty(sys.stderr.fileno()):
+    +    if config[DAEMON][LOGMODE] == "stderr":
+    +        sys.stderr.write("%s\n" % (message,))
+    +    elif config[DAEMON][LOGMODE] == "syslog":
+    +        syslog.syslog(priority, message)
+    +    elif os.isatty(sys.stderr.fileno()):
+             sys.stderr.write("%s\n" % (message,))
+         else:
+             syslog.syslog(priority, message)
+
+Вторую заплатку для исправления файла конфигурации я поместил в файл `patches/patch-config_config`, выглядит она так:
+
+    $NetBSD$
+    
+    --- config/config.orig  2023-02-12 06:19:52.291251220 +0000
+    +++ config/config
+    @@ -2,6 +2,10 @@
+     ### FILE:      /etc/greylistd/config
+     ### PURPOSE:   Configuration settings for the "greylistd(8)" daemon
+     ########################################################################
+    +[daemon]
+    +# Logging mode, one of the following: syslog, stderr, auto
+    +# Default mode is auto: use stderr if it is a tty, otherwise use syslog
+    +logmode      = auto
+     
+     [timeouts]
+     # Initial delay before previously unknown triplets are allowed to pass
+
+Заплатку для исправления справочного руководства я поместил в файл `patches/patch-doc_man8_greylistd.8`, в ней содержатся следующие исправления:
+
+    $NetBSD$
+    
+    --- doc/man8/greylistd.8.orig   2023-02-12 14:10:15.847567733 +0000
+    +++ doc/man8/greylistd.8
+    @@ -111,6 +111,9 @@ other MTAs, check the links on Evan Harr
+     .SS "/etc/greylistd/config"
+     Configuration settings.  Currently, this file consists of three
+     sections:
+    +.IP "[daemon]" 4
+    +General options for the daemon. Currently contains only one option
+    +to switch the logging mode.
+     .IP "[timeout]" 4
+     Lists various timeouts used to determine how long to keep a new
+     \fItriplet\fP greylisted, and when to expire previosly known
+
+Как видно из заплаток, для выбора режима можно поменять значение опции `logmode` в секции `[daemon]` со значения `auto` на значение `stderr` или `syslog`.
+
+Итоги
+-----
 
 До полноценного пакета для NetBSD не хватает скрипта инициализации, но этот вопрос меня не интересует, т.к. я собираюсь запускать greylistd под управлением daemontools. Возможно в pkgsrc понадобится добавить ещё некоторые доработки, чтобы поменять пути к файлам конфигурации, путь к месту размещения базы данных демона и т.п.
 
