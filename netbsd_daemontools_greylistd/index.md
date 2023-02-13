@@ -18,6 +18,7 @@
     fi
     
     exec \
+    /usr/pkg/bin/setuidgid greylist \
     /usr/pkg/sbin/greylistd
 
 И сделаем его исполняемым:
