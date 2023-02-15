@@ -44,7 +44,7 @@ Everything seems to work, so far; I've not tested it extensively, but plain file
 
 This patch does NOT support SSLv2. I don't know if anyone on the planet is still using SSLv2 (it has been deprecated for over a decade), but when I get a chance I'll see how hard it is to include as well.
 
-Patch: [[http://opensource.stobor.net/mathopd/gnutls.1.5p6.diff|gnutls.1.5p6.diff]] (or see attached). 
+Patch: [[http://opensource.stobor.net/mathopd/gnutls.1.5p6.diff|mathopd_patches/gnutls.1.5p6.diff]] (or see attached). 
 
 As usual, apply using:
 
