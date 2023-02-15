@@ -219,7 +219,7 @@ Android
 * [[Установка и настройка Dokuwiki в NetBSD|netbsd_dokuwiki]]
 * [[Установка и настройка Ikiwiki в NetBSD|netbsd_ikiwiki]]
 * [[Структурированная документация по конфигурации mathopd.conf|mathopd.conf]]
-* [[Поддержка TLS в mathopd|mathopd_gnutls]]
+* [[Поддержка TLS в mathopd|mathopd_patches]]
 * [[Настройка SOCKS4/5-прокси сервера Dante|dante]]
 * [[Настройка AltLinux|altlinux]]
 * [[Советы и рецепты по KVM|kvm]]
