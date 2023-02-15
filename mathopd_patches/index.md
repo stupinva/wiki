@@ -154,7 +154,7 @@ This patch adds a "RedirectStatus" keyword, which takes a single integer between
 
 One reason for using this patch is the [Google duplicate content penalty](http://www.google.com/search?q=duplicate+content+penalty). When multiple pages or domains have the same content, some search engines (notably Google) impose a penalty, lowering the result on the search result pages. Moreover, using a 302 redirect is considered the same as having duplicate content, while a 301 redirect is considered a permanent move, which means the content is only indexed under the redirected url.
 
-Patch: [[Redirect Status (+ Query String Redirect) Patch for Mathopd 1.5p6|RedirectStatus.1.5p6.diff]], [[Redirect Status (+ Query String Redirect) Patch for Mathopd 1.6b9|RedirectStatus.1.6b9.diff]]. This patch also includes the above query string patch.
+Patch: [[Redirect Status (+ Query String Redirect) Patch for Mathopd 1.5p6|mathopd_patches/RedirectStatus.1.5p6.diff]], [[Redirect Status (+ Query String Redirect) Patch for Mathopd 1.6b9|RedirectStatus.1.6b9.diff]]. This patch also includes the above query string patch.
 
 An alternative, if you do not wish to patch your server, is to use this short CGI program: [[301 Redirect CGI|mathopd_patches/301_cgi.c]]. Compile it to 301_cgi (bash$ gcc -o 301_cgi 301_cgi.c) and then use PutEnv to define a variable called MATHOPD_DESTINATION for the alias you wish to redirect:
 
