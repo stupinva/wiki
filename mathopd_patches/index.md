@@ -1,5 +1,5 @@
-Поддержка TLS в Mathopd
-=======================
+Заплатки для Mathopd
+====================
 
 [[!tag mathopd]]
 
@@ -44,7 +44,7 @@ Everything seems to work, so far; I've not tested it extensively, but plain file
 
 This patch does NOT support SSLv2. I don't know if anyone on the planet is still using SSLv2 (it has been deprecated for over a decade), but when I get a chance I'll see how hard it is to include as well.
 
-Patch: [[http://opensource.stobor.net/mathopd/gnutls.1.5p6.diff|mathopd_patches/gnutls.1.5p6.diff]] (or see attached). 
+Patch: [[http://opensource.stobor.net/mathopd/gnutls.1.5p6.diff|gnutls.1.5p6.diff]] (or see attached). 
 
 As usual, apply using:
 
@@ -86,7 +86,7 @@ GnuTLS support works, and is functional. GnuTLS CRL support is implemented.
 
 Please, please specify a DH Params file if you're doing repeated testing. DH params generation at startup can take a long time otherwise... 
 
-Patch: [[http://opensource.stobor.net/mathopd/tls.1.5p6.diff|mathopd_patches/tls.1.5p6.diff]] (or see attached).
+Patch: [[http://opensource.stobor.net/mathopd/tls.1.5p6.diff|tls.1.5p6.diff]] (or see attached).
 
 As usual, apply using: 
 
@@ -144,7 +144,7 @@ This is not ideal; we would often like to have the query strings passed to the r
 * http://example.net/pages/index.php → http://example.com/pages/index.php
 * http://example.net/pages/fun.php?q=4 → http://example.com/pages/fun.php?q=4
 
-This patch implements that: [[Query String Patch for Mathopd 1.5p6|mathopd_patches/QueryStringInRedirect.1.5p6.diff]], [[Query String Patch for Mathopd 1.6b9|mathopd_patches/QueryStringInRedirect.1.6b9.diff]]. This is a relatively short, simple patch, and so should apply cleanly to other versions as well.
+This patch implements that: [[Query String Patch for Mathopd 1.5p6|QueryStringInRedirect.1.5p6.diff]], [[Query String Patch for Mathopd 1.6b9|QueryStringInRedirect.1.6b9.diff]]. This is a relatively short, simple patch, and so should apply cleanly to other versions as well.
 
 ### User-specifed HTTP Redirect Status Code
 
@@ -154,9 +154,9 @@ This patch adds a "RedirectStatus" keyword, which takes a single integer between
 
 One reason for using this patch is the [Google duplicate content penalty](http://www.google.com/search?q=duplicate+content+penalty). When multiple pages or domains have the same content, some search engines (notably Google) impose a penalty, lowering the result on the search result pages. Moreover, using a 302 redirect is considered the same as having duplicate content, while a 301 redirect is considered a permanent move, which means the content is only indexed under the redirected url.
 
-Patch: [[Redirect Status (+ Query String Redirect) Patch for Mathopd 1.5p6|mathopd_patches/RedirectStatus.1.5p6.diff]], [[Redirect Status (+ Query String Redirect) Patch for Mathopd 1.6b9|mathopd_patches/RedirectStatus.1.6b9.diff]]. This patch also includes the above query string patch.
+Patch: [[Redirect Status (+ Query String Redirect) Patch for Mathopd 1.5p6|RedirectStatus.1.5p6.diff]], [[Redirect Status (+ Query String Redirect) Patch for Mathopd 1.6b9|RedirectStatus.1.6b9.diff]]. This patch also includes the above query string patch.
 
-An alternative, if you do not wish to patch your server, is to use this short CGI program: [[301 Redirect CGI|mathopd_patches/301_cgi.c]]. Compile it to 301_cgi (bash$ gcc -o 301_cgi 301_cgi.c) and then use PutEnv to define a variable called MATHOPD_DESTINATION for the alias you wish to redirect:
+An alternative, if you do not wish to patch your server, is to use this short CGI program: [[301 Redirect CGI|301_cgi.c]]. Compile it to 301_cgi (bash$ gcc -o 301_cgi 301_cgi.c) and then use PutEnv to define a variable called MATHOPD_DESTINATION for the alias you wish to redirect:
 
     Virtual {
         Host example.net
@@ -202,7 +202,7 @@ Quick HowTo:
 
 CertFile is the only required option, but if KeyFile is not supplied, CertFile must contain the private key as well. DHBits defaults to 1024, DH Params are generated if not supplied (but this can take some time, so for repeated testing, a dhparams file is suggested).
 
-Patch: [[TLS Patch for Mathopd 1.5p6 - beta|mathopd_patches/tls.1.5p6.diff]]
+Patch: [[TLS Patch for Mathopd 1.5p6 - beta|tls.1.5p6.diff]]
 
 ### Contact
 
