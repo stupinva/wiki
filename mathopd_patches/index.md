@@ -86,7 +86,7 @@ GnuTLS support works, and is functional. GnuTLS CRL support is implemented.
 
 Please, please specify a DH Params file if you're doing repeated testing. DH params generation at startup can take a long time otherwise... 
 
-Patch: [[http://opensource.stobor.net/mathopd/tls.1.5p6.diff|tls.1.5p6.diff]] (or see attached).
+Patch: [[http://opensource.stobor.net/mathopd/tls.1.5p6.diff|mathopd_patches/tls.1.5p6.diff]] (or see attached).
 
 As usual, apply using: 
 
@@ -202,7 +202,7 @@ Quick HowTo:
 
 CertFile is the only required option, but if KeyFile is not supplied, CertFile must contain the private key as well. DHBits defaults to 1024, DH Params are generated if not supplied (but this can take some time, so for repeated testing, a dhparams file is suggested).
 
-Patch: [[TLS Patch for Mathopd 1.5p6 - beta|tls.1.5p6.diff]]
+Patch: [[TLS Patch for Mathopd 1.5p6 - beta|mathopd_patches/tls.1.5p6.diff]]
 
 ### Contact
 
