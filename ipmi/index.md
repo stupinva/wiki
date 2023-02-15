@@ -13,6 +13,47 @@
     ipmi_devintf
     ipmi_msghandler
 
+Управление пользователями
+-------------------------
+
+Просмотр списка пользователей:
+
+    # ipmitool user list 0x1
+    ID  Name	     Callin  Link Auth	IPMI Msg   Channel Priv Limit
+    1                    false   false      true       ADMINISTRATOR
+    2   root             false   true       true       ADMINISTRATOR
+    3   zabbix           true    true       true       USER
+    4   admin            true    true       true       ADMINISTRATOR
+
+Смена имени пользователя:
+
+    # ipmitool user set name 5 zabbix
+
+Смена пароля пользователя:
+
+    # ipmitool user set password 5 $ecretP4ssw0rd
+    Set User Password command successful (user 5)
+
+Выдача пользователю прав:
+
+    # ipmitool channel setaccess 0x2 5 callin=on ipmi=on link=on privilege=2
+    Set User Access (channel 2 id 5) successful.
+
+Список возможных уровней привилегий пользователей:
+
+|Уровень|Описание             |
+|:-----:|---------------------|
+|   1   |Callback level       |
+|   2   |User level           |
+|   3   |Operator level       |
+|   4   |Administrator level  |
+|   5   |OEM Proprietary level|
+|  15   |No access            |
+
+Включение пользователя:
+
+    # ipmitool user enable 5
+
 Минимальная настройка
 ---------------------
 
