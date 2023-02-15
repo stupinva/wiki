@@ -1,6 +1,16 @@
 Настройка IPMI
 ==============
 
+[[!tag ipmi debian linux]]
+
+Оглавление
+----------
+
+[[!toc startlevel=2 levels=4]]
+
+Загрузка модулей ядра
+---------------------
+
 Для начала нужно загрузить в ядро модули для работы с IPMI:
 
     # modprobe ipmi_si
@@ -13,12 +23,19 @@
     ipmi_devintf
     ipmi_msghandler
 
+Установка пакетов
+-----------------
+
+В Debian для установки утилиты `ipmitool` достаточно установки одноимённого пакета:
+
+    # apt-get install ipmitool
+
 Управление пользователями
 -------------------------
 
-Просмотр списка пользователей:
+Просмотр списка пользователей на сетевом интерфейсе 1:
 
-    # ipmitool user list 0x1
+    # ipmitool user list 1
     ID  Name	     Callin  Link Auth	IPMI Msg   Channel Priv Limit
     1                    false   false      true       ADMINISTRATOR
     2   root             false   true       true       ADMINISTRATOR
@@ -27,17 +44,17 @@
 
 Смена имени пользователя:
 
-    # ipmitool user set name 5 zabbix
+    # ipmitool user set name 3 zabbix
 
 Смена пароля пользователя:
 
-    # ipmitool user set password 5 $ecretP4ssw0rd
-    Set User Password command successful (user 5)
+    # ipmitool user set password 3 $ecretP4ssw0rd
+    Set User Password command successful (user 3)
 
-Выдача пользователю прав:
+Выдача прав пользователю на доступ к сетевому интерфейсу 1:
 
-    # ipmitool channel setaccess 0x2 5 callin=on ipmi=on link=on privilege=2
-    Set User Access (channel 2 id 5) successful.
+    # ipmitool channel setaccess 1 3 callin=on ipmi=on link=on privilege=2
+    Set User Access (channel 1 id 3) successful.
 
 Список возможных уровней привилегий пользователей:
 
@@ -50,12 +67,21 @@
 |   5   |OEM Proprietary level|
 |  15   |No access            |
 
+Отбор прав пользователя на доступ к сетевым интерфейсам 2 и 3:
+
+    # ipmitool channel setaccess 2 3 callin=off ipmi=off link=off privilege=15
+    Set User Access (channel 2 id 3) successful.
+    # ipmitool channel setaccess 3 3 callin=off ipmi=off link=off privilege=15
+    Set User Access (channel 3 id 3) successful.
+
 Включение пользователя:
 
     # ipmitool user enable 5
 
-Минимальная настройка
----------------------
+Дополнительная информация
+-------------------------
+
+### Минимальная настройка
 
     ipmitool lan print 1
     ipmitool lan set 1 ipaddr 192.168.1.2
@@ -70,8 +96,7 @@
 
     ipmitool -H 192.168.1.2 -f .pwd sdr type 'Power Supply'
 
-С ограниченными привилегиями
-----------------------------
+### С ограниченными привилегиями
 
     # Просмотр настроек интерфейса 1
     ipmitool lan print 1
@@ -86,22 +111,6 @@
     ipmitool lan set 1 auth user md5
     ipmitool lan set 1 auth operator ''
     ipmitool lan set 1 auth admin ''
-  
-    # Отключаем неиспользуемых пользователей
-    ipmitool channel setaccess 1 1 privilege=15
-    ipmitool channel setaccess 1 4 privilege=15
-    ipmitool channel setaccess 1 5 privilege=15
-  
-    # Меняем пароль у пользователя root, которого нельзя отключить
-    ipmitool user set password 2 xxxxxx
-  
-    # Пользователя 3 переименовываем в mon, выставляем пароль
-    ipmitool user set name 3 mon
-    ipmitool user set password 3 yyyyyy
-    ipmitool user enable 3
-  
-    # Даём пользователю 3 доступ через интерфейс 1 с привилегиями user (только чтение)
-    ipmitool channel setaccess 1 3 ipmi=off privilege=2
   
     # Включаем доступ через интерфейс
     ipmitool lan set 1 access on
