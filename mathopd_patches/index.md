@@ -144,7 +144,7 @@ This is not ideal; we would often like to have the query strings passed to the r
 * http://example.net/pages/index.php → http://example.com/pages/index.php
 * http://example.net/pages/fun.php?q=4 → http://example.com/pages/fun.php?q=4
 
-This patch implements that: [[Query String Patch for Mathopd 1.5p6|mathopd_patches/QueryStringInRedirect.1.5p6.diff]], [[Query String Patch for Mathopd 1.6b9|QueryStringInRedirect.1.6b9.diff]]. This is a relatively short, simple patch, and so should apply cleanly to other versions as well.
+This patch implements that: [[Query String Patch for Mathopd 1.5p6|mathopd_patches/QueryStringInRedirect.1.5p6.diff]], [[Query String Patch for Mathopd 1.6b9|mathopd_patches/QueryStringInRedirect.1.6b9.diff]]. This is a relatively short, simple patch, and so should apply cleanly to other versions as well.
 
 ### User-specifed HTTP Redirect Status Code
 
