@@ -156,7 +156,7 @@ One reason for using this patch is the [Google duplicate content penalty](http:/
 
 Patch: [[Redirect Status (+ Query String Redirect) Patch for Mathopd 1.5p6|RedirectStatus.1.5p6.diff]], [[Redirect Status (+ Query String Redirect) Patch for Mathopd 1.6b9|RedirectStatus.1.6b9.diff]]. This patch also includes the above query string patch.
 
-An alternative, if you do not wish to patch your server, is to use this short CGI program: [[301 Redirect CGI|301_cgi.c]]. Compile it to 301_cgi (bash$ gcc -o 301_cgi 301_cgi.c) and then use PutEnv to define a variable called MATHOPD_DESTINATION for the alias you wish to redirect:
+An alternative, if you do not wish to patch your server, is to use this short CGI program: [[301 Redirect CGI|mathopd_patches/301_cgi.c]]. Compile it to 301_cgi (bash$ gcc -o 301_cgi 301_cgi.c) and then use PutEnv to define a variable called MATHOPD_DESTINATION for the alias you wish to redirect:
 
     Virtual {
         Host example.net
