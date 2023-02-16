@@ -30,6 +30,28 @@
 
     # apt-get install ipmitool
 
+Настройка сетевых интерфейсов
+-----------------------------
+
+Переключение сетевого интерфейса 3 в режим статически прописанных настроек:
+
+    # ipmitool lan set 3 ipsrc static
+
+Настройка IP-адреса на сетевом интерфейсе 3:
+
+    # ipmitool lan set 3 ipaddr 192.168.1.2
+    Setting LAN IP Address to 192.168.1.2
+
+Настройка маски сети на сетевом интерфейсе 3:
+
+    # ipmitool lan set 3 netmask 255.255.255.0
+    Setting LAN Subnet Mask to 255.255.255.0
+
+Настройка сетевого шлюза по умолчанию на сетевом интерфейсе 3:
+
+    # ipmitool lan set 3 defgw ipaddr 192.168.1.1
+    Setting LAN Default Gateway IP to 192.168.1.1
+
 Управление пользователями
 -------------------------
 
@@ -107,9 +129,6 @@
 ### Минимальная настройка
 
     ipmitool lan print 1
-    ipmitool lan set 1 ipaddr 192.168.1.2
-    ipmitool lan set 1 netmask 255.255.255.0
-    ipmitool lan set 1 defgw ipaddr 192.168.1.1
   
     ipmitool lan set 1 password myPaSsW0rD
     ipmitool lan set 1 user
