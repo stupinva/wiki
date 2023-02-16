@@ -30,6 +30,6 @@
 |Intel Corporation S3420TH  |Intel Server System ST1604TH                  |
 |Intel Corporation S2600GZ  |Intel Server System R1208GZ4GC / R2312GZ4GC4  |
 |Intel Corporation S2600WTTR|Intel Server System R2308WTTYSR               |
-|Intel Corporation S2600WFT |Intel Server System R1208WFTYS                |
+|Intel Corporation S2600WFT |Intel Server System R1208WFTYS / R2224WFTZSR  |
 
 Если определилась материнская плата Intel Corporation S3420TH, то это сервер модели Intel Server System ST1604TH, в который вставлено 2 материнские платы Intel Spare Board FSR1640BRD, каждая из которых логически делится на две независимые материнские платы модели Intel Corporation S3420TH. На этом физическом сервере может работать 4 логически независимых сервера.
