@@ -78,6 +78,29 @@
 
     # ipmitool user enable 3
 
+Удалённый доступ
+----------------
+
+После настройки сетевого интерфейса и пользователя становится возможным вызывать утилиту ipmitool для просмотра информации и настройки удалённых серверов:
+
+    $ ipmitool -H 192.168.1.2 -L user -U zabbix -P $ecretP4ssw0rd type 'Power Supply'
+
+Важно в опции `-L` указать минимально необходимый уровень привилегий, потому что по умолчанию утилита использует привилегии администратора. Если у пользователя нет привилегий администратора, то утилита выдаст ошибку следующего вида:
+
+    Activate Session error:	Requested privilege level exceeds limit
+
+Возможные уровни привилегий:
+
+* callback
+* user
+* operator
+* administrator
+
+Чтобы не передавать открытым текстом пароль в командную строку, где его смогут увидеть другие пользователи, можно воспользоваться файлом с паролем. Например, сделать это можно следующим образом:
+
+    $ echo -n "$ecretP4ssw0rd" > .pwd
+    $ ipmitool -H 192.168.1.2 -L user -U zabbix -f .pwd sdr type 'Power Supply'
+
 Дополнительная информация
 -------------------------
 
@@ -91,10 +114,6 @@
     ipmitool lan set 1 password myPaSsW0rD
     ipmitool lan set 1 user
     ipmitool lan set 1 access on
-
-    echo "myPaSsW0rD" > .pwd
-
-    ipmitool -H 192.168.1.2 -f .pwd sdr type 'Power Supply'
 
 ### С ограниченными привилегиями
 
