@@ -156,8 +156,10 @@ case $1 in
 		$SUDO $MC -PdInfo -PhysDrv\[$3:$4\] -a$2 -NoLog 2>&1 \
 			| $AWK -F: '
 				$1 ~ /^Inquiry Data$/ {
-					if (match($2, /(WDC |)WD[^-][^ ]+/)) {
-						print substr($2, RSTART, RLENGTH);
+					if (match($2, /(WDC |)WD[^-][^ ]+|Micron[^ ]+/)) {
+						model = substr($2, RSTART, RLENGTH);
+						gsub(/_/, " ", model);
+						print model;
 					} else if (match($2, /[^ ]+ [^ ]+/)) {
 						# Two tokens, separated by space, is vendor and model
 						print substr($2, RSTART, RLENGTH);
@@ -172,7 +174,7 @@ case $1 in
 					}
 
 				$1 ~ /^Inquiry Data$/ {
-					if (match($2, /(WDC |)WD[^-][^ ]+/)) {
+					if (match($2, /(WDC |)WD[^-][^ ]+|Micron[^ ]+/)) {
 						model = substr($2, RSTART, RLENGTH);
 					} else if (match($2, /[^ ]+ [^ ]+/)) {
 						# Two tokens, separated by space, is vendor and model
