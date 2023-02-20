@@ -191,6 +191,143 @@
 
     # ipmitool sel time set "02/20/2023 05:41:32"
 
+Журнал событий
+--------------
+
+Посмотреть статистику журнала событий:
+
+    # ipmitool sel info
+    SEL Information
+    Version          : 1.5 (v1.5, v2 compliant)
+    Entries          : 366
+    Free Space       : 65535 bytes or more
+    Percent Used     : unknown
+    Last Add Time    : 02/16/2023 12:11:17
+    Last Del Time    : 12/08/2020 11:18:05
+    Overflow         : false
+    Supported Cmds   : 'Partial Add' 'Reserve' 'Get Alloc Info' 
+    # of Alloc Units : 4000
+    Alloc Unit Size  : 24
+    # Free Units     : 3634
+    Largest Free Blk : 3634
+    Max Record Size  : 1
+
+Посмотреть содержимое журнала событий:
+
+    # ipmitool sel list
+
+Очистить журнал событий:
+
+    # ipmitool sel clear
+
+Сброс модуля управления
+-----------------------
+
+При зависании веб-интерфейса модуля управления можно попробовать выполнить мягкий или жёсткий сброс одной из соответствующих команд:
+
+    # ipmitool mc reset warm
+    # ipmitool mc reset cold
+
+Настройка порядка загрузки
+--------------------------
+
+При следующей загрузки системы войти в меню настройки BIOS:
+
+    # ipmitool chassis bootdev bios
+
+При следующей загрузке системы использовать в качестве источника жёсткий диск, указанный в BIOS:
+
+    # ipmitool chassis bootdev disk
+
+При следующей загрузке системы использовать в качестве источника CDROM:
+
+    # ipmitool chassis bootdev cdrom
+
+При следующей загрузке системы использовать в качестве источника сеть:
+
+    # ipmitool chassis bootdev pxe 
+
+Последовательный порт
+---------------------
+
+Включить поддержку доступа к последовательному порту через IPMI:
+
+    # ipmitool sol set enabled true
+
+Включить доступ через IPMI к последовательному порту через сетевой интерфейс 1 для пользователя 3:
+
+    # ipmitool sol payload enable 1 3
+
+Подключение к последовательному порту:
+
+    # ipmitool sol activate
+
+Завершить зависший сеанс доступа к последовательному порту:
+
+    # ipmitool sol deactivate
+
+Для настройки консоли на последовательном порту в GRUB 2 и Linux можно воспользоваться разделом "Настройка консоли в GRUB 2 и Linux" из статьи [Настройка текстового терминала для использования в virsh](https://stupin.su/blog/serial-console-virsh/).
+
+Управление питанием
+-------------------
+
+Узнать текущее состояние подачи электропитания можно следующим образом:
+
+    # ipmitool chassis power status
+    Chassis Power is on
+
+Выполнить отключение средствами ACPI:
+
+    # ipmitool chassis power soft
+
+Выключить питание без ACPI, подождать одну секунду и снова включить:
+
+    # ipmitool chassis power cycle
+
+Выключить питание без ACPI:
+
+    # ipmitool chassis power off
+
+Включить питание:
+ 
+    # ipmitool chassis power on
+
+Выполнить перезагрузку без участия ACPI: 
+
+    # ipmitool chassis power reset
+
+Вместо длинной команды `chassis power` можно использовать более короткий вариант - `power`.
+
+Просмотр информации о модулях/платах
+------------------------------------
+
+Для просмотра информации о моделях, серийных номерах электронных компонентов, входящих в состав оборудования, можно воспользоваться командой:
+
+    # ipmitool fru print
+
+Просмотр состояния датчиков
+---------------------------
+
+Для просмотра полного списка датчиков можно воспользоваться следующей командой:
+
+    # ipmitool sensor
+
+Вывести текущие значения датчиков и статус их доступности:
+
+    # ipmitool sdr list
+
+Вывести только информацию от датчиков температуры:
+
+    # ipmitool sdr type Temperature
+
+Вывести информацию только от датчиков частоты вращения вентиляторов:
+
+    # ipmitool sdr type Fan
+
+Вывести информацию только о блоках питания:
+
+    # ipmitool sdr type 'Power Supply'
+
 Дополнительная информация
 -------------------------
 
@@ -225,3 +362,5 @@
 -------------------------
 
 * [kipmi kernel helper thread kipmi0 is generating high CPU load](https://access.redhat.com/solutions/21322)
+* [egernst/ipmi-sol.md](https://gist.github.com/egernst/66febb5b95a1d303881db05c926e0b63)
+* [ipmitool: Reset and manage IPMI (Intelligent Platform Management Interface) / ILO (Integrated Lights Out) remote board on Linux servers](https://www.pc-freak.net/blog/ipmitool-reset-manage-ipmi-intelligent-platform-management-interface-ilo-integrated-lights-remote-board-linux-servers/)
