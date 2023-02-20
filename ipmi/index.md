@@ -328,6 +328,66 @@
 
     # ipmitool sdr type 'Power Supply'
 
+Утилита syscfg от Intel
+-----------------------
+
+Для работы с модулем удалённого управления у Intel есть своя собственная утилита, которая называется syscfg.
+
+Утилиту можно скачать по ссылке [Save and Restore System Configuration Utility (SYSCFG) for the Intel® Server System S9200WK Product Family](https://www.intel.com/content/www/us/en/download/19502/save-and-restore-system-configuration-utility-syscfg-for-the-intel-server-system-s9200wk-product-family.html)
+
+Заглянул в скачанный архив [[syscfg_v14_1_build29_allos.zip]]:
+
+    $ unzip -v syscfg_v14_1_build29_allos.zip
+
+Увидел, что там есть deb-пакет для Ubuntu. У меня Debian, но пакет для Ubuntu подойдёт лучше, чем пакет для какой-либо другой системы. Извлёк его:
+
+    $ unzip syscfg_v14_1_build29_allos.zip 'Linux_x64/UBUNTU/syscfg-V14.1-B29.x86_64.deb' -d .
+
+Залил deb-пакет по SSH на сервер:
+
+    $ scp syscfg-V14.1-B29.x86_64.deb bm5.core.ufanet.ru:
+
+Установил пакет на сервере:
+
+    # dpkg -i syscfg-V14.1-B29.x86_64.deb
+
+Заглянул в список файлов, установленных пакетом:
+
+    # dpkg -L syscfg
+
+Руководство по использованию утилиты можно скачать на этой странице [User Guide for Intel System Configuration Utility](https://www.intel.com/content/www/us/en/support/articles/000023060/server-products.html). Скачанное руководство можно взять тут: [[Intel System Configuration Utility. User Guide|intel-syscfg-userguide-v1-03.pdf]]
+
+Решение проблем
+---------------
+
+### Отключение ограниченного доступа
+
+Утилита syscfg от Intel возвращает ошибку следующего вида:
+
+KCS Policy Control Mode is currently set to "RESTRICTED". This function depends on an unrestricted KCS environment to operate.  To run utility, please change "KCS Policy Control Mode" using BMC web console or other authenticated session.
+
+Поиск ошибки в интернете привёл на страницу [How to set the Keyboard Controller Style (KCS) Policy Control from Deny all to Allow all](https://www.intel.com/content/www/us/en/support/articles/000058730/server-products/server-boards.html).
+
+В приведённой на этой странице команде есть ошибка - опцию `-c` нужно указывать в верхнем регистре, так что команда приобретает следующий вид:
+
+    # ipmitool -C 17 raw 0x30 0xB4 0x03
+
+Однако такой вызов команды приводит к следующей ошибке:
+
+    Unable to send RAW command (channel=0x0 netfn=0x30 lun=0x0 cmd=0xb4 rsp=0xd4): Insufficient privilege level
+
+Для того, чтобы команда сработала, нужно запустить её через сеть с указанием IP-адреса модуля удалённого управления и заведённого на нём пользователя, имеющего права администратора, вот так:
+
+    # ipmitool -I lanplus -L ADMINISTRATOR -H 192.168.1.2 -C 17 -U admin -P $ecretP4ssw0rd raw 0x30 0xB4 0x03
+
+### Восстановление доступа к веб-интерфейсу
+
+На сервере модели Intel Corporation R2224WFTZSR с материнской платой Intel Corporation S2600WFT с прошивкой карты управления версии 2.48 столкнулся с проблемой, описанной на странице [Unable to access http on RMM4 after disabling https](https://community.intel.com/t5/Server-Products/Unable-to-access-http-on-RMM4-after-disabling-https/td-p/559119): в веб-интерфейсе имеется возможность раздельного включения/выключения протоколов HTTP и HTTPS, а при отключении протокола HTTPS пропадает доступ и по протоколу HTTP. В этой статье было предложено воспользоваться утилитой syscfg, однако попытки воспользоваться ей для сброса настроек модуля удалённого управления к успеху не привели.
+
+Зато помогла команда, найденная в статье: ["syscfg /hc https 3 enable 443" -> Invalid data in the switch parameters](https://community.intel.com/t5/Server-Products/quot-syscfg-hc-https-3-enable-443-quot-gt-Invalid-data-in-the/m-p/722554):
+
+    # ipmitool raw 0x30 0xb1 0x01 0x79 0x00
+
 Дополнительная информация
 -------------------------
 
@@ -358,9 +418,15 @@
     # Включаем доступ через интерфейс
     ipmitool lan set 1 access on
 
+Использованные материалы
+------------------------
+
+* [egernst/ipmi-sol.md](https://gist.github.com/egernst/66febb5b95a1d303881db05c926e0b63)
+* [ipmitool: Reset and manage IPMI (Intelligent Platform Management Interface) / ILO (Integrated Lights Out) remote board on Linux servers](https://www.pc-freak.net/blog/ipmitool-reset-manage-ipmi-intelligent-platform-management-interface-ilo-integrated-lights-remote-board-linux-servers/)
+
 Дополнительная информация
 -------------------------
 
 * [kipmi kernel helper thread kipmi0 is generating high CPU load](https://access.redhat.com/solutions/21322)
-* [egernst/ipmi-sol.md](https://gist.github.com/egernst/66febb5b95a1d303881db05c926e0b63)
-* [ipmitool: Reset and manage IPMI (Intelligent Platform Management Interface) / ILO (Integrated Lights Out) remote board on Linux servers](https://www.pc-freak.net/blog/ipmitool-reset-manage-ipmi-intelligent-platform-management-interface-ilo-integrated-lights-remote-board-linux-servers/)
+* [[Фирменная утилита syscfg от Intel|syscfg_v14_1_build29_allos.zip]]
+* [[Intel System Configuration Utility. User Guide|intel-syscfg-userguide-v1-03.pdf]]
