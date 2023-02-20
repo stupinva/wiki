@@ -382,11 +382,38 @@ KCS Policy Control Mode is currently set to "RESTRICTED". This function depends 
 
 ### Восстановление доступа к веб-интерфейсу
 
-На сервере модели Intel Corporation R2224WFTZSR с материнской платой Intel Corporation S2600WFT с прошивкой карты управления версии 2.48 столкнулся с проблемой, описанной на странице [Unable to access http on RMM4 after disabling https](https://community.intel.com/t5/Server-Products/Unable-to-access-http-on-RMM4-after-disabling-https/td-p/559119): в веб-интерфейсе имеется возможность раздельного включения/выключения протоколов HTTP и HTTPS, а при отключении протокола HTTPS пропадает доступ и по протоколу HTTP. В этой статье было предложено воспользоваться утилитой syscfg, однако попытки воспользоваться ей для сброса настроек модуля удалённого управления к успеху не привели.
+На сервере модели Intel Corporation R2224WFTZSR с материнской платой Intel Corporation S2600WFT с прошивкой модуля удалённого управления версии 2.48 столкнулся с проблемой, описанной на странице [Unable to access http on RMM4 after disabling https](https://community.intel.com/t5/Server-Products/Unable-to-access-http-on-RMM4-after-disabling-https/td-p/559119): в веб-интерфейсе имеется возможность раздельного включения/выключения протоколов HTTP и HTTPS, а при отключении протокола HTTPS пропадает доступ и по протоколу HTTP. В этой статье было предложено воспользоваться утилитой syscfg, однако попытки воспользоваться ей для сброса настроек модуля удалённого управления к успеху не привели.
 
 Зато помогла команда, найденная в статье: ["syscfg /hc https 3 enable 443" -> Invalid data in the switch parameters](https://community.intel.com/t5/Server-Products/quot-syscfg-hc-https-3-enable-443-quot-gt-Invalid-data-in-the/m-p/722554):
 
     # ipmitool raw 0x30 0xb1 0x01 0x79 0x00
+
+### Высокая загрузка от kipmi0
+
+На сервере модели Intel Corporation с материнской платой R2312GZ4GC4 Intel Corporation S2600GZ с прошивкой модуля удалённого управления версии 1.17 столкнулся с проблемой, описанной на странице [kipmi kernel helper thread kipmi0 is generating high CPU load](https://access.redhat.com/solutions/21322): утилита ipmitool не работает, при этом поток ядра с именем kipmiN (где N - цифра, совпадающая с номером устройства /dev/ipmiN) создаёт высокую нагрузку на процессор сервера (может полностью занять одно ядро процессора).
+
+Проблема вызвана тем, что модуль удалённого управления не умеет отправлять процессору сигнал о завершении некоторых операций, поэтому устройство приходится периодически опрашивать. Опросом устройства занимается специально предназначенный для этого поток ядра с именем вида kipmiN. В некоторых ситуациях устройство завершает операцию, но драйвер продолжает считать, что операция ещё не завершена и продолжает опрашивать устройство в ожидании готовности, что приводит к повышенной нагрузке на процессор сервера.
+
+Одно из возможных решений приведено в той же статье. Смотрим параметры модуля удалённого управления:
+
+    $ cat /proc/ipmi/0/params
+    kcs,i/o,0xca2,rsp=1,rsi=1,rsh=0,irq=0,ipmb=32
+
+Удаляем устройство `/dev/ipmi0`, передав драйверу команду на удаление с этими параметрами следующим образом:
+
+    # echo "remove,kcs,i/o,0xca2,rsp=1,rsi=1,rsh=0,irq=0,ipmb=32" > /sys/module/ipmi_si/parameters/hotmod
+
+Стоит учесть, что оболочка, выполняющая команду echo, может зависнуть в ожидании завершения операции ввода-вывода. Нужно подождать завершения операции, что может занять от 8 до 30 минут.
+
+Затем можно попытаться снова добавить устройство `/dev/ipmi0` с теми же параметрами командой следующего вида:
+
+    # echo "add,kcs,i/o,0xca2,rsp=1,rsi=1,rsh=0,irq=0,ipmb=32" > /sys/module/ipmi_si/parameters/hotmod
+
+Перед попытками запуска утилиты ipmitool следует уменьшить время непрерывной работы потока kipmiN, указав сколько миллисекунд в секунду он может работать:
+
+    # echo 100 > /sys/module/ipmi_si/parameters/kipmid_max_busy_us
+
+Затем можно попробовать снова воспользоваться утилитой ipmitool. При необходимости, если нагрузка на процессор снизилась недостаточно, лимит времени работы потока kipmiN можно уменьшить ещё.
 
 Дополнительная информация
 -------------------------
@@ -427,6 +454,5 @@ KCS Policy Control Mode is currently set to "RESTRICTED". This function depends 
 Дополнительная информация
 -------------------------
 
-* [kipmi kernel helper thread kipmi0 is generating high CPU load](https://access.redhat.com/solutions/21322)
 * [[Фирменная утилита syscfg от Intel|syscfg_v14_1_build29_allos.zip]]
 * [[Intel System Configuration Utility. User Guide|intel-syscfg-userguide-v1-03.pdf]]
