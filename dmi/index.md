@@ -33,3 +33,7 @@
 |Intel Corporation S2600WFT |Intel Server System R1208WFTYS / R2224WFTZSR  |
 
 Если определилась материнская плата Intel Corporation S3420TH, то это сервер модели Intel Server System ST1604TH, в который вставлено 2 материнские платы Intel Spare Board FSR1640BRD, каждая из которых логически делится на две независимые материнские платы модели Intel Corporation S3420TH. На этом физическом сервере может работать 4 логически независимых сервера.
+
+В случае, если на сервере доступен IPMI, то иногда точную модель сервера можно узнать так:
+
+    # ipmitool fru print | awk -F: '/Chassis Type/ { chassis = 1; } /^$/ { chassis = 0; } /Product (Manufacturer|Version)/ { if (chassis) { gsub(/^[ \t]+/, "", $2); print $2; } }'
