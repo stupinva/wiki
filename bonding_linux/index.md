@@ -257,6 +257,57 @@
 
     16:16:59.047875 fe:54:00:16:5e:3b > 01:80:c2:00:00:02, ethertype Slow Protocols (0x8809), length 124: LACPv1, length 110
 
+Тестовый стенд 2
+----------------
+
+На этот раз вместо стандартных для Linux сетевых мостов, создаваемых с помощью модуля ядра `bridge`, я решил воспользоваться программным коммутатором Open vSwitch и реализовать следующую схему:
+
+    debian     |           host                    | centos
+      bond0    |             vswitch1              |   bond0
+        eno1 --|-- vnet1 --o-- bond1   .-- vnet3 --|---- eth1
+        eno2 --|-- vnet2 --'   bond2 --o-- vnet4 --|---- eth2
+
+На компьютере с системой виртуализации предполагается создать программный коммутатор Open vSwitch с именем `vswitch1`, а на нём создать две агрегации с именами `bond1` и `bond2`, поддерживающие работу по протоколу LACP. В первую агрегацию включаются сетевые интерфейсы виртуальной машины с Debian, а во вторую агрегацию - сетевые интерфейсы виртуальной машины с CentOS. При такой схеме агрегацию на каждой из виртуальных машин можно будет проверять и настраивать независимо.
+
+Установим пакет с Open vSwitch на компьютере с системой виртуалцизации:
+
+    # apt-get install openvswitch-switch
+
+Вместо настроенных ранее сетевых мостов `virbr1` и `virbr2` пропишем в файле конфигруации `/etc/network/interfaces` конфигурацию программного коммутатора `vswitch1`:
+
+    auto vswitch1
+    allow-ovs vswitch1
+    iface vswitch1 inet manual
+        ovs_type OVSBridge
+        ovs_ports none
+
+После этого создадим его с помощью команды:
+
+    # ifup vswitch1
+
+Теперь поменяем конфигурацию сетевых интерфейсов виртуальных машин с помощью команды вида:
+
+    # virsh edit vm
+
+Сделаем сетевые интерфейсы пригодными для подключения к программному коммутатору Open vSwitch, для чего добавим строчку `<virtualport type='openvswitch'/>`, а имена сетевых мостов `virbr1` и `virbr2` заменим на имя программного коммутатора `vswitch1`:
+
+    <interface type='bridge'>
+      <mac address='52:54:00:16:5e:3b'/>
+      <source bridge='vswitch1'/>
+      <virtualport type='openvswitch'/>
+      <model type='virtio'/>
+      <link state='up'/>
+      <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
+    </interface>
+
+Чтобы сетевые интерфейсы `vnet` создавались в системе всегда под одним и тем же именем, пропишем в файл конфигурации `/etc/udev/rules.d/70-persistent-net.rules` строчки для привязки имён сетевых интерфейсов к MAC-адресам:
+
+    SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="52:54:00:16:5e:3b", ATTR{dev_id}=="0x0", ATTR{type}=="1", KERNEL=="vnet*", NAME="vm1-p1"
+
+Сообщим демону `systemd-udevd` об изменившейся конфигурации с помощью следующей команды:
+
+    # udevd control -R
+
 Использованные материалы
 ------------------------
 
