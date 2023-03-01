@@ -48,7 +48,22 @@
 
     # modprobe bonding
 
-Создадим агрегирующий интерфейс с именем bond0:
+При загрузке модуля ядра можно сразу указать опции для будущих агрегирующих сетевых интерфейсов:
+
+    # modprobe bonding mode=802.3ad xmit_hash_policy=layer2+3 miimon=100 lacp_rate=fast
+
+В случае нескольких агрегирующих сетевых интерфейсов, можно подготовить псевдонимы модуля ядра и указать для каждого из псевдонимов модуля собственные настройки. Для этого необходимо добавить в каталог `/etc/modprobe.d` новые файлы с расширением `.conf`. Например, создадим файл `/etc/modprobe.d/bonding.conf` со следующим содержимым:
+
+    alias bond0 bonding
+    optinons bond0 mode=802.3ad xmit_hash_policy=layer2+3 miimon=100 lacp_rate=fast
+
+В таком случае при попытке загрузить модуль ядра `bond0` с помощью приведённой ниже команды получится создать одноимённого сетевой интерфейс с указанными опциями:
+
+    # modprobe bond0
+
+Однако то же самое можно проделать и с помощью файловой системы `/sys/class/net/` описанным ниже образом.
+
+Создадим агрегирующий интерфейс с именем `bond0`:
 
     # echo "+bond0" > /sys/class/net/bonding_masters
 
@@ -81,6 +96,18 @@
 
     # ip addr add 172.16.7.2/24 dev bond0
     # ip route add default dev bond0 via 172.16.7.1
+
+Проверка состояния
+------------------
+
+Состояние агрегирующего сетевого интерфейса `bond0` можно узнать из файла `/proc/net/bonding/bond0`. Если не погружаться глубоко в рассмотрение содержимого файла, то исправность интерфейса можно проверить с помощью следующей команды:
+
+    # fgrep Status /proc/net/bonding/bond0
+    MII Status: up
+    MII Status: up
+    MII Status: up
+
+Первая строчка соответствует состоянию агрегирующего сетевого интерфейса, а последующие - состоянию входящих в его состав агрегируемых сетевых интерфейсов. Если значение каждого из состояний соответствует тексту `up`, то агрегация полностью исправна.
 
 Настройка в Debian
 ------------------
@@ -116,9 +143,51 @@
 
 Если опцию `auto` заменить на `allow-hotplug`, то можно будет пользоваться демоном `ifplugd` для настройки сетевых интерфейсов после их физического исчезновения и возврата в систему, например, если это внешний USB-адаптер Ethernet.
 
+Чтобы зафиксировать имена сетевых интерфейсов, можно создать файл `/etc/udev/rules.d/70-persistent-net.rules`, содержащий по одной строчке следующего вида для каждого из сетевых интерфейсов:
+
+    SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="00:1e:67:5b:08:17", ATTR{dev_id}=="0x0", ATTR{type}=="1", KERNEL=="eth*", NAME="eno1"
+
+Сетевому интерфейсу с MAC-адресом `00:1e:67:5b:08:17` будет назначено имя `eno1`.
+
+Настройка в CentOS 6
+--------------------
+
+В случае с CentOS 6 утилита `ifenslave` входит в состав пакета iputils
+
+В CentOS 6 конфигурация сетевых интерфейсов находится в отдельных файлах. Для того, чтобы при загрузке операционной системы восстанавливались настройки, заданные нами выше вручную, нужно отредактировать по одному файлу для каждого из сетевых интерфейсов. В примере ниже сетевые интерфейсы будут называться `eth1` и `eth2`.
+
+Настройки сетевого интерфейса `eth1` впишем в файл конфигурации `/etc/sysconfig/network-scripts/ifcfg-eth1`:
+
+    DEVICE=eth1
+    ONBOOT=yes
+    BOOTPROTO=none
+    SLAVE=yes
+    MASTER=bond0
+
+Аналогичным образом настройки сетевого интерфейса `eth2` впишем в файл конфигурации `/etc/sysconfig/network-scripts/ifcfg-eth2`:
+
+    DEVICE=eth2
+    ONBOOT=yes
+    BOOTPROTO=none
+    SLAVE=yes
+    MASTER=bond0
+
+Наконец, настройки агрегирующего сетевого интерфейса `bond0` впишем в файл конфигурации `/etc/sysconfig/network-scripts/ifcfg-bond0`:
+
+    DEVICE=bond0
+    ONBOOT=yes
+    BOOTPROTO=none
+    IPADDR=172.16.7.2
+    NETMASK=255.255.255.0
+    GATEWAY=172.16.7.1
+    BONDING_OPTS="mode=802.3ad xmit_hash_policy=layer2+3 miimon=100 lacp_rate=fast"
+
+В данном случае настройки сетевого интерфейса соответствуют опциям, которые можно передать модулю ядра `bonding` при его ручной загрузке описанной выше командой `modprobe`.
+
 Использованные материалы
 ------------------------
 
 * [Механизмы агрегации сетевых каналов](https://wiki.astralinux.ru/pages/viewpage.action?pageId=158604474)
 * [Preparing a bonded interface](https://www.ibm.com/docs/en/linux-on-systems?topic=connection-bonded-interface)
 * [man interfaces-bond(5)](https://manpages.debian.org/testing/ifupdown-ng/interfaces-bond.5.en.html)
+* [Linux bonding — объединение сетевых интерфейсов в Linux](https://www.adminia.ru/linux-bonding-obiedinenie-setevyih-interfeysov-v-linux/)
