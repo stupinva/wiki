@@ -82,8 +82,43 @@
     # ip addr add 172.16.7.2/24 dev bond0
     # ip route add default dev bond0 via 172.16.7.1
 
+Настройка в Debian
+------------------
+
+Для того, чтобы описанные выше ручные настройки восстанавливались в Debian при загрузке, нужно установить пакет `ifenslave`:
+
+    # apt-get install ifenslave
+
+И вписать настройки в файл `/etc/network/interfaces`:
+
+    auto eno1
+    iface eno1 inet manual
+        bond-master bond0
+    
+    auto eno2
+    iface eno2 inet manual
+        bond-master bond0
+    
+    auto bond0
+    iface bond0 inet static
+        bond-slaves eno1 eno2
+        bond-mode 802.3ad
+        bond-xmit-hash-policy layer2+3
+        bond-miimon 100
+        bond-lacp-rate fast
+        address 172.16.7.2/24
+        gateway 172.16.7.1
+
+Опции `bond-master` в объединяемых сетевых интерфейсах позволяют возвращать сетевой интерфейс в объединение, если зачем-то понадобится выключить и снова включить их с помощью команд `ifdown` и `ifup`:
+
+    # ifdown eno1
+    # ifup eno1
+
+Если опцию `auto` заменить на `allow-hotplug`, то можно будет пользоваться демоном `ifplugd` для настройки сетевых интерфейсов после их физического исчезновения и возврата в систему, например, если это внешний USB-адаптер Ethernet.
+
 Использованные материалы
 ------------------------
 
 * [Механизмы агрегации сетевых каналов](https://wiki.astralinux.ru/pages/viewpage.action?pageId=158604474)
 * [Preparing a bonded interface](https://www.ibm.com/docs/en/linux-on-systems?topic=connection-bonded-interface)
+* [man interfaces-bond(5)](https://manpages.debian.org/testing/ifupdown-ng/interfaces-bond.5.en.html)
