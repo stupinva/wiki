@@ -189,7 +189,7 @@
 
 В данном случае настройки сетевого интерфейса соответствуют опциям, которые можно передать модулю ядра `bonding` при его ручной загрузке описанной выше командой `modprobe`.
 
-Тестовый стенд 1
+Тестовая среда 1
 ----------------
 
 Для проверки правильности настройки агрегаций я решил воспользоваться двумя виртуальными машинами с Debian и CentOS. В качестве системы виртуализации я воспользовался KVM и графическим интерфейсом virt-manager, настроенными в соответствии со статьёй [[Настройка KVM и virt-manager в Debian 11|debian11_kvm]]. Предполагалось на каждой из виртуальных машин настроить по два сетевых интерфейса, объединённых в LACP. По плану предусматривалось настроить на системе виртуализации два сетевых моста и подключить к каждому из них по одному сетевому интерфейсу от каждой из виртуальных машин так, чтобы в итоге получилась такая схема:
@@ -237,7 +237,7 @@
       <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
     </interface>
 
-К сожалению, на этом тестовом стенде агрегация сетевых интерфейсов работала загадочно. При неактивном сетевом интерфейсе `virbr2` связь между виртуальными машинами оставалась, а вот при неактивном сетевом интерфейсе `virbr1` связь пропадала.
+К сожалению, в этой тестовой среде агрегация сетевых интерфейсов работала загадочно. При неактивном сетевом интерфейсе `virbr2` связь между виртуальными машинами оставалась, а вот при неактивном сетевом интерфейсе `virbr1` связь пропадала.
 
 На виртуальной машине с CentOS, судя по содержимому файла `/proc/net/bonding/bond0`, не происходило согласование агрегации по протоколу LACP с партнёром по агрегации - виртуальной машиной с Debian.
 
@@ -264,7 +264,7 @@
 
 Я нашёл в интернете страницу, где была описана возникшая у меня проблема: [Multicast frames in Linux bridge dropped](https://answerbun.com/unix-linux/multicast-frames-in-linux-bridge-dropped/), однако единственное предложенное решение сводилось к изменению исходных текстов модуля ядра `bridge` и его пересборке.
 
-Тестовый стенд 2
+Тестовая среда 2
 ----------------
 
 На этот раз вместо стандартных для Linux сетевых мостов, создаваемых с помощью модуля ядра `bridge`, я решил воспользоваться программным коммутатором Open vSwitch и реализовать следующую схему:
@@ -321,6 +321,49 @@
 
 Стоит отметить, что постоянные имена сетевых интерфейсов не должны начинаться с префиксов `vnet`, `vif`, `macvtap` или `macvlan`, в противном случае такое постоянное имя может быть проигнорировано.
 
+После запуска виртуальных машин на виртуальном коммутаторе `vswitch1` можно увидеть следующую картину:
+
+    # ovs-vsctl show
+    0c1a793c-69d7-4606-8a14-2ea9317eaa47
+        Bridge vswitch1
+            Port vm2-p2
+                Interface vm2-p2
+            Port vm1-p1
+                Interface vm1-p1
+            Port vm2-p1
+                Interface vm2-p1
+            Port vswitch1
+                Interface vswitch1
+                    type: internal
+            Port vm1-p2
+                Interface vm1-p2
+        ovs_version: "2.15.0"
+
+Все сетевые карты виртуальных машин просто включены в виртуальный коммутатор. Исправим это - создадим агрегирующие интерфейсы и переключим виртуальные машины в них:
+
+    # ovs-vsctl del-port vswitch1 vm1-p1
+    # ovs-vsctl del-port vswitch1 vm1-p2
+    # ovs-vsctl del-port vswitch1 vm2-p1
+    # ovs-vsctl del-port vswitch1 vm2-p2
+    # ovs-vsctl add-bond vswitch1 bond0 vm1-p1 vm1-p2 lacp=active other_config:lacp_time=fast
+    # ovs-vsctl add-bond vswitch1 bond1 vm2-p1 vm2-p2 lacp=active other_config:lacp_time=fast
+
+Состояние виртуального коммутатора `vswitch1` стало выглядеть следующим образом:
+
+    # ovs-vsctl show
+    0c1a793c-69d7-4606-8a14-2ea9317eaa47
+        Bridge vswitch1
+            Port bond0
+                Interface vm1-p1
+                Interface vm1-p2
+            Port vswitch1
+                Interface vswitch1
+                    type: internal
+            Port bond1
+                Interface vm2-p1
+                Interface vm2-p2
+        ovs_version: "2.15.0"
+
 Использованные материалы
 ------------------------
 
@@ -329,3 +372,5 @@
 * [man interfaces-bond(5)](https://manpages.debian.org/testing/ifupdown-ng/interfaces-bond.5.en.html)
 * [Linux bonding — объединение сетевых интерфейсов в Linux](https://www.adminia.ru/linux-bonding-obiedinenie-setevyih-interfeysov-v-linux/)
 * [Ralph Mönchmeyer. KVM/qemu, libvirt, virt-manager – persistent names for virtual network interfaces of guest systems](https://linux-blog.anracom.com/2016/02/07/kvmqemu-libvirt-virt-manager-persistent-names-for-the-virtual-network-interfaces-of-guest-systems/)
+* [Link Aggregation and LACP with Open vSwitch](https://blog.scottlowe.org/2012/10/19/link-aggregation-and-lacp-with-open-vswitch/)
+* [Radovan Brezula. Playing with Bonding on Openvswitch](https://brezular.com/2011/12/04/openvswitch-playing-with-bonding-on-openvswitch/)
