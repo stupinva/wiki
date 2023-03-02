@@ -405,4 +405,5 @@
 * [Radovan Brezula. Playing with Bonding on Openvswitch](https://brezular.com/2011/12/04/openvswitch-playing-with-bonding-on-openvswitch/)
 * [Multicast frames in Linux bridge dropped](https://answerbun.com/unix-linux/multicast-frames-in-linux-bridge-dropped/)
 * [An oddly specific post about group_fwd_mask](https://interestingtraffic.nl/2017/11/21/an-oddly-specific-post-about-group_fwd_mask/)
+* [libvirt / Domain XML format / Element and attribute overviewDevices / Network interfaces / Generic ethernet connection](https://libvirt.org/formatdomain.html#generic-ethernet-connection)
 * [Debian Linux Kernel Handbook / Chapter 4. Common kernel-related tasks](https://www.debian.org/doc/manuals/debian-kernel-handbook/ch-common-tasks.html)
