@@ -147,6 +147,11 @@
 
     SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="00:1e:67:5b:08:17", ATTR{dev_id}=="0x0", ATTR{type}=="1", KERNEL=="eth*", NAME="eno1"
 
+Для применения новых правил нужно выполнить следующие команды:
+
+    # udevadm control -R
+    # udevadm trigger
+
 Сетевому интерфейсу с MAC-адресом `00:1e:67:5b:08:17` будет назначено имя `eno1`.
 
 Настройка в CentOS 6
@@ -300,13 +305,19 @@
       <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
     </interface>
 
-Чтобы сетевые интерфейсы `vnet` создавались в системе всегда под одним и тем же именем, пропишем в файл конфигурации `/etc/udev/rules.d/70-persistent-net.rules` строчки для привязки имён сетевых интерфейсов к MAC-адресам:
+Кроме этого, чтобы сетевые интерфейсы `vnet` создавались в системе всегда под одним и тем же именем, добавим в конфигурацию каждого из интерфейсов строчку вида `<target dev='vm1-p1'/>` с его именем в системе виртуализации:
 
-    SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="52:54:00:16:5e:3b", ATTR{dev_id}=="0x0", ATTR{type}=="1", KERNEL=="vnet*", NAME="vm1-p1"
+    <interface type='bridge'>
+      <mac address='52:54:00:16:5e:3b'/>
+      <source bridge='vswitch1'/>
+      <virtualport type='openvswitch'/>
+      <model type='virtio'/>
+      <target dev='vm1-p1'/>
+      <link state='up'/>
+      <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
+    </interface>
 
-Сообщим демону `systemd-udevd` об изменившейся конфигурации с помощью следующей команды:
-
-    # udevd control -R
+Стоит отметить, что постоянные имена сетевых интерфейсов не должны начинаться с префиксов `vnet`, `vif`, `macvtap` или `macvlan`, в противном случае такое постоянное имя может быть проигнорировано.
 
 Использованные материалы
 ------------------------
@@ -315,3 +326,4 @@
 * [Preparing a bonded interface](https://www.ibm.com/docs/en/linux-on-systems?topic=connection-bonded-interface)
 * [man interfaces-bond(5)](https://manpages.debian.org/testing/ifupdown-ng/interfaces-bond.5.en.html)
 * [Linux bonding — объединение сетевых интерфейсов в Linux](https://www.adminia.ru/linux-bonding-obiedinenie-setevyih-interfeysov-v-linux/)
+* [Ralph Mönchmeyer. KVM/qemu, libvirt, virt-manager – persistent names for virtual network interfaces of guest systems](https://linux-blog.anracom.com/2016/02/07/kvmqemu-libvirt-virt-manager-persistent-names-for-the-virtual-network-interfaces-of-guest-systems/)
