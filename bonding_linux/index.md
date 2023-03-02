@@ -364,6 +364,8 @@
                 Interface vm2-p2
         ovs_version: "2.15.0"
 
+В этом тестовом окружении наблюдалась проблема аналогичная той, которая наблюдалась в первом тестовом окружении. Возможно трафик LACP фильтруется на уровне драйвера интерфейсов `vnet`.
+
 Использованные материалы
 ------------------------
 
@@ -374,3 +376,5 @@
 * [Ralph Mönchmeyer. KVM/qemu, libvirt, virt-manager – persistent names for virtual network interfaces of guest systems](https://linux-blog.anracom.com/2016/02/07/kvmqemu-libvirt-virt-manager-persistent-names-for-the-virtual-network-interfaces-of-guest-systems/)
 * [Link Aggregation and LACP with Open vSwitch](https://blog.scottlowe.org/2012/10/19/link-aggregation-and-lacp-with-open-vswitch/)
 * [Radovan Brezula. Playing with Bonding on Openvswitch](https://brezular.com/2011/12/04/openvswitch-playing-with-bonding-on-openvswitch/)
+* [Multicast frames in Linux bridge dropped](https://answerbun.com/unix-linux/multicast-frames-in-linux-bridge-dropped/)
+* [Debian Linux Kernel Handbook / Chapter 4. Common kernel-related tasks](https://www.debian.org/doc/manuals/debian-kernel-handbook/ch-common-tasks.html)
