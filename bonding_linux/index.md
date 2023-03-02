@@ -262,6 +262,8 @@
 
     16:16:59.047875 fe:54:00:16:5e:3b > 01:80:c2:00:00:02, ethertype Slow Protocols (0x8809), length 124: LACPv1, length 110
 
+Я нашёл в интернете страницу, где была описана возникшая у меня проблема: [Multicast frames in Linux bridge dropped](https://answerbun.com/unix-linux/multicast-frames-in-linux-bridge-dropped/), однако единственное предложенное решение сводилось к изменению исходных текстов модуля ядра `bridge` и его пересборке.
+
 Тестовый стенд 2
 ----------------
 
