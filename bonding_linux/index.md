@@ -377,4 +377,5 @@
 * [Link Aggregation and LACP with Open vSwitch](https://blog.scottlowe.org/2012/10/19/link-aggregation-and-lacp-with-open-vswitch/)
 * [Radovan Brezula. Playing with Bonding on Openvswitch](https://brezular.com/2011/12/04/openvswitch-playing-with-bonding-on-openvswitch/)
 * [Multicast frames in Linux bridge dropped](https://answerbun.com/unix-linux/multicast-frames-in-linux-bridge-dropped/)
+* [Linux kernel parameter group_fwd_mask-set bridge filtering MAC address range](https://www.programmersought.com/article/23143839923/)
 * [Debian Linux Kernel Handbook / Chapter 4. Common kernel-related tasks](https://www.debian.org/doc/manuals/debian-kernel-handbook/ch-common-tasks.html)
