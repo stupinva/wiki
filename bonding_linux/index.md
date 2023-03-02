@@ -345,8 +345,8 @@
     # ovs-vsctl del-port vswitch1 vm1-p2
     # ovs-vsctl del-port vswitch1 vm2-p1
     # ovs-vsctl del-port vswitch1 vm2-p2
-    # ovs-vsctl add-bond vswitch1 bond0 vm1-p1 vm1-p2 lacp=active other_config:lacp_time=fast
-    # ovs-vsctl add-bond vswitch1 bond1 vm2-p1 vm2-p2 lacp=active other_config:lacp_time=fast
+    # ovs-vsctl add-bond vswitch1 bond0 vm1-p1 vm1-p2 lacp=active other_config:lacp_time=fast other_config:bond-miimon-interval=100 other_config:bond-hash-basis=2
+    # ovs-vsctl add-bond vswitch1 bond1 vm2-p1 vm2-p2 lacp=active other_config:lacp_time=fast other_config:bond-miimon-interval=100 other_config:bond-hash-basis=2
 
 Состояние виртуального коммутатора `vswitch1` стало выглядеть следующим образом:
 
