@@ -287,6 +287,98 @@
 
 Я нашёл в интернете страницу, где была описана возникшая у меня проблема: [Multicast frames in Linux bridge dropped](https://answerbun.com/unix-linux/multicast-frames-in-linux-bridge-dropped/), однако единственное предложенное решение сводилось к изменению исходных текстов модуля ядра `bridge` и его пересборке.
 
+Если попытаться включить пропуск мультикаст-адреса `01:80:c2:00:00:02` мостовым интерфейсом, то можно увидеть такую ошибку:
+
+    # echo 4 > /sys/class/net/virbr1/bridge/group_fwd_mask 
+    -bash: echo: write error: Invalid argument
+
+После пересборки ядра Linux, которая описана ниже, становится возможным выполнить указанную выше команду без ошибок. Включаем пропуск мультикаст-трафика LACP на обоих сетевых мостах:
+
+    # echo 4 > /sys/class/net/virbr1/bridge/group_fwd_mask 
+    # echo 4 > /sys/class/net/virbr2/bridge/group_fwd_mask 
+
+Как ни странно, но даже после этого партнёры по агрегации не смогли согласовать агрегацию по протоколу LACP. На этот раз я обнаружил в журналах `/var/log/messages` сообщения следующего вида:
+
+    Mar  3 17:23:26 debian   kernel: [   91.295406] bond0: (slave eno1): failed to get link speed/duplex
+
+Очевидно, модуль ядра `bonding` не смог узнать скорость на интерфейсе, потому что мы используется сетевую карту модели `virtio`, которая является виртуальной. Попробуем заменить в настройках виртуальной машины модель сетевой карты на `rtl8139`, вот так:
+
+    <interface type="bridge">
+      <mac address="52:54:00:16:5e:3b"/>
+      <source bridge="virbr1"/>
+      <target dev="vm1-p1"/>
+      <model type="rtl8139"/>
+      <link state="up"/>
+      <address type="pci" domain="0x0000" bus="0x08" slot="0x00" function="0x0"/>
+    </interface>
+
+Выключим виртуальные машины и снова включим их. На этот раз виртуальные машины согласовали агрегацию по протоколу LACP. Отключение любого одного сетевого интерфейса на одной из виртуальной машине не приводит к потере связи между виртуальными машинами:
+
+[[deactive-vm1-p2.png]]
+
+### Пересборка ядра Linux
+
+Для пересборки пакетов с ядром Linux понадобится около 60 гигабайт места на диске и ещё некоторый объём для установки пакетов, необходимых для сборки.
+
+Первым делом установим пакеты, которые точно понадобятся для сборки:
+
+    # apt-get install dpkg-dev quilt devscripts
+
+Без пакета `dpkg-dev` команда `apt-get source` не сможет распаковать скачанные пакеты с исходными текстами, с помощью утилиты `quilt` я буду создавать заплатки к пакету, а с помощью утилиты `dch` из пакета `devscripts` буду редактировать журнал изменений пакета.
+
+Теперь скачаем и распакуем пакет с исходными текстами ядра Linux:
+
+    $ apt-get source linux
+
+Для сборки пакета требуется установить дополнительные пакеты. Сделаем это, пометив установленные пакеты как установленные автоматически, чтобы их потом было легко удалить из системы:
+
+    # apt-get install --mark-auto dpkg-dev quilt devscripts build-essential:native debhelper-compat dh-exec dh-python bison flex kernel-wedge libssl-dev:native libssl-dev libelf-dev:native libelf-dev lz4 dwarves python3-docutils zlib1g-dev libcap-dev libpci-dev autoconf automake libtool libglib2.0-dev libudev-dev libwrap0-dev asciidoctor gcc-multilib libaudit-dev libbabeltrace-dev libbabeltrace-dev libdw-dev libiberty-dev libnewt-dev libnuma-dev libperl-dev libunwind-dev libopencsd-dev python3-dev python3-sphinx python3-sphinx-rtd-theme texlive-latex-base texlive-latex-extra dvipng patchutils
+
+Перейдём в каталог с распакованными исходными текстами пакета:
+
+    $ cd linux-5.10.162
+
+С помощью `quilt` создадим новую заплатку:
+
+    $ quilt new allow-all-standard-group-mac-addresses
+
+Добавим в текущую заплатку отслеживание изменений в файле `net/bridge/br_private.h`:
+
+    $ quilt add net/bridge/br_private.h
+
+Откроем файл `net/bridge/br_private.h` на редактирование, находим макрос `BR_GROUPFWD_RESTRICTED` и присваиваем ему значение `0x0u`.
+
+Обновляем текущую заплатку, внеся в неё отличия в отредактированном нами файла:
+
+    $ quilt refresh
+
+Добавим в журнал изменений пакета описание нашей доработки и поменяем версию `5.10.162-1` на `5.10.162-1ufanet1`:
+
+    $ dch -i
+
+Добавленная мной запись в журнале выглядела следующим образом:
+
+    linux (5.10.162-1ufanet1) UNRELEASED; urgency=medium
+    
+      * Allow use all standard group MAC-addresses in group_fwd_mask of bridge
+        kernel module
+    
+     -- Vladimir Stupin <stupin_v@ufanet.ru>  Thu, 02 Mar 2023 17:00:32 +0500
+
+Запускаем сборку пакетов:
+
+    $ dpkg-buildpackage -us -uc -rfakeroot
+
+По окончании процесса сборки переходим в родительский каталог:
+
+    $ cd ..
+
+Среди собранных двоичных пакетов будет пакет с именем `linux-image-5.10.0-21-amd64-unsigned_5.10.162-1ufanet1_amd64.deb`. Установим его с помощью следующей команды:
+
+    # dpkg -i linux-image-5.10.0-21-amd64-unsigned_5.10.162-1ufanet1_amd64.deb
+
+Осталось перезагрузить систему, чтобы можно было загрузить в ядро обновлённый модуль.
+
 Тестовая среда 2
 ----------------
 
