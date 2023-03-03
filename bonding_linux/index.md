@@ -401,6 +401,7 @@
 * [man interfaces-bond(5)](https://manpages.debian.org/testing/ifupdown-ng/interfaces-bond.5.en.html)
 * [Linux bonding — объединение сетевых интерфейсов в Linux](https://www.adminia.ru/linux-bonding-obiedinenie-setevyih-interfeysov-v-linux/)
 * [Ralph Mönchmeyer. KVM/qemu, libvirt, virt-manager – persistent names for virtual network interfaces of guest systems](https://linux-blog.anracom.com/2016/02/07/kvmqemu-libvirt-virt-manager-persistent-names-for-the-virtual-network-interfaces-of-guest-systems/)
+* [Using advanced tcpdump filters / General trace principles / Tracing Ethernet header type LACP](https://my.f5.com/manage/s/article/K2289#6)
 * [Link Aggregation and LACP with Open vSwitch](https://blog.scottlowe.org/2012/10/19/link-aggregation-and-lacp-with-open-vswitch/)
 * [Radovan Brezula. Playing with Bonding on Openvswitch](https://brezular.com/2011/12/04/openvswitch-playing-with-bonding-on-openvswitch/)
 * [Multicast frames in Linux bridge dropped](https://answerbun.com/unix-linux/multicast-frames-in-linux-bridge-dropped/)
