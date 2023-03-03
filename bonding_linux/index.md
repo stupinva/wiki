@@ -242,6 +242,18 @@
       <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
     </interface>
 
+Чтобы сетевые интерфейсы `vnet` создавались в системе всегда под одним и тем же именем, добавим в конфигурацию каждого из интерфейсов строчку вида `<target dev='vm1-p1'/>` с его именем в системе виртуализации:
+
+    <interface type='bridge'>
+      <mac address='52:54:00:16:5e:3b'/>
+      <source bridge='virbr1'/>
+      <target dev='vm1-p1'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+    </interface>
+
+Стоит отметить, что постоянные имена сетевых интерфейсов не должны начинаться с префиксов `vnet`, `vif`, `macvtap` или `macvlan`, в противном случае такое постоянное имя может быть проигнорировано.
+
 К сожалению, в этой тестовой среде агрегация сетевых интерфейсов работала загадочно. При неактивном сетевом интерфейсе `virbr2` связь между виртуальными машинами оставалась, а вот при неактивном сетевом интерфейсе `virbr1` связь пропадала.
 
 На виртуальной машине с CentOS, судя по содержимому файла `/proc/net/bonding/bond0`, не происходило согласование агрегации по протоколу LACP с партнёром по агрегации - виртуальной машиной с Debian.
@@ -259,9 +271,9 @@
     Aggregator ID: 1
     Aggregator ID: 1
 
-Было подозрение, что сетевые мосты не транслируют трафик протокола LACP. В пользу этой версии говорило наблюдение за трафиком LACP на сетевых интерфейсах vnet и virbr с помощью `tcpdump`:
+Было подозрение, что сетевые мосты не транслируют трафик протокола LACP. В пользу этой версии говорило наблюдение за трафиком LACP на сетевых интерфейсах vm*-p* и virbr с помощью `tcpdump`:
 
-    # tcpdump -npi vnet61 -e ether proto 0x8809
+    # tcpdump -npi vm1-p1 -e ether proto 0x8809
 
 На сетевых интерфейсах vnet можно было наблюдать попытки отправить пакет по протоколу LACP на мультикаст-адрес, в то время как на мостовых интерфейсах virbr подобный трафик отсутствовал:
 
@@ -288,11 +300,11 @@
 
 На компьютере с системой виртуализации предполагается создать программный коммутатор Open vSwitch с именем `vswitch1`, а на нём создать две агрегации с именами `bond1` и `bond2`, поддерживающие работу по протоколу LACP. В первую агрегацию включаются сетевые интерфейсы виртуальной машины с Debian, а во вторую агрегацию - сетевые интерфейсы виртуальной машины с CentOS. При такой схеме агрегацию на каждой из виртуальных машин можно будет проверять и настраивать независимо.
 
-Установим пакет с Open vSwitch на компьютере с системой виртуалцизации:
+Установим пакет с Open vSwitch на компьютере с системой виртуализации:
 
     # apt-get install openvswitch-switch
 
-Вместо настроенных ранее сетевых мостов `virbr1` и `virbr2` пропишем в файле конфигруации `/etc/network/interfaces` конфигурацию программного коммутатора `vswitch1`:
+Вместо настроенных ранее сетевых мостов `virbr1` и `virbr2` пропишем в файле конфигурации `/etc/network/interfaces` конфигурацию программного коммутатора `vswitch1`:
 
     auto vswitch1
     allow-ovs vswitch1
@@ -314,24 +326,11 @@
       <mac address='52:54:00:16:5e:3b'/>
       <source bridge='vswitch1'/>
       <virtualport type='openvswitch'/>
-      <model type='virtio'/>
-      <link state='up'/>
-      <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
-    </interface>
-
-Кроме этого, чтобы сетевые интерфейсы `vnet` создавались в системе всегда под одним и тем же именем, добавим в конфигурацию каждого из интерфейсов строчку вида `<target dev='vm1-p1'/>` с его именем в системе виртуализации:
-
-    <interface type='bridge'>
-      <mac address='52:54:00:16:5e:3b'/>
-      <source bridge='vswitch1'/>
-      <virtualport type='openvswitch'/>
-      <model type='virtio'/>
       <target dev='vm1-p1'/>
+      <model type='virtio'/>
       <link state='up'/>
       <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
     </interface>
-
-Стоит отметить, что постоянные имена сетевых интерфейсов не должны начинаться с префиксов `vnet`, `vif`, `macvtap` или `macvlan`, в противном случае такое постоянное имя может быть проигнорировано.
 
 После запуска виртуальных машин на виртуальном коммутаторе `vswitch1` можно увидеть следующую картину:
 
@@ -402,9 +401,9 @@
 * [Linux bonding — объединение сетевых интерфейсов в Linux](https://www.adminia.ru/linux-bonding-obiedinenie-setevyih-interfeysov-v-linux/)
 * [Ralph Mönchmeyer. KVM/qemu, libvirt, virt-manager – persistent names for virtual network interfaces of guest systems](https://linux-blog.anracom.com/2016/02/07/kvmqemu-libvirt-virt-manager-persistent-names-for-the-virtual-network-interfaces-of-guest-systems/)
 * [Using advanced tcpdump filters / General trace principles / Tracing Ethernet header type LACP](https://my.f5.com/manage/s/article/K2289#6)
-* [Link Aggregation and LACP with Open vSwitch](https://blog.scottlowe.org/2012/10/19/link-aggregation-and-lacp-with-open-vswitch/)
-* [Radovan Brezula. Playing with Bonding on Openvswitch](https://brezular.com/2011/12/04/openvswitch-playing-with-bonding-on-openvswitch/)
 * [Multicast frames in Linux bridge dropped](https://answerbun.com/unix-linux/multicast-frames-in-linux-bridge-dropped/)
 * [An oddly specific post about group_fwd_mask](https://interestingtraffic.nl/2017/11/21/an-oddly-specific-post-about-group_fwd_mask/)
-* [libvirt / Domain XML format / Element and attribute overviewDevices / Network interfaces / Generic ethernet connection](https://libvirt.org/formatdomain.html#generic-ethernet-connection)
+* [libvirt / Domain XML format / Element and attribute overview / Devices / Network interfaces / Generic ethernet connection](https://libvirt.org/formatdomain.html#generic-ethernet-connection)
+* [Link Aggregation and LACP with Open vSwitch](https://blog.scottlowe.org/2012/10/19/link-aggregation-and-lacp-with-open-vswitch/)
+* [Radovan Brezula. Playing with Bonding on Openvswitch](https://brezular.com/2011/12/04/openvswitch-playing-with-bonding-on-openvswitch/)
 * [Debian Linux Kernel Handbook / Chapter 4. Common kernel-related tasks](https://www.debian.org/doc/manuals/debian-kernel-handbook/ch-common-tasks.html)
