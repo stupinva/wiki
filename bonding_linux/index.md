@@ -417,42 +417,18 @@
 
     # virsh edit vm
 
-Сделаем сетевые интерфейсы пригодными для подключения к программному коммутатору Open vSwitch, для чего добавим строчку `<virtualport type='openvswitch'/>`, а имена сетевых мостов `virbr1` и `virbr2` заменим на имя программного коммутатора `vswitch1`:
+Сделаем сетевые интерфейсы пригодными для подключения к программному коммутатору Open vSwitch. Чтобы KVM не пытался добавить эти интерфейсы в мосты, заменим строчки `<interface type='bridge'>` на `<interface type='ethernet'>` и удалим строчки вида `<source bridge="virbr1"/>`:
 
-    <interface type='bridge'>
+    <interface type='ethernet'>
       <mac address='52:54:00:16:5e:3b'/>
-      <source bridge='vswitch1'/>
-      <virtualport type='openvswitch'/>
       <target dev='vm1-p1'/>
-      <model type='virtio'/>
+      <model type='e1000'/>
       <link state='up'/>
       <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
     </interface>
 
-После запуска виртуальных машин на виртуальном коммутаторе `vswitch1` можно увидеть следующую картину:
+Таким образом после запуска виртуальных машин мы получим сетевые интерфейсы Ethernet, не подключенные к какому-либо мосту. Создадим агрегирующие интерфейсы и включим в них интерфейсы виртуальных машин:
 
-    # ovs-vsctl show
-    0c1a793c-69d7-4606-8a14-2ea9317eaa47
-        Bridge vswitch1
-            Port vm2-p2
-                Interface vm2-p2
-            Port vm1-p1
-                Interface vm1-p1
-            Port vm2-p1
-                Interface vm2-p1
-            Port vswitch1
-                Interface vswitch1
-                    type: internal
-            Port vm1-p2
-                Interface vm1-p2
-        ovs_version: "2.15.0"
-
-Все сетевые карты виртуальных машин просто включены в виртуальный коммутатор. Исправим это - создадим агрегирующие интерфейсы и переключим виртуальные машины в них:
-
-    # ovs-vsctl del-port vswitch1 vm1-p1
-    # ovs-vsctl del-port vswitch1 vm1-p2
-    # ovs-vsctl del-port vswitch1 vm2-p1
-    # ovs-vsctl del-port vswitch1 vm2-p2
     # ovs-vsctl add-bond vswitch1 bond0 vm1-p1 vm1-p2 lacp=active other_config:lacp_time=fast other_config:bond-miimon-interval=100 other_config:bond-hash-basis=2
     # ovs-vsctl add-bond vswitch1 bond1 vm2-p1 vm2-p2 lacp=active other_config:lacp_time=fast other_config:bond-miimon-interval=100 other_config:bond-hash-basis=2
 
@@ -472,22 +448,9 @@
                 Interface vm2-p2
         ovs_version: "2.15.0"
 
-Теперь виртуальный коммутатор запомнил конфигурацию, которую нужно применять к сетевым интерфейсам виртуальных машин. Чтобы KVM не пытался снова добавить эти интерфейсы напрямую в коммутатор, их конфигурацию нужно привести к следующему виду:
+Теперь виртуальный коммутатор запомнил конфигурацию, которую нужно применять к сетевым интерфейсам виртуальных машин и она будет автоматически восстанавливаться даже после выключения виртуальной машины.
 
-    <interface type='ethernet'>
-      <mac address='52:54:00:16:5e:3b'/>
-      <target dev='vm1-p1'/>
-      <model type='virtio'/>
-      <link state='up'/>
-      <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
-    </interface>
-
-В этом тестовом окружении наблюдалась проблема аналогичная той, которая наблюдалась в первом тестовом окружении. Возможно трафик LACP фильтруется на уровне драйвера интерфейсов `vnet`.
-
-    # ovs-vsctl set interface vm2-p1 other_config:forward-bpdu=true
-    # ovs-vsctl set interface vm2-p2 other_config:forward-bpdu=true
-    # ovs-vsctl set interface vm1-p1 other_config:forward-bpdu=true
-    # ovs-vsctl set interface vm1-p2 other_config:forward-bpdu=true
+В этой конфигурации агрегация интерфейсов по протоколу LACP тоже заработала ожидаемым образом, причём в этом случае не потребовалось исправлять исходные тексты модуля bridge и пересобирать ядро Linux.
 
 Использованные материалы
 ------------------------
