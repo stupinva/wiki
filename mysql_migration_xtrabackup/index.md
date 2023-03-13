@@ -73,7 +73,7 @@
     $ echo "USE salavat;" >> db_schema.sql
     $ mysql information_schema -BNe "SELECT table_name, row_format FROM tables WHERE table_schema = 'salavat' AND table_type = 'BASE TABLE' AND row_format <> 'Dynamic';" | awk '{ print "ALTER TABLE " $1 " ROW_FORMAT=" $2 ";" }' >> db_schema.sql
 
-Второй способ сложнее. Придётся менять формат таблиц на работающем сервере, что может вызывать блокировку таблиц. Для таблиц с первичными ключами и ключами уникальности можно воспользоваться утилитой [[pt_online_schema_change|pt-online-schema-change]]. Для остальных таблиц придётся воспользоваться запросами `ALTER TABLE` с блокировкой таблиц на время их изменения.
+Второй способ сложнее. Придётся менять формат таблиц на работающем сервере, что может вызывать блокировку таблиц. Для таблиц с первичными ключами и ключами уникальности можно воспользоваться утилитой [[pt-online-schema-change|pt_online_schema_change]]. Для остальных таблиц придётся воспользоваться запросами `ALTER TABLE` с блокировкой таблиц на время их изменения.
 
 Команды импорта таблиц
 ----------------------
