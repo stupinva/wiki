@@ -73,7 +73,48 @@
     $ echo "USE salavat;" >> db_schema.sql
     $ mysql information_schema -BNe "SELECT table_name, row_format FROM tables WHERE table_schema = 'salavat' AND table_type = 'BASE TABLE' AND row_format <> 'Dynamic';" | awk '{ print "ALTER TABLE " $1 " ROW_FORMAT=" $2 ";" }' >> db_schema.sql
 
-Второй способ сложнее. Придётся менять формат таблиц на работающем сервере, что может вызывать блокировку таблиц. Для таблиц с первичными ключами и ключами уникальности можно воспользоваться утилитой [[pt-online-schema-change|pt_online_schema_change]]. Для остальных таблиц придётся воспользоваться запросами `ALTER TABLE` с блокировкой таблиц на время их изменения.
+Второй способ сложнее. Придётся менять формат таблиц на работающем сервере, что может вызывать блокировку таблиц. Для таблиц с первичными ключами и ключами уникальности можно воспользоваться утилитой [[pt-online-schema-change|pt_online_schema_change]], например, следующим образом:
+
+    $ mysql information_schema -BN <<END | sh
+    SELECT CONCAT('    pt-online-schema-change --alter row_format=Dynamic --execute D=',
+           tables.table_schema,
+           ',t=',
+           tables.table_name)
+    FROM tables
+    JOIN table_constraints ON tables.table_schema = table_constraints.table_schema
+      AND tables.table_name = table_constraints.table_name
+      AND table_constraints.constraint_type IN ('PRIMARY KEY', 'UNIQUE')
+    WHERE tables.engine = 'InnoDB'
+      AND tables.row_format <> 'Dynamic'
+      AND tables.table_schema IN ('icsms_statistic', 'neftekamsk', 'oktyabrsky', 'sterlitamak', 'ishimbay', 'salavat')
+      AND tables.table_type = 'BASE TABLE'
+    ORDER BY tables.data_length + tables.index_length DESC,
+             tables.table_schema ASC,
+             tables.table_name ASC;
+    END
+
+Для остальных таблиц придётся воспользоваться запросами `ALTER TABLE` с блокировкой таблиц на время их изменения:
+
+    $ mysql information_schema -BN <<END | mysql
+    SELECT CONCAT('    ALTER TABLE \`',
+           tables.table_schema,
+           '\`.\`',
+           tables.table_name,
+           '\` row_format=Dynamic; -- ',
+           (tables.data_length + tables.index_length) / (1024 * 1024),
+           ' MB')
+    FROM tables
+    LEFT JOIN table_constraints ON tables.table_schema = table_constraints.table_schema
+      AND tables.table_name = table_constraints.table_name
+      AND table_constraints.constraint_type IN ('PRIMARY KEY', 'UNIQUE')
+    WHERE table_constraints.constraint_type IS NULL
+      AND tables.engine = 'InnoDB'
+      AND tables.table_schema IN ('icsms_statistic', 'neftekamsk', 'oktyabrsky', 'sterlitamak', 'ishimbay', 'salavat')
+      AND tables.table_type = 'BASE TABLE'
+    ORDER BY tables.data_length + tables.index_length DESC,
+             tables.table_schema ASC,
+             tables.table_name ASC;
+    END
 
 Команды импорта таблиц
 ----------------------
