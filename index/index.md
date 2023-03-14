@@ -79,6 +79,7 @@ MySQL
 * [[Настройка реплики MySQL с помощью снимков LVM и rysnc|mysql_slave_lvm_rsync]]
 * [[Настройка реплики MySQL с помощью mysqldump|mysql_slave_mysqldump]]
 * [[Перенос базы данных с одного сервера MySQL на другой с помощью xtrabackup|mysql_migration_xtrabackup]]
+* [[Перенос базы данных с одного сервера MySQL на другой с помощью mysqldump|mysql_migration_mysqldump]]
 * [[Периодическое резервное копирование MySQL с помощью xtrabackup|mysql_periodic_xtrabackup]]
 * [[Архивация периодических таблиц MySQL|mysql_archive_tables]]
 * [[Добавление нового узла в кластер Percona XtraDB Cluster|xtradb_cluster]]
