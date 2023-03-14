@@ -252,7 +252,7 @@
 
 ### Преобразование всех таблиц из MyISAM в InnoDB
 
-В лоб эту задачу можно решить следующим образом:
+"В лоб" эту задачу можно решить следующим образом:
 
     $ mysql information_schema -BN <<END | mysql
     SELECT CONCAT('ALTER TABLE \`',
@@ -271,7 +271,10 @@
     SELECT CONCAT('pt-online-schema-change --alter engine=InnoDB --execute D=',
            tables.table_schema,
            ',t=',
-           tables.table_name)
+           tables.table_name,
+           ' # ',
+           (tables.data_length + tables.index_length) / (1024 * 1024),
+           ' MB'))
     FROM tables
     JOIN table_constraints ON tables.table_schema = table_constraints.table_schema
       AND tables.table_name = table_constraints.table_name
@@ -279,7 +282,8 @@
     WHERE tables.engine = 'MyISAM'
       AND tables.table_schema NOT IN ('mysql', 'information_schema', 'performance_schema', 'sys')
       AND tables.table_type = 'BASE TABLE'
-    ORDER BY tables.table_schema,
+    ORDER BY tables.data_length + tables.index_length DESC,
+             tables.table_schema,
              tables.table_name;
     END
 
@@ -334,6 +338,69 @@
     FROM partitions
     WHERE partition_name IS NOT NULL
       OR subpartition_name IS NOT NULL;
+    END
+
+### Преобразование формата строк таблиц InnoDB
+
+Строки таблиц InnoDB могут храниться в форматах `Redundant`, `Compact`, `Dynamic` и `Compressed`. Форматы `Redundant` и `Compact` поддерживают индексы шириной не более 768 байт, в результате чего индексы по текстовым полям, у которых в начале часто встречается определённый длинный текст, могут оказаться неэффективными. Форматы `Dynamic` и `Compressed` поддерживают индексы шириной до 3072 байт и в подобных ситуациях могут оказаться эффективнее. Для преобразования всех таблиц InnoDB к формату строк `Dynamic` можно воспользоваться решением "в лоб":
+
+    $ mysql information_schema -BN <<END | mysql
+    SELECT CONCAT('ALTER TABLE \`',
+                  table_schema,
+                  '\`.\`',
+                  table_name,
+                  '\` ROW_FORMAT=Dynamic;')
+    FROM tables
+    WHERE engine = 'InnoDB'
+      AND row_format <> 'Dynamic'
+      AND table_schema NOT IN ('mysql', 'performance_schema', 'information_schema', 'sys');"
+    END
+
+Преобразовать формат строк в таблицах без их блокировки с помощью утилиты `pt-online-schema-change` можно, например, вот так:
+
+    $ mysql information_schema -BN <<END | sh
+    SELECT CONCAT('pt-online-schema-change --alter row_format=Dynamic --execute D=',
+                  tables.table_schema,
+                  ',t=',
+                  tables.table_name,
+                  ' # ',
+                  (tables.data_length + tables.index_length) / (1024 * 1024),
+                  ' MB'))
+    FROM tables
+    JOIN table_constraints ON tables.table_schema = table_constraints.table_schema
+      AND tables.table_name = table_constraints.table_name
+      AND table_constraints.constraint_type IN ('PRIMARY KEY', 'UNIQUE')
+    WHERE tables.engine = 'InnoDB'
+      AND tables.row_format <> 'Dynamic'
+      AND tables.table_schema NOT IN ('mysql', 'information_schema', 'performance_schema', 'sys')
+      AND tables.table_type = 'BASE TABLE'
+    ORDER BY tables.data_length + tables.index_length DESC,
+             tables.table_schema,
+             tables.table_name;
+    END
+
+Таблицы без первичного ключа и ключа уникальности утилита `pt-online-schema-change` обрабатывать не умеет, поэтому их придётся обрабатывать прежним образом:
+
+    $ mysql information_schema -BN <<END
+    SELECT CONCAT('ALTER TABLE \`',
+                  tables.table_schema,
+                  '\`.\`',
+                  tables.table_name,
+                  '\` ROW_FORMAT=Dynamic; -- ',
+                  (tables.data_length + tables.index_length) / (1024 * 1024),
+                  ' MB')
+    FROM tables
+    LEFT JOIN table_constraints ON tables.table_schema = table_constraints.table_schema
+      AND tables.table_name = table_constraints.table_name
+      AND table_constraints.constraint_type IN ('PRIMARY KEY', 'UNIQUE')
+    WHERE table_constraints.constraint_type IS NULL
+      AND tables.engine = 'InnoDB'
+      AND talbes.row_format <> 'Dynamic'
+      AND tables.table_schema NOT IN ('mysql', 'information_schema', 'performance_schema', 'sys')
+      AND tables.table_type = 'BASE TABLE'
+    ORDER BY tables.data_length + tables.index_length DESC,
+             tables.table_schema ASC,
+             tables.table_name ASC;
     END
 
 ### Удаление осиротевших табличных пространств
