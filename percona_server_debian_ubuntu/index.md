@@ -30,7 +30,7 @@
     # apt-get install percona-xtrabackup-24
     # apt-get install percona-toolkit
 
-В Debian Bullseye поставляется только Percona Server 8.0, соответствующий ему пакет Percona XtraBackup 8.0 и набор инструментов Percona Toolkit, работающий с любым вариантом сервера MySQL. Для этого случая включение репозиториев, обновление списка пакетов и их установка выполняются с помощью следующих команд:
+В Debian Bullseye поставляется Percona Server 8.0, соответствующий ему пакет Percona XtraBackup 8.0 и набор инструментов Percona Toolkit, работающий с любым вариантом сервера MySQL. Для этого случая включение репозиториев, обновление списка пакетов и их установка выполняются с помощью следующих команд:
 
     # percona-release enable ps-80
     # percona-release enable pxb-80
