@@ -410,11 +410,14 @@
 
 Игнорировать ошибки репликации небезопасно. Однажды пропущенная запись из журнала репликации приводит к появлению различий в таблицах на источнике и реплике. Даже если база данных содержит лишь таблицы, содержимое которых используется как кэш или журнал событий, и небольшая разница в данных не критична, однажды появившееся расхождение может приводить к возникновению новых ошибок репликации. Поэтому стоит использовать пропуск записей из журнала репликации лишь как временную меру до тех пор, пока не будет развёрнута новая реплика.
 
+Источник:
+
+* [Another reason why SQL_SLAVE_SKIP_COUNTER is bad in MySQL](https://www.percona.com/blog/2013/07/23/another-reason-why-sql_slave_skip_counter-is-bad-in-mysql/)
+
 Дополнительные материалы
 ------------------------
 
 * [Jeremy Cole. The MySQL “swap insanity” problem and the effects of the NUMA architecture](https://blog.jcole.us/2010/09/28/mysql-swap-insanity-and-the-numa-architecture/)
 * [Jeremy Cole. A brief update on NUMA and MySQL](https://blog.jcole.us/2012/04/16/a-brief-update-on-numa-and-mysql/)
 * [Memory part 4: NUMA support](https://lwn.net/Articles/254445/)
-* [Another reason why SQL_SLAVE_SKIP_COUNTER is bad in MySQL](https://www.percona.com/blog/2013/07/23/another-reason-why-sql_slave_skip_counter-is-bad-in-mysql/)
 * [Syncing MySQL Slave Table with pt-online-schema-change](https://dzone.com/articles/syncing-mysql-slave-table-pt)
