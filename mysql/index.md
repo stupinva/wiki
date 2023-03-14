@@ -6,16 +6,18 @@
 
 [[!toc startlevel=2 levels=3]]
 
-Логин и пароль в консольном клиенте mysql
------------------------------------------
+Пользователи
+------------
 
-### Явное указание логина и пароля
+### Логин и пароль в консольном клиенте mysql
+
+#### Явное указание логина и пароля
 
 Клиент MySQL может подключаться с использованием явно указанного пароля:
 
     $ mysql -u username -p pass
 
-### Использование файла с логином и паролем
+#### Использование файла с логином и паролем
 
 Можно указать используемые по умолчанию настройки клиента в произвольном файле в следующем виде:
 
@@ -28,7 +30,7 @@
 
     $ mysql --defaults-file=файл.cnf
 
-### Использование файла `~/.mylogin.cnf`
+#### Использование файла `~/.mylogin.cnf`
 
 Можно настроить используемый по умолчанию пароль в файле `~/.mylogin.cnf` при помощи команды следующего вида:
 
@@ -44,15 +46,67 @@
 
     $ mysql --login-path=client
 
-### Аутентификация через Unix-сокет
+#### Аутентификация через Unix-сокет
 
 Имеется также возможность аутентификации без пароля при подключении через Unix-сокет. Для этого в настройках у клиента вместо традиционного плагина `mysql_native_password` должен быть выставлен плагин `auth_socket`. Для изменения способа аутентификации определённого пользователя можно воспользоваться одним из соответствующих запросов:
 
     ALTER USER user@localhost IDENTIFIED WITH mysql_native_password BY 'password';
     ALTER USER user@localhost IDENTIFIED WITH auth_socket;
 
-Просмотр списка активных транзакций
------------------------------------
+### Просмотр пользователей-определителей
+
+В базах данных могут быть определены представления, подпрограммы, события и триггеры, исполняемые с правами пользователя, который их определил. Для получения списка таких пользователей можно воспользоваться следующим запросом:
+
+    SELECT DISTINCT m.user,
+                    m.host,
+                    CASE WHEN is_v.DEFINER IS NULL THEN 'N' ELSE 'Y' END AS view_definer,
+                    CASE WHEN is_r.DEFINER IS NULL THEN 'N' ELSE 'Y' END AS routine_definer,
+                    CASE WHEN is_e.DEFINER IS NULL THEN 'N' ELSE 'Y' END AS event_definer,
+                    CASE WHEN is_t.DEFINER IS NULL THEN 'N' ELSE 'Y' END AS trigger_definer
+    FROM mysql.user m
+    LEFT JOIN information_schema.views is_v ON is_v.security_type = 'DEFINER'
+      AND is_v.definer LIKE CONCAT(m.user, '@', m.host)
+    LEFT JOIN information_schema.routines is_r ON is_r.security_type = 'DEFINER'
+      AND is_r.definer LIKE CONCAT(m.user, '@', m.host)
+    LEFT JOIN information_schema.events is_e ON is_e.definer LIKE CONCAT(m.user, '@', m.host)
+    LEFT JOIN information_schema.triggers is_t ON is_t.definer LIKE CONCAT(m.user, '@', m.host)
+    WHERE is_v.DEFINER IS NOT NULL
+      OR is_r.DEFINER IS NOT NULL
+      OR is_e.DEFINER IS NOT NULL
+      OR is_t.DEFINER IS NOT NULL
+    GROUP BY m.user, m.host
+    ORDER BY user, host
+
+### Просмотр неактивных пользователей
+
+Запрос для извлечения пользователей, которые никогда не подключались и не определили представление, подпрограмму, триггер или запись в планировщике задач:
+
+    SELECT DISTINCT m.user,
+                    m.host
+    FROM mysql.user m
+    LEFT JOIN performance_schema.accounts p ON m.user = p.user
+      AND p.host LIKE m.host
+    LEFT JOIN information_schema.views is_v ON is_v.security_type = 'DEFINER'
+      AND is_v.definer LIKE CONCAT(m.user, '@', m.host)
+    LEFT JOIN information_schema.routines is_r ON is_r.security_type = 'DEFINER'
+      AND is_r.definer LIKE CONCAT(m.user, '@', m.host)
+    LEFT JOIN information_schema.events is_e ON is_e.definer LIKE CONCAT(m.user, '@', m.host)
+    LEFT JOIN information_schema.triggers is_t ON is_t.definer LIKE CONCAT(m.user, '@', m.host)
+    WHERE p.user IS NULL
+      AND is_v.DEFINER IS NULL
+      AND is_r.DEFINER IS NULL
+      AND is_e.DEFINER IS NULL
+      AND is_t.DEFINER IS NULL
+    ORDER BY user, host;
+
+Источник:
+
+* [How to find unused MariaDB/MySQL accounts](https://falseisnotnull.wordpress.com/2013/09/14/how-to-find-unused-mariadbmysql-accounts/)
+
+Просмотр информации
+-------------------
+
+### Просмотр списка активных транзакций
 
 Просмотреть список активных транзакций можно выполнив в базе данных `information_schema` следующий запрос:
 
@@ -69,8 +123,7 @@
 
     KILL <trx_mysql_thread_id>;
 
-Просмотр количества записей в журнале откатов
----------------------------------------------
+### Просмотр количества записей в журнале откатов
 
 Просмотреть количество элементов можно выполнив в базе данных `information_schema` следующий запрос:
 
@@ -86,8 +139,7 @@
 
     History list length 2759
 
-Просмотр объёма сегментов отката транзакций
--------------------------------------------
+### Просмотр объёма сегментов отката транзакций
 
 Узнать объём сегментов отката транзакций в мегабайтах можно из базы данных `information_schema` при помощи запроса:
 
@@ -127,60 +179,13 @@
 * [Innodb transaction history often hides dangerous ‘debt’](https://www.percona.com/blog/2014/10/17/innodb-transaction-history-often-hides-dangerous-debt/).
 * [24.4.2 The INFORMATION_SCHEMA INNODB_BUFFER_PAGE Table](https://dev.mysql.com/doc/refman/5.7/en/information-schema-innodb-buffer-page-table.html)
 
-Просмотр пользователей-определителей
-------------------------------------
+### Выгрузка схемы базы данных
 
-В базах данных могут быть определены представления, подпрограммы, события и триггеры, исполняемые с правами пользователя, который их определил. Для получения списка таких пользователей можно воспользоваться следующим запросом:
+Для выгрузки схемы базы данных можно воспользоваться утилитой резервного копирования:
 
-    SELECT DISTINCT m.user,
-                    m.host,
-                    CASE WHEN is_v.DEFINER IS NULL THEN 'N' ELSE 'Y' END AS view_definer,
-                    CASE WHEN is_r.DEFINER IS NULL THEN 'N' ELSE 'Y' END AS routine_definer,
-                    CASE WHEN is_e.DEFINER IS NULL THEN 'N' ELSE 'Y' END AS event_definer,
-                    CASE WHEN is_t.DEFINER IS NULL THEN 'N' ELSE 'Y' END AS trigger_definer
-    FROM mysql.user m
-    LEFT JOIN information_schema.views is_v ON is_v.security_type = 'DEFINER'
-      AND is_v.definer LIKE CONCAT(m.user, '@', m.host)
-    LEFT JOIN information_schema.routines is_r ON is_r.security_type = 'DEFINER'
-      AND is_r.definer LIKE CONCAT(m.user, '@', m.host)
-    LEFT JOIN information_schema.events is_e ON is_e.definer LIKE CONCAT(m.user, '@', m.host)
-    LEFT JOIN information_schema.triggers is_t ON is_t.definer LIKE CONCAT(m.user, '@', m.host)
-    WHERE is_v.DEFINER IS NOT NULL
-      OR is_r.DEFINER IS NOT NULL
-      OR is_e.DEFINER IS NOT NULL
-      OR is_t.DEFINER IS NOT NULL
-    GROUP BY m.user, m.host
-    ORDER BY user, host
+    $ mysqldump --single-transaction --skip-comments --skip-add-drop-table --no-data db > db_schema.sql
 
-Просмотр неактивных пользователей
----------------------------------
-
-Запрос для извлечения пользователей, которые никогда не подключались и не определили представление, подпрограмму, триггер или запись в планировщике задач:
-
-    SELECT DISTINCT m.user,
-                    m.host
-    FROM mysql.user m
-    LEFT JOIN performance_schema.accounts p ON m.user = p.user
-      AND p.host LIKE m.host
-    LEFT JOIN information_schema.views is_v ON is_v.security_type = 'DEFINER'
-      AND is_v.definer LIKE CONCAT(m.user, '@', m.host)
-    LEFT JOIN information_schema.routines is_r ON is_r.security_type = 'DEFINER'
-      AND is_r.definer LIKE CONCAT(m.user, '@', m.host)
-    LEFT JOIN information_schema.events is_e ON is_e.definer LIKE CONCAT(m.user, '@', m.host)
-    LEFT JOIN information_schema.triggers is_t ON is_t.definer LIKE CONCAT(m.user, '@', m.host)
-    WHERE p.user IS NULL
-      AND is_v.DEFINER IS NULL
-      AND is_r.DEFINER IS NULL
-      AND is_e.DEFINER IS NULL
-      AND is_t.DEFINER IS NULL
-    ORDER BY user, host;
-
-Источник:
-
-* [How to find unused MariaDB/MySQL accounts](https://falseisnotnull.wordpress.com/2013/09/14/how-to-find-unused-mariadbmysql-accounts/)
-
-Просмотр размеров таблиц и индексов
------------------------------------
+### Просмотр размеров таблиц и индексов
 
 Для просмотра 10 самых крупных таблиц (вместе с индексами) можно воспользоваться запросом следующего вида, выполнив его в базе данных `information_schema`:
 
@@ -190,8 +195,7 @@
     ORDER BY s DESC
     LIMIT 10;
 
-Поиск таблиц без первичного ключа и ключа уникальности
-------------------------------------------------------
+### Поиск таблиц без первичного ключа и ключа уникальности
 
 Для поиска таблиц, не имеющих первичного ключа, можно воспользоваться следующим запросом к базе данных `information_schema`:
 
@@ -223,10 +227,9 @@
 
 Источник: [Bart Gawrych. Find tables without primary keys (PKs) in MySQL database](https://dataedo.com/kb/query/mysql/find-tables-without-primary-keys)
 
-Просмотр необычных движков таблиц
----------------------------------
+### Поиск таблиц с необычными форматами
 
-"Обычным" движком для таблиц считается InnoDB. Для получения списка таблиц, в которых используются другие движки, за исключением таблиц в системных базах данных, можно воспользоваться следующим запросом:
+"Обычным" форматом для таблиц считается InnoDB. Для получения списка таблиц, в которых используются другие форматы, за исключением таблиц в системных базах данных, можно воспользоваться следующим запросом:
 
     SELECT engine,
            table_schema,
@@ -235,8 +238,19 @@
     WHERE engine <> 'InnoDB'
       AND table_schema NOT IN ('mysql', 'performance_schema', 'information_schema', 'sys');
 
-Преобразование всех таблиц из MyISAM в InnoDB
----------------------------------------------
+### Поиск таблиц с секциями
+
+Для вывода списка таблиц, поделённых на секции или подсекции, можно выполнить в базе данных `information_schema` следующий запрос:
+
+    SELECT DISTINCT table_schema, table_name
+    FROM partitions
+    WHERE partition_name IS NOT NULL
+      OR subpartition_name IS NOT NULL;
+
+Преобразование таблиц
+---------------------
+
+### Преобразование всех таблиц из MyISAM в InnoDB
 
 В лоб эту задачу можно решить следующим образом:
 
@@ -253,7 +267,7 @@
 
 Однако во время выполнения команд преобразования таблицы будут заблокированы для операций записи, что в большинстве случаев неприемлемо. Для того, чтобы преобразовать к InnoDB только таблицы с первичным ключом или ключом уникальности, можно воспользоваться такой конструкцией:
 
-    $ mysql information_schema -BN <<END
+    $ mysql information_schema -BN <<END | sh
     SELECT CONCAT('pt-online-schema-change --alter engine=InnoDB --execute D=',
            tables.table_schema,
            ',t=',
@@ -273,7 +287,7 @@
 
 Для остальных таблиц конструкция по-прежнему придётся воспользоваться запросами `ALTER TABLE`, т.к. `pt-online-schema-change` не умеет преобразовывать таблицы, у которых нет первичного ключа или ключа уникальности:
 
-    $ mysql information_schema -BN <<END
+    $ mysql information_schema -BN <<END | mysql
     SELECT CONCAT('ALTER TABLE \`',
            tables.table_schema,
            '\`.\`',
@@ -294,22 +308,7 @@
              tables.table_name ASC;
     END
 
-Поиск таблиц с секциями
------------------------
-
-Для вывода списка таблиц, поделённых на секции или подсекции, можно выполнить в базе данных `information_schema` следующий запрос:
-
-    SELECT DISTINCT table_schema, table_name
-    FROM partitions
-    WHERE partition_name IS NOT NULL
-      OR subpartition_name IS NOT NULL;
-
-Для удаления секций из таблицы без потери данных можно выполнить над ней запрос такого вида:
-
-    ALTER TABLE <таблица> REMOVE PARTITIONING;
-
-Неблокирующее преобразование журнальных таблиц без первичного и уникального ключей
-----------------------------------------------------------------------------------
+### Неблокирующее преобразование журнальных таблиц без первичного и уникального ключей
 
 Для неблокирующего преобразования любых таблиц, имеющих первичный или уникальный ключ, лучше всего использовать утилиту `pt-online-schema-change`. Если же в таблице нет ни первичного ключа, ни уникального ключа, то утилита `pt-online-schema-change` откажется работать. Если таблица используется в качестве журнала и в неё только вставляются новые записи, но записи никогда не удаляются и не изменяются, то можно воспользоваться комбинацией нескольких запросов. Например, для смены типа таблицы на `InnoDB` можно воспользоваться такой последовательностью запросов:
 
@@ -322,15 +321,44 @@
 
 Стоит учитывать, что во время выполнения этих операций запросы `SELECT` будут возвращать только новые записи, а уже имеющиеся на время не будут попадать в выборку, т.к. будут находиться в таблице `<таблица>_old`. Если это недопустимо, то стоит поискать другие способы.
 
-Выгрузка схемы базы данных
---------------------------
+### Преобразование секционированных таблиц
 
-Для выгрузки схемы базы данных можно воспользоваться утилитой резервного копирования:
+Для вывода списка таблиц, поделённых на секции или подсекции, можно выполнить в базе данных `information_schema` следующий запрос:
 
-    $ mysqldump --single-transaction --skip-comments --skip-add-drop-table --no-data db > db_schema.sql
+    $ mysql information_schema -BN <<END | mysql
+    SELECT DISTINCT CONCAT('ALTER TABLE \`',
+                           table_schema,
+                           '\`.\`',
+                           table_name,
+                           '\` REMOVE PARTITIONING;')
+    FROM partitions
+    WHERE partition_name IS NOT NULL
+      OR subpartition_name IS NOT NULL;
+    END
 
-Переключение реплики на другой IP-адрес источника
--------------------------------------------------
+### Удаление осиротевших табличных пространств
+
+Иногда можно столкнуться с ситуациями, когда таблицы нет, но от неё осталось табличное пространство. Такая проблема может возникнуть из-за некорректной обработки сервером MySQL команд `ALTER TABLE ... DISCARD TABLESPACE` и `ALTER TABLE ... IMPORT TABLESPACE`. У отсутствующей таблицы нельзя посмотреть структуру и её нельзя удалить, потому что её нет:
+
+    mysql> show create table log_session_20_201506;
+    ERROR 1146 (42S02): Table 'neftekamsk.log_session_20_201506' doesn't exist
+    mysql> drop table log_session_20_201506;
+    ERROR 1051 (42S02): Unknown table 'neftekamsk.log_session_20_201506'
+
+Но и создать на её месте новую таблицу с таким же именем тоже нельзя, потому что существует табличное пространство, которое сервер MySQL не хочет затирать:
+
+    mysql> create table log_session_20_201506 (id int);
+    ERROR 1813 (HY000): Tablespace '`neftekamsk`.`log_session_20_201506`' exists.
+
+Решается эта проблема просто: нужно удалить (переместить, переименовать) существующий ibd-файл из каталога, в котором находятся файлы базы данных:
+
+    # cd /var/lib/mysql/neftekamsk
+    # rm log_session_20_201506.ibd
+
+Репликация
+----------
+
+### Переключение реплики на другой IP-адрес источника
 
 Понадобилось поменять IP-адрес на источнике. Для того, чтобы не сломать репликацию, сделать это можно в три этапа:
 
@@ -374,28 +402,7 @@
 
 Для того, чтобы перерыв в репликации был минимальным, все команды можно поместить в скрипт и выполнить разом.
 
-Удаление осиротевших табличных пространств
-------------------------------------------
-
-Иногда можно столкнуться с ситуациями, когда таблицы нет, но от неё осталось табличное пространство. Такая проблема может возникнуть из-за некорректной обработки сервером MySQL команд `ALTER TABLE ... DISCARD TABLESPACE` и `ALTER TABLE ... IMPORT TABLESPACE`. У отсутствующей таблицы нельзя посмотреть структуру и её нельзя удалить, потому что её нет:
-
-    mysql> show create table log_session_20_201506;
-    ERROR 1146 (42S02): Table 'neftekamsk.log_session_20_201506' doesn't exist
-    mysql> drop table log_session_20_201506;
-    ERROR 1051 (42S02): Unknown table 'neftekamsk.log_session_20_201506'
-
-Но и создать на её месте новую таблицу с таким же именем тоже нельзя, потому что существует табличное пространство, которое сервер MySQL не хочет затирать:
-
-    mysql> create table log_session_20_201506 (id int);
-    ERROR 1813 (HY000): Tablespace '`neftekamsk`.`log_session_20_201506`' exists.
-
-Решается эта проблема просто: нужно удалить (переместить, переименовать) существующий ibd-файл из каталога, в котором находятся файлы базы данных:
-
-    # cd /var/lib/mysql/neftekamsk
-    # rm log_session_20_201506.ibd
-
-Игнорирование ошибок репликации MySQL
--------------------------------------
+### Игнорирование ошибок репликации MySQL
 
 Пропустить одну запись из журнала репликации можно следующим образом:
 
