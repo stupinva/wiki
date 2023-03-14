@@ -30,7 +30,7 @@
 
 ### Использование файла `~/.mylogin.cnf`
 
-Можно настроить иcпользумый по умолчанию пароль в файле `~/.mylogin.cnf` при помощи команды следующего вида:
+Можно настроить используемый по умолчанию пароль в файле `~/.mylogin.cnf` при помощи команды следующего вида:
 
     $ mysql_config_editor set --login-path=client --host=localhost --user=root --password
 
@@ -46,7 +46,7 @@
 
 ### Аутентификация через Unix-сокет
 
-Имеется также возможность аутентификации без пароля при подключении через Unix-сокет. Для этого в настройках у клиента вместо традиционного плагина `mysql_native_password` должен быть выставлен плагин `auth_socket`. Для изменения способа аутентификации определённого пользователя можно воспользоваться одним из соотвествующих запросов:
+Имеется также возможность аутентификации без пароля при подключении через Unix-сокет. Для этого в настройках у клиента вместо традиционного плагина `mysql_native_password` должен быть выставлен плагин `auth_socket`. Для изменения способа аутентификации определённого пользователя можно воспользоваться одним из соответствующих запросов:
 
     ALTER USER user@localhost IDENTIFIED WITH mysql_native_password BY 'password';
     ALTER USER user@localhost IDENTIFIED WITH auth_socket;
@@ -190,8 +190,8 @@
     ORDER BY s DESC
     LIMIT 10;
 
-Поиск таблиц без первичного ключа
----------------------------------
+Поиск таблиц без первичного ключа и ключа уникальности
+------------------------------------------------------
 
 Для поиска таблиц, не имеющих первичного ключа, можно воспользоваться следующим запросом к базе данных `information_schema`:
 
@@ -201,6 +201,20 @@
     LEFT JOIN table_constraints ON tables.table_schema = table_constraints.table_schema
       AND tables.table_name = table_constraints.table_name
       AND table_constraints.constraint_type = 'PRIMARY KEY'
+    WHERE table_constraints.constraint_type IS NULL
+      AND tables.table_schema NOT IN ('mysql', 'information_schema', 'performance_schema', 'sys')
+      AND tables.table_type = 'BASE TABLE'
+    ORDER BY tables.table_schema,
+             tables.table_name;
+
+Бывают таблицы, у которых нет первичного ключа, но вместо него создан ключ уникальности. Чтобы найти таблицы, у которых нет ни первичного ключа, ни ключа уникальности, можно воспользоваться таким запросом:
+
+    SELECT tables.table_schema,
+           tables.table_name
+    FROM tables
+    LEFT JOIN table_constraints ON tables.table_schema = table_constraints.table_schema
+      AND tables.table_name = table_constraints.table_name
+      AND table_constraints.constraint_type ('PRIMARY KEY', 'UNIQUE')
     WHERE table_constraints.constraint_type IS NULL
       AND tables.table_schema NOT IN ('mysql', 'information_schema', 'performance_schema', 'sys')
       AND tables.table_type = 'BASE TABLE'
@@ -219,12 +233,66 @@
            table_name
     FROM information_schema.tables
     WHERE engine <> 'InnoDB'
-      AND table_schema NOT IN ('mysql', 'performance_schema', 'information_schema');
+      AND table_schema NOT IN ('mysql', 'performance_schema', 'information_schema', 'sys');
 
 Преобразование всех таблиц из MyISAM в InnoDB
 ---------------------------------------------
 
-    $ mysql information_schema -BNe "SELECT CONCAT('ALTER TABLE \`', table_schema, '\`.\`', table_name, '\` ENGINE=InnoDB;') FROM tables WHERE engine = 'MyISAM' AND table_schema NOT IN ('mysql', 'performance_schema', 'information_schema');" | mysql
+В лоб эту задачу можно решить следующим образом:
+
+    $ mysql information_schema -BN <<END | mysql
+    SELECT CONCAT('ALTER TABLE \`',
+                  table_schema,
+                  '\`.\`',
+                  table_name,
+                  '\` ENGINE=InnoDB;')
+    FROM tables
+    WHERE engine = 'MyISAM'
+      AND table_schema NOT IN ('mysql', 'performance_schema', 'information_schema', 'sys');"
+    END
+
+Однако во время выполнения команд преобразования таблицы будут заблокированы для операций записи, что в большинстве случаев неприемлемо. Для того, чтобы преобразовать к InnoDB только таблицы с первичным ключом или ключом уникальности, можно воспользоваться такой конструкцией:
+
+    $ mysql information_schema -BN <<END
+    SELECT CONCAT('pt-online-schema-change --alter engine=InnoDB --execute D=',
+           tables.table_schema,
+           ',t=',
+           tables.table_name)
+    FROM tables
+    JOIN table_constraints ON tables.table_schema = table_constraints.table_schema
+      AND tables.table_name = table_constraints.table_name
+      AND table_constraints.constraint_type IN ('PRIMARY KEY', 'UNIQUE')
+    WHERE tables.engine = 'MyISAM'
+      AND tables.table_schema NOT IN ('mysql', 'information_schema', 'performance_schema', 'sys')
+      AND tables.table_type = 'BASE TABLE'
+    ORDER BY tables.table_schema,
+             tables.table_name;
+    END
+
+Таблицы сразу сортируются в порядке убывания размеров. Т.к. таблицы InnoDB занимают больше места, чем таблицы MyISAM, лучше преобразовывать их начиная с самых больших, пока на диске ещё есть достаточно места. Если преобразовывать таблицы в обратном порядке, то на некотором этапе можно столкнуться с тем, что на диске нет места для размещения копии очередной таблицы, поскольку всё свободное место уже было истрачено на увеличение размеров мелких таблиц.
+
+Для остальных таблиц конструкция по-прежнему придётся воспользоваться запросами `ALTER TABLE`, т.к. `pt-online-schema-change` не умеет преобразовывать таблицы, у которых нет первичного ключа или ключа уникальности:
+
+    $ mysql information_schema -BN <<END
+    SELECT CONCAT('ALTER TABLE \`',
+           tables.table_schema,
+           '\`.\`',
+           tables.table_name,
+           '\` ENGINE=InnoDB; -- ',
+           (tables.data_length + tables.index_length) / (1024 * 1024),
+           ' MB')
+    FROM tables
+    LEFT JOIN table_constraints ON tables.table_schema = table_constraints.table_schema
+      AND tables.table_name = table_constraints.table_name
+      AND table_constraints.constraint_type IN ('PRIMARY KEY', 'UNIQUE')
+    WHERE table_constraints.constraint_type IS NULL
+      AND tables.engine = 'MyISAM'
+      AND tables.table_schema NOT IN ('mysql', 'information_schema', 'performance_schema', 'sys')
+      AND tables.table_type = 'BASE TABLE'
+    ORDER BY tables.data_length + tables.index_length DESC,
+             tables.table_schema ASC,
+             tables.table_name ASC;
+    END
 
 Поиск таблиц с секциями
 -----------------------
