@@ -488,3 +488,5 @@
 * [Jeremy Cole. A brief update on NUMA and MySQL](https://blog.jcole.us/2012/04/16/a-brief-update-on-numa-and-mysql/)
 * [Memory part 4: NUMA support](https://lwn.net/Articles/254445/)
 * [Syncing MySQL Slave Table with pt-online-schema-change](https://dzone.com/articles/syncing-mysql-slave-table-pt)
+* [Sveta Smirnova. How to Update InnoDB Table Statistics Manually](https://www.percona.com/blog/updating-innodb-table-statistics-manually/)
+* [Peter Zaitsev. Examining MySQL InnoDB Persistent Statistics](https://www.percona.com/blog/examining-mysql-innodb-persistent-statistics/)
