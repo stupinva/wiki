@@ -177,6 +177,36 @@
 
 Импорт таблиц может быть довольно длительным и зависит от размера файлов данных таблиц.
 
+Проблемы
+--------
+
+Этот способ имеет ограниченную пригодность к применению. Один раз мне удалось перенести базы данных этим способом довольно быстро и без каких-либо проблем. В другой раз столкнулся с некоторыми проблемами.
+
+Во-первых, во время выполнения команд `ALTER TABLE ... DISCARD TABLESPACE` запросы на вставку новых данных в таблицы других баз данных начинают выполняться заметно медленнее. Это отрицательно сказывается на комфорте работы с интерактивными приложениями. Для смягчения проблемы пришлось проводить работы в ночное нерабочее время, когда нагрузка на СУБД значительно снижается, а интерактивные приложения не используются.
+
+Во-вторых, во время выполнения команд `ALTER TABLE ... IMPORT TABLESPACE` спорадически происходят обращения к таблицам, что приводит к ошибкам следующего вида, приводящим к аварийному завершению работы сервера MySQL:
+
+    2023-03-10T09:25:35.920940Z 804144 [ERROR] InnoDB: Trying to access page number 2044638464 in space 86995138, space name neftekamsk/contract_logon_error, which is outside the tablespace bounds. Byte offset 0, len 16384, i/o type read. If you get this error at mysqld startup, please check that your my.cnf matches the ibdata files that you have in the MySQL server.
+    2023-03-10T09:25:35.920967Z 804144 [ERROR] InnoDB: Server exits.
+
+    2023-03-10T09:29:01.917753Z 57 [ERROR] InnoDB: trying to read page [page id: space=86998512, page number=4294967295] in nonexisting or being-dropped tablespace
+    2023-03-10T09:29:01.917773Z 57 [ERROR] [FATAL] InnoDB: Unable to read page [page id: space=86998512, page number=4294967295] into the buffer pool after 100 attempts. The most probable cause of this error may be that the table has been corrupted. Or, the table was compressed with with an algorithm that is not supported by this instance. If it is not a decompress failure, you can try to fix this problem by using innodb_force_recovery. Please see http://dev.mysql.com/doc/refman/5.7/en/ for more details. Aborting...
+    2023-03-10 14:29:01 0x7f27b3210700  InnoDB: Assertion failure in thread 139808485738240 in file ut0ut.cc line 924
+
+Также после импорта каждого табличного пространства происходили ошибки следующего вида, которые не приводили к падению сервера:
+
+    2023-03-14T01:07:49.676086Z 24 [Warning] InnoDB: Tablespace for table `salavat`.`setup` is set as discarded.
+    2023-03-14T01:07:49.676177Z 24 [Warning] InnoDB: Trying to access missing tablespace 87012042
+    2023-03-14T01:07:49.676200Z 24 [Warning] InnoDB: Cannot save statistics for table `salavat`.`setup` because the .ibd file is missing. Please refer to http://dev.mysql.com/doc/refman/5.7/en/innodb-troubleshooting.html for how to resolve the issue.
+
+В частности, из-за этих сообщений возникли подозрения, что при импорте табличных пространств происходит состояние гонки между процессом импорта данных и процессом пересчёта статистики, в результате которого с небольшой вероятностью может произойти попытка посчитать статистику для таблицы, импорт табличного пространства которой ещё не завершён, но таблица уже помечена как импортированная. Чтобы проверить догадку, пробовал отключать через глобальные переменные и файлы конфигурации опции `innodb_stats_auto_recalc` и `innodb_stats_persistent`, но это не помогало. Изучать ситуацию подробно на сервере, используемом для обработки бизнес-процессов, времени не было.
+
+В-третьих, описанная выше проблема возникает, хоть и значительно реже, и на серверах-репликах, работающих в режиме только чтения. Первая же возникшая проблема на сервере-реплике привела к поломке репликации.
+
+Из-за падений основного сервера на нём было потеряно две таблицы, которые должны были быть импортированы. От них остались ibd-файлы с табличными пространствами, но frm-файлы с определениями структуры таблиц пропали. Кроме того, из-за падений сервера-реплики репликация остановилась на попытке импортировать табличное пространство, которое уже было отмечено как импортированное.
+
+В итоге я посчитал этот метод переноса баз данных непригодным для данного случая и воспользовался для переноса баз данных утилитами `mysqldump` и `mysql`. Перенос с нескольких часов растянулся почти на сутки, но не вызывал проблем с отзывчивостью запросов вставки и не приводил к падениям серверов MySQL.
+
 Использованные материалы
 ------------------------
 
