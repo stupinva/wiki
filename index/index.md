@@ -84,7 +84,6 @@ MySQL
 * [[Архивация периодических таблиц MySQL|mysql_archive_tables]]
 * [[Добавление нового узла в кластер Percona XtraDB Cluster|xtradb_cluster]]
 * [[Мониторинг MySQL с помощью Zabbix|mysql_zabbix]]
-* [[Игнорирование ошибок репликации MySQL|mysql_slave_ignore_errors]]
 * [[Исправление ошибок в таблице InnoDB|mysql_recovery_innodb_table]]
 * [[Удаление временной системной таблицы MySQL|mysql_drop_temporary_system_table]]
 * [[Утилита для изменения структуры таблицы без блокировки запросов pt-online-schema-change|pt_online_schema_change]]
