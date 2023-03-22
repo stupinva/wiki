@@ -13,7 +13,7 @@
 
 Создадим резервную копию структуры исходных баз данных с исходного сервера в файле `dbs.sql.gz`:
 
-    $ mysqldump --single-transaction --routines --triggers --events --master-data --databases icsms_statistic neftekamsk oktyabrsky sterlitamak ishimbay salavat | sed '/^CREATE DATABASE .*icsms_statistic.*$/d' | gzip -1p 4 > dbs.sql.gz
+    $ mysqldump --single-transaction --routines --triggers --events --master-data --databases icsms_statistic neftekamsk oktyabrsky sterlitamak ishimbay salavat | sed '/^CREATE DATABASE .*icsms_statistic.*$/d' | pigz -1p 4 > dbs.sql.gz
 
 Восстановление резервной копии
 ------------------------------
