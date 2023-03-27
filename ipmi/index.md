@@ -435,36 +435,6 @@ KCS Policy Control Mode is currently set to "RESTRICTED". This function depends 
 
 Затем можно попробовать снова воспользоваться утилитой ipmitool. При необходимости, если нагрузка на процессор снизилась недостаточно, лимит времени работы потока kipmiN можно уменьшить ещё.
 
-Дополнительная информация
--------------------------
-
-### Минимальная настройка
-
-    ipmitool lan print 1
-  
-    ipmitool lan set 1 password myPaSsW0rD
-    ipmitool lan set 1 user
-    ipmitool lan set 1 access on
-
-### С ограниченными привилегиями
-
-    # Просмотр настроек интерфейса 1
-    ipmitool lan print 1
-  
-    # Выставляем настройки интерфейса
-    ipmitool lan set 1 ipaddr 192.168.1.4
-    ipmitool lan set 1 netmask 255.255.255.0
-    ipmitool lan set 1 defgw ipaddr 192.168.1.1
-  
-    # Выставляем доступные методы аутентификации для каждого уровня привилегий
-    ipmitool lan set 1 auth callback ''
-    ipmitool lan set 1 auth user md5
-    ipmitool lan set 1 auth operator ''
-    ipmitool lan set 1 auth admin ''
-  
-    # Включаем доступ через интерфейс
-    ipmitool lan set 1 access on
-
 Использованные материалы
 ------------------------
 
