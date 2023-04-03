@@ -205,6 +205,7 @@ Android
 ---------------------
 
 * [[Розеттский камень GnuTLS/OpenSSL|gnutls_openssl]]
+* [[Использование autotools|autotools]]
 * [[Использование debconf|debconf]]
 * [[Печать сложных документов в Linux|printing]]
 * [[Настройка музыкального сервера на основе mpd|mpd]]
