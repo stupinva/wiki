@@ -187,3 +187,15 @@
     $ make dist
 
 Архив должен сформироваться в текущем каталоге.
+
+Использованные материалы
+------------------------
+
+* [Использование GNU Autotools. Создание своего скрипта configure и файла Makefile](https://help.ubuntu.ru/wiki/using_gnu_autotools)
+
+Дополнительные материалы
+------------------------
+
+* [Autoconf](https://www.gnu.org/savannah-checkouts/gnu/autoconf/manual/autoconf-2.71/html_node/index.html)
+* [Automake](https://www.gnu.org/software/automake/manual/html_node/index.html)
+* [Diego Elio “Flameeyes” Pettenò. Autotools Mythbuster](https://autotools.info/)
