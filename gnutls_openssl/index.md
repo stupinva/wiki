@@ -72,6 +72,8 @@
 
 Поле `organizationUnitName` указывать не обязательно.
 
+Опция `pathlen:0` запрещает подписывать этим сертификатом сертификаты промежуточных удостоверяющих центров. Если в цепочке заверения сертификатов допускается один промежуточный удостоверяющий центр, то эту опцию можно поменять на `pathlen:1` и т.п.
+
 Создание запроса сертификата
 ----------------------------
 
@@ -99,34 +101,40 @@
 
 Поле `unit` указывать не обязательно.
 
+При необходимости можно повторять опции `dns_name` и `ip_address` для задания дополнительных имён и адресов, принадлежащих серверу.
+
 С помощью OpenSSL:
 
-    $ cat > ca.cnf <<END
+    $ cat > www.cnf <<END
     [req]
     default_bits = 4096
     default_md = sha256
     default_days = 365
     distinguished_name = req_distinguished_name
-    x509_extensions = v3_ca
+    x509_extensions = v3_req
     prompt = no
     
     [req_distinguished_name]
-    0.organizationName = "Test Inc."
-    organizationalUnitName = "Sleeping dept"
+    0.organizationName = "Mathopd Test Inc."
+    #organizationalUnitName = "Sleeping dept"
     localityName = Ufa
     stateOrProvinceName = "Bashkortostan Republic"
     countryName = RU
-    commonName = "CA Test"
+    commonName = localhost
     
-    [v3_ca]
-    basicConstraints = critical, CA:true, pathlen:0
-    keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+    [v3_req]
+    basicConstraints = CA:false
+    keyUsage = nonRepudiation, digitalSignature, keyEncipherment, dataEncipherment
     END
-    $ openssl req -new -key ca.key -config ca.cnf -x509 -out ca.crt
+    $ openssl req -new -key www.key -config www.cnf -out www.csr
 
 Поле `organizationUnitName` указывать не обязательно.
 
-Опция `pathlen:0` запрещает подписывать этим сертификатом сертификаты промежуточных удостоверяющих центров. Если в цепочке заверения сертификатов допускается один промежуточный удостоверяющий центр, то эту опцию можно поменять на `pathlen:1` и т.п.
+Доменное имя защищаемого сервера в случае с OpenSSL необходимо указать в опции `commonName`. Если нужно доказать дополнительные доменные имена и/или IP-адреса, то для этого в секцию `[v3_req]` нужно можно добавить опцию `subjectAltName = @alt_names` и описать дополнительные доменные имена и IP-адреса в секции `[alt_names]`:
+
+    [alt_names]
+    DNS.1 = localhost.localdomain
+    IP.1 = 127.0.0.1
 
 Заверение сертификата
 ---------------------
