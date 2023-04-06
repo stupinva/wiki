@@ -155,6 +155,8 @@ Android
 
 * [[Объединение сетевых интерфейсов в Linux|bonding_linux]]
 * [[Шпаргалка по Docker|docker]]
+* [[Розеттский камень GnuTLS/OpenSSL|gnutls_openssl]]
+* [[Использование autotools|autotools]]
 * [[Сборка и использование декомпилятора pyc-файлов|pycdc]]
 * [[Настройка и использвоание LFS в git-репозитории|git_lfs]]
 * [[Zabbix-агент в Debian Bullseye и Zabbix-сервер 3.4|zabbix_agent_bullseye]]
@@ -204,8 +206,6 @@ Android
 Черновики и заготовки
 ---------------------
 
-* [[Розеттский камень GnuTLS/OpenSSL|gnutls_openssl]]
-* [[Использование autotools|autotools]]
 * [[Использование debconf|debconf]]
 * [[Печать сложных документов в Linux|printing]]
 * [[Настройка музыкального сервера на основе mpd|mpd]]
