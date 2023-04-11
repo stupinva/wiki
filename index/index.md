@@ -153,6 +153,7 @@ Android
 Другие статьи
 -------------
 
+* [[Настройка hostapd с шириной канала в 40 МГц|hostapd_ht40]]
 * [[Отключение встроенного RAID-контроллера Intel(R) Embedded Server RAID Technology II|disable_intel_raid]]
 * [[Устранение проблем загрузки Debian на RAID1 и LVM через Grub|debian_raid1_lvm_grub]]
 * [[Объединение сетевых интерфейсов в Linux|bonding_linux]]
