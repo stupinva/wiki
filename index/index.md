@@ -153,6 +153,7 @@ Android
 Другие статьи
 -------------
 
+* [[Отключение встроенного RAID-контроллера Intel(R) Embedded Server RAID Technology II|disable_intel_raid]]
 * [[Объединение сетевых интерфейсов в Linux|bonding_linux]]
 * [[Шпаргалка по Docker|docker]]
 * [[Розеттский камень GnuTLS/OpenSSL|gnutls_openssl]]
