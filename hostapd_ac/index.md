@@ -17,6 +17,10 @@
 
 [Sergey Pisarenko. Updates to the 802.11ac guide](http://pisarenko.net/blog/2015/05/05/updates-to-the-802-dot-11ac-guide/)
 
+[cfg80211 certification onus](https://www.kernelconfig.io/CONFIG_CFG80211_CERTIFICATION_ONUS?kernelversion=5.10.178)
+
+[Atheros DFS support for certified platforms](https://www.kernelconfig.io/CONFIG_ATH9K_DFS_CERTIFIED?kernelversion=5.10.178)
+
 Устанавливаем пакеты:
 
     # apt-get install crda wireless-regdb
