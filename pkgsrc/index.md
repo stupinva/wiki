@@ -333,6 +333,8 @@
 Решение проблем
 ---------------
 
+### Проблема 1
+
 Если при обновлении Perl возникает ошибка следующего вида:
 
     pkg_add: Can't open +CONTENTS of depending package p5-Crypt-OpenSSL-Guess-0.11
@@ -342,6 +344,24 @@
     # pkg_admin rebuild-tree
 
 Источник: [RE: Error Installing perl-5.28.1 on netbsd 7.1.1 - pkg_add: Can't open +CONTENTS of depending package p5-Crypt-OpenSSL-Guess-0.11](https://mail-index.netbsd.org/pkgsrc-users/2019/01/19/msg027965.html)
+
+### Проблема 2
+
+Если при сборке какой-либо программы из pkgsrc в процессе установки зависимостей из двоичных пакетов возникает проблема такого вида:
+
+    ===> Binary install for perl-5.36.1
+    ERROR: perl-5.34.0nb3 is already installed - perhaps an older version?
+    ERROR: If so, you may wish to ``pkg_delete perl-5.34.0nb3'' and install
+    ERROR: this package again by ``/usr/bin/make bin-install'' to upgrade it properly.
+    *** Error code 1
+
+Можно попробовать переустановить пакет и все зависящие от него установленные в системе пакеты с помощью `pkgin`:
+
+    # pkgin export > /root/pkgs
+    # pkg_delete -f perl
+    # pkgin import /root/pkgs
+
+Учтите, что `pkgin` должен быть настроен, а повторная установка удалённых пакетов будет происходить из репозитория, указанного в настройках `pkgin`.
 
 Цели make
 ---------
