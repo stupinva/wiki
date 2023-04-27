@@ -13,6 +13,10 @@
 
 [hostapd configuration file](https://w1.fi/cgit/hostap/plain/hostapd/hostapd.conf)
 
+[Sergey Pisarenko. Beginners guide to a custom 802.11ac setup](http://pisarenko.net/blog/2015/02/01/beginners-guide-to-802-dot-11ac-setup/)
+
+[Sergey Pisarenko. Updates to the 802.11ac guide](http://pisarenko.net/blog/2015/05/05/updates-to-the-802-dot-11ac-guide/)
+
 Устанавливаем пакеты:
 
     # apt-get install crda wireless-regdb
