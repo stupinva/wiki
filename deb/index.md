@@ -45,32 +45,31 @@
 
 |Утилита                        |Версия                      |Контроллер                    |amd64|i386|
 |-------------------------------|----------------------------|------------------------------|-----|----|
-|3ware-status                   |0.4                         |3Ware Eskalad 7000/8000/9000  |X    |X   |
-|tw-cli                         |2.00.11.020+10.2.1-1        |3Ware Eskalad 7000/8000/9000  |X    |X   |
-|3dm2                           |2.11.00.019+10.2.1+KB16625-1|3Ware Eskalad 7000/8000/9000  |X    |X   |
-|aacraid-status                 |0.19                        |Adaptec AACRaid               |X    |X   |
-|adaptec-storage-manager-agent  |7.31.18856-1                |Adaptec AACRaid               |X    |X   |
-|adaptec-storage-manager-common |7.31.18856-1                |Adaptec AACRaid               |X    |X   |
-|adaptec-storage-manager-gui    |7.31.18856-1                |Adaptec AACRaid               |X    |X   |
-|arcconf                        |7.31.18856-1                |Adaptec AACRaid               |X    |X   |
-|hrconf                         |7.31.18856-1                |Adaptec AACRaid               |X    |X   |
-|adaptec-universal-storage-snmpd|7.31.18856-1                |Adaptec AACRaid               |X    |X   |
-|adaptec-universal-storage-mib  |7.31.18856-1                |Adaptec AACRaid               |X    |X   |
-|cciss-vol-status               |1:1.09-2hwraid1             |HP/Compaq SmartArray          |X    |X   |
-|hpacucli                       |9.20.9.0-1                  |HP/Compaq SmartArray          |X    |X   |
-|megaraid-status                |0.10                        |LSI MegaRAID / MegaRAID SAS   |X    |X   |
-|megactl                        |0.4.1+svn20090725.r6-1      |LSI MegaRAID / MegaRAID SAS   |X    |X   |
-|megamgr                        |5.20-3                      |LSI MegaRAID                  |X    |X   |
-|dellmgr                        |5.31-1                      |LSI MegaRAID (Dell cards only)|X    |X   |
-|megaclisas-status              |0.9                         |LSI MegaRAID SAS              |X    |X   |
-|megacli                        |8.04.07-1                   |LSI MegaRAID SAS              |X    |X   |
-|megaide-status                 |0.2                         |LSI MegaIDE                   |X    |X   |
-|megaide-spyd                   |7.24.26-3                   |LSI MegaIDE                   |     |X   |
-|mpt-status                     |1.2.0-4.2.hwraid1           |LSI FusionMPT                 |X    |X   |
-|lsiutil                        |1.60-1                      |LSI FusionMPT                 |X    |X   |
-|lsiutil                        |1.60-1                      |LSI FusionMPT                 |X    |X   |
-|sas2ircu                       |16.00.00.00-1               |LSI FusionMPT SAS2            |X    |X   |
-|sas2ircu-status                |0.5                         |LSI FusionMPT SAS2            |X    |X   |
+|3ware-status                   |0.5                         |3Ware Eskalad 7000/8000/9000  |  X  | X  |
+|tw-cli                         |2.00.11.020+10.2.1-1        |3Ware Eskalad 7000/8000/9000  |  X  | X  |
+|3dm2                           |2.11.00.019+10.2.1+KB16625-1|3Ware Eskalad 7000/8000/9000  |  X  | X  |
+|aacraid-status                 |0.20                        |Adaptec AACRaid               |  X  | X  |
+|adaptec-storage-manager-agent  |7.31.18856-1                |Adaptec AACRaid               |  X  | X  |
+|adaptec-storage-manager-common |7.31.18856-1                |Adaptec AACRaid               |  X  | X  |
+|adaptec-storage-manager-gui    |7.31.18856-1                |Adaptec AACRaid               |  X  | X  |
+|arcconf                        |7.31.18856-1                |Adaptec AACRaid               |  X  | X  |
+|hrconf                         |7.31.18856-1                |Adaptec AACRaid               |  X  | X  |
+|adaptec-universal-storage-snmpd|7.31.18856-1                |Adaptec AACRaid               |  X  | X  |
+|adaptec-universal-storage-mib  |7.31.18856-1                |Adaptec AACRaid               |  X  | X  |
+|cciss-vol-status               |1:1.10-1hwraid1             |HP/Compaq SmartArray          |  X  | X  |
+|hpacucli                       |9.20.9.0-1                  |HP/Compaq SmartArray          |  X  | X  |
+|megaraid-status                |0.12                        |LSI MegaRAID / MegaRAID SAS   |  X  | X  |
+|megactl                        |0.4.1+svn20090725.r6-5      |LSI MegaRAID / MegaRAID SAS   |  X  | X  |
+|megamgr                        |5.20-3                      |LSI MegaRAID                  |  X  | X  |
+|dellmgr                        |5.31-2                      |LSI MegaRAID (Dell cards only)|  X  | X  |
+|megaclisas-status              |0.14                        |LSI MegaRAID SAS              |  X  | X  |
+|megacli                        |8.07.14-1                   |LSI MegaRAID SAS              |  X  | X  |
+|megaide-status                 |0.2                         |LSI MegaIDE                   |  X  | X  |
+|megaide-spyd                   |7.24.26-3                   |LSI MegaIDE                   |     | X  |
+|mpt-status                     |1.2.0-4.2.hwraid1           |LSI FusionMPT                 |  X  | X  |
+|lsiutil                        |1.60-1                      |LSI FusionMPT                 |  X  | X  |
+|sas2ircu                       |16.00.00.00-1               |LSI FusionMPT SAS2            |  X  | X  |
+|sas2ircu-status                |0.7                         |LSI FusionMPT SAS2            |  X  | X  |
 
 Настройки APT
 -------------
