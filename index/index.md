@@ -103,6 +103,7 @@ PostgreSQL
 * [[Настройка буферов PostgreSQL|postgresql_buffers]]
 * [[Мониторинг PostgreSQL с помощью Zabbix|postgresql_zabbix]]
 * [[Рекомендации по поиску проблем и тонкой настройке PostgreSQL|postgresql_tuning]]
+* [[Поиск медленных запросов с помощью pg_stat_statements в PostgreSQL|pg_stat_statements]]
 * [[Ускорение запросов LIKE с % в начале шаблона в PostgreSQL|postgresql_trgm]]
 * [[Ускорение запросов с Hash Join в плане выполнения в PostgreSQL|postgresql_hash]]
 * [[Ускорение запросов с ORDER BY и LIMIT в плане выполнения в PostgreSQL|postgresql_order_limit]]
