@@ -367,7 +367,12 @@
 
 Теперь удалим базу данных пакетов:
 
-    # rm -R /usr/pkg/pkgdb.refcount /usr/pkg/pkgdb
+    # rm -R /usr/pkg/pkgdb.refcount /usr/pkg/pkgdb /usr/pkg/bin /usr/pkg/include /usr/pkg/info /usr/pkg/lib /usr/pkg/libdata /usr/pkg/man /usr/pkg/sbin /usr/pkg/share
+
+Распакуем двоичные пакеты, необходимые для работы системы `pkgsrc`:
+
+    # cd /
+    # tar xzvf /var/pkg_comp/packages/bootstrap.tgz
 
 Установим пакет `pkgin` из заранее сохранённого архива:
 
