@@ -171,7 +171,9 @@ Gitea работает от имени пользователя `git` и поэ�
     
     [mailer]
     ENABLED   = true
-    SMTP_ADDR = mail.stupin.su:587
+    PROTOCOL  = smtp+starttls
+    SMTP_ADDR = mail.stupin.su
+    SMTP_PORT = 587
     FROM      = gitea@stupin.su
     USER      = gitea@stupin.su
     PASSWD    = mail_password
@@ -208,8 +210,10 @@ Gitea работает от имени пользователя `git` и поэ�
     OFFLINE_MODE     = false
     APP_DATA_PATH    = /var/db/gitea/data
     LFS_START_SERVER = true
-    LFS_CONTENT_PATH = /var/db/gitea/data/lfs
     LFS_JWT_SECRET   = xxx
+
+    [lfs]
+    PATH = /var/db/gitea/data/lfs
     
     [service]
     REGISTER_EMAIL_CONFIRM            = true
@@ -229,3 +233,8 @@ Gitea работает от имени пользователя `git` и поэ�
     [openid]
     ENABLE_OPENID_SIGNIN = false
     ENABLE_OPENID_SIGNUP = false
+
+Дополнительная настройка
+------------------------
+
+При создании зеркал больших внешних репозиториев может возникнуть проблема 
