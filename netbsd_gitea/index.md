@@ -170,11 +170,11 @@ Gitea работает от имени пользователя `git` и поэ�
     LEVEL     = info
     
     [mailer]
-    ENABLED = true
-    HOST    = mail.stupin.su:587
-    FROM    = gitea@stupin.su
-    USER    = gitea@stupin.su
-    PASSWD  = mail_password
+    ENABLED   = true
+    SMTP_ADDR = mail.stupin.su:587
+    FROM      = gitea@stupin.su
+    USER      = gitea@stupin.su
+    PASSWD    = mail_password
     
     [picture]
     AVATAR_UPLOAD_PATH      = /var/db/gitea/data/avatars
