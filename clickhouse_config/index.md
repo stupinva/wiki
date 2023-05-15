@@ -150,7 +150,15 @@
 
 [Altinity Knowledge Base / System tables eat my disk](https://kb.altinity.com/altinity-kb-setup-and-maintenance/altinity-kb-system-tables-eat-my-disk/)
 
-Включение управлния доступом через SQL-запросы
-----------------------------------------------
+Включение управления доступом через SQL-запросы
+-----------------------------------------------
 
-По умолчанию список пользователей и их права настраиваются с помощью файла `/etc/clickhouse-server/users.xml`. Однако ClickHouse умеет хранить эту информацию в базе данных. Для включения этой функциональности нужно вписать в файл конфигурации
+По умолчанию список пользователей и их права настраиваются с помощью файла `/etc/clickhouse-server/users.xml`. Однако ClickHouse умеет хранить эту информацию в базе данных. Для включения этой функциональности нужно вписать в файл конфигурации, в секцию, соответствующую пользователю `default`, следующую опцию:
+
+    <access_management>1</access_management>
+
+Далее нужно перезапустить сервер ClickHouse:
+
+    # systemctl restart clickhouse-server
+
+[Creating Users and Roles in ClickHouse](https://clickhouse.com/docs/en/operations/access-rights)
