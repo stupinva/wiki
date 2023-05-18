@@ -162,3 +162,32 @@
     # systemctl restart clickhouse-server
 
 [Creating Users and Roles in ClickHouse](https://clickhouse.com/docs/en/operations/access-rights)
+
+Заведение пользователей
+-----------------------
+
+Какой бы ни использовался метод управления пользователями - через файл `/etc/clickhouse-server/users.xml` или через SQL-запросы, может пригодиться вычислить хэш от пароля пользователя. Хэш в формате `password_sha256_hex` или `sha256_hash` можно вычислить одним из двух следующих способов:
+
+В командной строке с помощью утилиты `sha256sum`:
+
+    $ echo -n '<password>' | sha256sum | tr -d '-'
+    dd81ca61fb57a4ff454c1cf89335a1f5e96afa849dfad4e0116b6ec35309fdea
+
+В клиенте ClickHouse с помощью функций `hex` и `SHA256`:
+
+    SELECT HEX(SHA256('<password>'));
+
+Далее полученный хэш пароля можно вписать в файл `/etc/clickhouse-server/users.xml` следующим образом (пример соответствует пользователю с именем `default`):
+
+    <yandex>
+        <users>
+            <default>
+                <password_sha256_hex>dd81ca61fb57a4ff454c1cf89335a1f5e96afa849dfad4e0116b6ec35309fdea</password_sha256_hex>
+            </default>
+        <users>
+    </yandex>
+
+Или этот же хэш пароля можно вписать в SQL-запрос для создания пользователя или изменения его пароля:
+
+    CREATE USER default IDENTIFIED WITH sha256_hash BY 'dd81ca61fb57a4ff454c1cf89335a1f5e96afa849dfad4e0116b6ec35309fdea';
+    ALTER USER default IDENTIFIED WITH sha256_hash BY 'dd81ca61fb57a4ff454c1cf89335a1f5e96afa849dfad4e0116b6ec35309fdea';
