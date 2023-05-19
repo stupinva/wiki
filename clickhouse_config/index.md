@@ -1,10 +1,19 @@
 Настройка ClickHouse
 ====================
 
+[[!tag clickhouse]]
+
+Содержание
+----------
+
+[[!toc startlevel=2 levels=4]]
+
+Настройка сервера
+-----------------
+
 Для настройки сервера ClickHouse используется XML-файл `/etc/clickhouse-server/config.xml`.
 
-Настройка журналов
-------------------
+### Настройка журналов
 
 Для настройки журналирования используется секция `clickhouse`/`logger`:
 
@@ -30,8 +39,7 @@
 
 [Документация ClickHouse / Конфигурационные параметры сервера / logger](https://clickhouse.com/docs/ru/operations/server-configuration-parameters/settings/#server_configuration_parameters-logger)
 
-Настройка доступа по протоколу MySQL
-------------------------------------
+### Настройка доступа по протоколу MySQL
 
 Для включения доступа к серверу ClickHouse по протоколу MySQL можно добавить в секцию `clickhouse` опцию `mysql_port`:
 
@@ -41,8 +49,7 @@
 
 [Документация ClickHouse / Конфигурационные параметры сервера / mysql_port](https://clickhouse.com/docs/ru/operations/server-configuration-parameters/settings/#server_configuration_parameters-mysql_port)
 
-Настройка прослушиваемых адресов
---------------------------------
+### Настройка прослушиваемых адресов
 
 Для настройки прослушиваемых IP-адресов предназначена опция `listen_host`, которую можно указывать более одного раза:
 
@@ -67,8 +74,7 @@
 
 [Документация ClickHouse / Конфигурационные параметры сервера / listen_host](https://clickhouse.com/docs/ru/operations/server-configuration-parameters/settings/#server_configuration_parameters-listen_host)
 
-Размер кэша несжатых данных
----------------------------
+### Размер кэша несжатых данных
 
 Для включения использования кэша несжатых данных и для настройки его размера предназначены следующие опции:
 
@@ -83,8 +89,7 @@
 
 [Документация ClickHouse / Конфигурационные параметры сервера / uncompressed_cache_size](https://clickhouse.com/docs/ru/operations/server-configuration-parameters/settings/#server-settings-uncompressed_cache_size)
 
-Размер кэша засечек
--------------------
+### Размер кэша засечек
 
 Для настройки размера кэша засечек используется опция `mark_cache_size` из секции `clickhouse`:
 
@@ -96,8 +101,7 @@
 
 [Документация ClickHouse / Конфигурационные параметры сервера / mark_cache_size](https://clickhouse.com/docs/ru/operations/server-configuration-parameters/settings/#server-mark-cache-size)
 
-Настройка журнала запросов
---------------------------
+### Настройка журнала запросов
 
 Для отключения всех журналов, которые ClickHouse ведёт в таблицах базы данных, кроме таблиц `query_log` и `query_thread_log`, можно воспользоваться такими опциями:
 
@@ -158,8 +162,10 @@
 
 [Altinity Knowledge Base / System tables eat my disk](https://kb.altinity.com/altinity-kb-setup-and-maintenance/altinity-kb-system-tables-eat-my-disk/)
 
-Включение управления доступом через SQL-запросы
------------------------------------------------
+Настройка пользователей
+-----------------------
+
+### Включение управления доступом через SQL-запросы
 
 По умолчанию список пользователей и их права настраиваются с помощью файла `/etc/clickhouse-server/users.xml`. Однако ClickHouse умеет хранить эту информацию в базе данных. Для включения этой функциональности нужно вписать в файл конфигурации, в секцию, соответствующую пользователю `default`, следующую опцию:
 
@@ -171,8 +177,7 @@
 
 [Creating Users and Roles in ClickHouse](https://clickhouse.com/docs/en/operations/access-rights)
 
-Заведение пользователей
------------------------
+### Заведение пользователей
 
 Какой бы ни использовался метод управления пользователями - через файл `/etc/clickhouse-server/users.xml` или через SQL-запросы, может пригодиться вычислить хэш от пароля пользователя. Хэш в формате `password_sha256_hex` или `sha256_hash` можно вычислить одним из двух следующих способов:
 
@@ -200,8 +205,7 @@
     CREATE USER default IDENTIFIED WITH sha256_hash BY 'dd81ca61fb57a4ff454c1cf89335a1f5e96afa849dfad4e0116b6ec35309fdea';
     ALTER USER default IDENTIFIED WITH sha256_hash BY 'dd81ca61fb57a4ff454c1cf89335a1f5e96afa849dfad4e0116b6ec35309fdea';
 
-Проверка учётной записи
------------------------
+### Проверка учётной записи
 
 Для проверки учётной записи можно воспользоваться клиентом ClickHouse для командной строки:
 
@@ -218,7 +222,7 @@
 * `user` - имя проверяемого пользователя,
 * `p4$$w0rd` - пароль проверяемого пользователя.
 
-Беспарольный вход
+Настройка клиента
 -----------------
 
 Для настройки консольного клиента ClickHouse для входа без пароля можно создать в домашнем каталоге подкаталог `.clickhouse-client` и поместить внутрь него файл `config.xml` со следующим содержимым:
