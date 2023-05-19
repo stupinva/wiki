@@ -175,7 +175,7 @@
 
     # systemctl restart clickhouse-server
 
-[Creating Users and Roles in ClickHouse](https://clickhouse.com/docs/en/operations/access-rights)
+[Goodbye XML, hello SQL! ClickHouse User Management Goes Pro](https://altinity.com/blog/goodbye-xml-hello-sql-clickhouse-user-management-goes-pro)
 
 ### Заведение пользователей
 
@@ -204,6 +204,8 @@
 
     CREATE USER default IDENTIFIED WITH sha256_hash BY 'dd81ca61fb57a4ff454c1cf89335a1f5e96afa849dfad4e0116b6ec35309fdea';
     ALTER USER default IDENTIFIED WITH sha256_hash BY 'dd81ca61fb57a4ff454c1cf89335a1f5e96afa849dfad4e0116b6ec35309fdea';
+
+[Creating Users and Roles in ClickHouse](https://clickhouse.com/docs/en/operations/access-rights)
 
 ### Проверка учётной записи
 
