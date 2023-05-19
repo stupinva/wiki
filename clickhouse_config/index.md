@@ -222,6 +222,8 @@
 * `user` - имя проверяемого пользователя,
 * `p4$$w0rd` - пароль проверяемого пользователя.
 
+[Drivers and Interfaces / HTTP Interface](https://clickhouse.com/docs/en/interfaces/http)
+
 Настройка клиента
 -----------------
 
