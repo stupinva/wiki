@@ -199,3 +199,52 @@
 
     CREATE USER default IDENTIFIED WITH sha256_hash BY 'dd81ca61fb57a4ff454c1cf89335a1f5e96afa849dfad4e0116b6ec35309fdea';
     ALTER USER default IDENTIFIED WITH sha256_hash BY 'dd81ca61fb57a4ff454c1cf89335a1f5e96afa849dfad4e0116b6ec35309fdea';
+
+Проверка учётной записи
+-----------------------
+
+Для проверки учётной записи можно воспользоваться клиентом ClickHouse для командной строки:
+
+    $ echo 'SELECT 1;' | clickhouse-client -h 192.168.1.2 -d db -u user --password 'p4$$w0rd'
+
+Если на проверяемом узле не установлен клиент ClickHouse для командной строки, то для проверки учётной записи можно воспользоваться утилитой `curl` и сервером HTTP, встроенным в сервер ClickHouse:
+
+    $ echo 'SELECT 1;' | curl --data-binary @- -u 'user:p4$$w0rd' 'http://192.168.1.2:8123/?database=db'
+
+В обеих командах:
+
+* `192.168.1.2` - IP-адрес или доменное имя сервера ClickHouse,
+* `db` - название базы данных, к которой есть доступ у проверяемого пользователя,
+* `user` - имя проверяемого пользователя,
+* `p4$$w0rd` - пароль проверяемого пользователя.
+
+Беспарольный вход
+-----------------
+
+Для настройки консольного клиента ClickHouse для входа без пароля можно создать в домашнем каталоге подкаталог `.clickhouse-client` и поместить внутрь него файл `config.xml` со следующим содержимым:
+
+    <config>
+        <host>192.168.1.2</host>
+        <port>9000</port>
+        <user>user</user>
+        <password>p4$$w0rd</password>
+        <database>db</database>
+        <!-- <format>PrettyCompactMonoBlock</format>
+        <multiline>1</multiline>
+        <multiquery>1</multiquery>
+        <stacktrace>1</stacktrace>
+        <pager>less -SR</pager>
+        <max_parser_depth>2500</max_parser_depth> -->
+    </config>
+
+Где:
+
+* `192.168.1.2` - IP-адрес или доменное имя сервера ClickHouse, к которому клиент будет подключаться по умолчанию,
+* `9000` - порт сервера ClickHouse, на котором он принимает подключения от клиентов, работающих по его двоичному протоколу,
+* `db` - название базы данных, к которой пользователь будет подключен по умолчанию,
+* `user` - имя пользователя,
+* `p4$$w0rd` - пароль пользователя.
+
+В файле конфигурации можно указать значение для любой опции командной строки: несколько примеров приведено в закомментированном блоке между символами `<!--` и `-->`.
+
+[Clients and Drivers / Command-Line Client](https://clickhouse.com/docs/en/interfaces/cli)
