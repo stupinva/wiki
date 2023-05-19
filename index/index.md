@@ -75,6 +75,7 @@ MySQL
 * [[Настройка реплики в MySQL|mysql_slave]]
 * [[Настройка многопоточной репликации MySQL|mysql_threads_slave]]
 * [[Настройка других опций MySQL|mysql_tuning_misc]]
+* [[Устранение предупреждения MySQL об отстутствии прав доступа к файлу check_sector_size|mysql_check_sector_size]]
 * [[Настройка реплики MySQL с помощью xtrabackup|mysql_slave_xtrabackup]]
 * [[Настройка реплики MySQL с помощью снимков LVM и rysnc|mysql_slave_lvm_rsync]]
 * [[Настройка реплики MySQL с помощью mysqldump|mysql_slave_mysqldump]]
