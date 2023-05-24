@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>3.4</version>
-    <date>2023-05-24T10:30:35Z</date>
+    <date>2023-05-24T10:44:34Z</date>
     <groups>
         <group>
             <name>Templates</name>
@@ -2017,27 +2017,12 @@
             <percent_left>0.0000</percent_left>
             <percent_right>0.0000</percent_right>
             <ymin_type_1>0</ymin_type_1>
-            <ymax_type_1>2</ymax_type_1>
+            <ymax_type_1>0</ymax_type_1>
             <ymin_item_1>0</ymin_item_1>
-            <ymax_item_1>
-                <host>Template App ClickHouse</host>
-                <key>clickhouse[QueryTimeMicroseconds]</key>
-            </ymax_item_1>
+            <ymax_item_1>0</ymax_item_1>
             <graph_items>
                 <graph_item>
                     <sortorder>0</sortorder>
-                    <drawtype>0</drawtype>
-                    <color>2774A4</color>
-                    <yaxisside>0</yaxisside>
-                    <calc_fnc>2</calc_fnc>
-                    <type>0</type>
-                    <item>
-                        <host>Template App ClickHouse</host>
-                        <key>clickhouse[OtherQueryTimeMicroseconds]</key>
-                    </item>
-                </graph_item>
-                <graph_item>
-                    <sortorder>1</sortorder>
                     <drawtype>0</drawtype>
                     <color>F63100</color>
                     <yaxisside>0</yaxisside>
@@ -2049,7 +2034,7 @@
                     </item>
                 </graph_item>
                 <graph_item>
-                    <sortorder>2</sortorder>
+                    <sortorder>1</sortorder>
                     <drawtype>0</drawtype>
                     <color>1A7C11</color>
                     <yaxisside>0</yaxisside>
@@ -2058,6 +2043,18 @@
                     <item>
                         <host>Template App ClickHouse</host>
                         <key>clickhouse[SelectQueryTimeMicroseconds]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>2</sortorder>
+                    <drawtype>0</drawtype>
+                    <color>2774A4</color>
+                    <yaxisside>0</yaxisside>
+                    <calc_fnc>2</calc_fnc>
+                    <type>0</type>
+                    <item>
+                        <host>Template App ClickHouse</host>
+                        <key>clickhouse[OtherQueryTimeMicroseconds]</key>
                     </item>
                 </graph_item>
             </graph_items>
@@ -2164,12 +2161,9 @@
             <percent_left>0.0000</percent_left>
             <percent_right>0.0000</percent_right>
             <ymin_type_1>0</ymin_type_1>
-            <ymax_type_1>2</ymax_type_1>
+            <ymax_type_1>0</ymax_type_1>
             <ymin_item_1>0</ymin_item_1>
-            <ymax_item_1>
-                <host>Template App ClickHouse</host>
-                <key>clickhouse[TotalQuery]</key>
-            </ymax_item_1>
+            <ymax_item_1>0</ymax_item_1>
             <graph_items>
                 <graph_item>
                     <sortorder>0</sortorder>
