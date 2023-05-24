@@ -55,3 +55,9 @@
 После этого можно назначить наблюдаемому узлу шаблон [[Template_App_ClickHouse_Active.xml]] для контроля общих показателей производительности и исправности.
 
 При необходимости вместо этого шаблона можно воспользоваться другим, в котором вместо активного Zabbix-агента используется пассивный: [[Template_App_ClickHouse.xml]].
+
+Дополнительные материалы
+------------------------
+
+* [Setup & maintenance / ClickHouse Monitoring](https://kb.altinity.com/altinity-kb-setup-and-maintenance/altinity-kb-monitoring/)
+* [Altinity / clickhouse-zabbix-template](https://github.com/Altinity/clickhouse-zabbix-template)
