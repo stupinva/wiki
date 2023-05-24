@@ -126,6 +126,7 @@ ClickHouse
 
 * [[Установка ClickHouse|clickhouse_install]]
 * [[Настройка ClickHouse|clickhouse_config]]
+* [[Мониторинг ClickHouse с помощью Zabbix|clickhouse_zabbix]]
 * [[Перенос базы данных ClickHouse|clickhouse_move_db]]
 * [[Шпаргалка по ClickHouse|clickhouse]]
 
