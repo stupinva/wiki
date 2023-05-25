@@ -1,7 +1,7 @@
 Настройка реплики MySQL с помощью mysqldump
 ===========================================
 
-[[!tag mysql mysqldump]]
+[[!tag mysql mysqldump backup restore]]
 
 Действия на источнике
 ---------------------
