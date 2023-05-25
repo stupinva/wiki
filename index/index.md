@@ -246,7 +246,7 @@ Android
 * [[Настройка D-Link DWA-566|hostapd_ac]]
 * [[Блок питания GLOBE FAN RL4Z S1352512H|psu]]
 * [[Raspberry Pi|rapi]]
-* [[BeagleBone Black|beablebone_black]]
+* [[BeagleBone Black|beaglebone_black]]
 * [[Java|java]]
 * [[Celery и Django|celery]]
 * [[Хэширование паролей|pwhash]]
