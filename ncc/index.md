@@ -9,7 +9,7 @@
 * [[Настройка IPMI|ipmi]]
 * [[Замена сбойного диска при использовании LVM|migrate_lvm]]
 * [[После обновления операционной системы Debian|after_upgrade]]
-* [[Полезные sysctl|sysctl]]
+* [[Полезные sysctl|linux_sysctl]]
 * [[Использование update-alternatives|update-alternatives]]
 * [[Развёртывание проекта dj|ufanet/dj]]
 * [[Сертификат для веб-серверов ЦУС|ufanet/ncc_cert]]
