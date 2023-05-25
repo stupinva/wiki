@@ -1,7 +1,7 @@
 Периодическое резервное копирование MySQL с помощью xtrabackup
 ==============================================================
 
-[[!tag mysql xtrabackup]]
+[[!tag mysql xtrabackup backup restore]]
 
 Введение
 --------
