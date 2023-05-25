@@ -1,7 +1,7 @@
 Настройка потоковой реплики PostgreSQL с помощью pg_basebackup
 ==============================================================
 
-[[!tag postgresql pg_basebackup]]
+[[!tag postgresql pg_basebackup backup restore]]
 
 Оглавление
 ----------
