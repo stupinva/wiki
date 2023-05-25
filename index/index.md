@@ -282,6 +282,7 @@ Android
 * [[Установка и настройка XWiki|xwiki]]
 * [[Методы увеличения производительности Zabbix|zabbix_performace]]
 * [[Линейка мейнфреймов PDP-6|pdp6]]
+* [[Zilog Z80 и VGA|z80_vga]]
 * [[Друзья djb|djbfriends]]
 * [[Сетевое оборудование, на которое можно прошить Linux|network_hardware_linux]]
 * [[Коммутаторы BDCom|bdcom]]
