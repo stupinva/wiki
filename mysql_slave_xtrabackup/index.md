@@ -1,7 +1,7 @@
 Настройка реплики MySQL с помощью xtrabackup
 ============================================
 
-[[!tag mysql xtrabackup]]
+[[!tag mysql xtrabackup backup restore]]
 
 Подготовка источника
 --------------------
