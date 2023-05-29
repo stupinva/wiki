@@ -1,6 +1,6 @@
 #!/bin/sh
 
-BACKUPS=/backup/
+BACKUPS=/backups/
 DAYS=3
 
 DT=`date '+%Y%m%d'`
@@ -21,7 +21,7 @@ echo "SHOW DATABASES;" \
 			continue
 		fi
 
-		echo "BACKUP DATABASE $DB TO Disk('backup', '$DB.$DT.zip');" | clickhouse-client >/dev/null 2>&1
+		echo "BACKUP DATABASE $DB TO Disk('backups', '$DB.$DT.zip');" | clickhouse-client >/dev/null 2>&1
 		if [ "$?" -eq "0" ] ; then
 			echo " done"
 
