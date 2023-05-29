@@ -1,6 +1,7 @@
 #!/bin/sh
 
-BACKUPS=/backups/
+BACKUPS=/backup/
+DAYS=3
 
 DT=`date '+%Y%m%d'`
 
@@ -11,7 +12,7 @@ echo "SHOW DATABASES;" \
 	| while read DB ;
 	do
 		echo -n "`date '+%Y:%m:%d %H:%M:%S'` Backing up database $DB..."
-		if [ -f "$BACKUPS$DT/$DB.zip.lock" ] ; then
+		if [ -f "$BACKUPS$DB.$DT.zip.lock" ] ; then
 			rm -f "$BACKUPS$DB.$DT.zip"
 			rm -f "$BACKUPS$DB.$DT.zip.lock"
 		fi
@@ -20,11 +21,18 @@ echo "SHOW DATABASES;" \
 			continue
 		fi
 
-		echo "BACKUP DATABASE $DB TO Disk('backups', '$DB.$DT.zip');" | clickhouse-client >/dev/null 2>&1
+		echo "BACKUP DATABASE $DB TO Disk('backup', '$DB.$DT.zip');" | clickhouse-client >/dev/null 2>&1
 		if [ "$?" -eq "0" ] ; then
-			find $BACKUPS -mindepth 1 -maxdepth 1 -type f -name $DB.\*.zip -mtime +2 -delete
 			echo " done"
 
+			echo -n "`date '+%Y:%m:%d %H:%M:%S'` Removing old backups of database $DB..."
+			FULL_LIST=`find "$BACKUPS" -mindepth 1 -maxdepth 1 -type f -name "$DB.*.zip" | sort`
+			NEED_LIST=`echo "$FULL_LIST" | tail -n "$DAYS"`
+			(echo "$FULL_LIST" ; echo "$NEED_LIST") \
+				| sort \
+				| uniq -u \
+				| xargs -r rm
+			echo " done"
 		else
 			rm -f "$BACKUPS$DB.$DT.zip"
 			echo " failed"
