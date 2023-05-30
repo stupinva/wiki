@@ -60,12 +60,9 @@
 
     $ dpkg -L libjemalloc2 | grep -E '\.so($|\.)'
 
-Полученный путь нужно указать как значение опции `malloc_lib` в разделе `[mysqld_safe]` в файле конфигурации сервера `/etc/mysql/percona-server.conf.d/mysqld_safe.cnf`:
+Полученный путь нужно указать как значение переменной `LD_PRELOAD` в файле конфигурации сервера `/etc/default/mysql`:
 
-    [mysqld_safe]
-    
-    ...
-    malloc_lib = /usr/lib/x86_64-linux-gnu/libjemalloc.so.2
+    LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
 
 Теперь отключим прозрачную поддержку огромных страниц (Transparent Hugepages). Для этого выполним следующие команды:
 
@@ -84,6 +81,10 @@
 
     # apt-get install percona-server-tokudb-5.7
 
+Перезапустим Percona Server, чтобы применить изменения в файле `/etc/default/mysql`:
+
+    # systemctl restart mysql
+
 Включим TokuDB:
 
     # ps-admin -e
@@ -92,7 +93,7 @@
 
     tokudb_cache_size = 64G
 
-Перезапустить Percona Server:
+Теперь можно перезапустить Percona Server ещё раз для включения TokuDB:
 
     # systemctl restart mysql
 
