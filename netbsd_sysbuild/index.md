@@ -796,5 +796,5 @@ pkgin - это продвинутый менеджер пакетов NetBSD, у
 * [Хулио Мерино. Знакомство с sysupgrade для NetBSD, 2012](http://netbsd.stupin.su/ru/sysupgrade/)
 * [Хулио Мерино. Поддержание свежести NetBSD при помощи pkg_comp 2.0, 2017](http://netbsd.stupin.su/ru/pkg_comp/)
 * [Frederic Cambus. Installing CA certificates on NetBSD](https://www.cambus.net/installing-ca-certificates-on-netbsd/)
-* [[Использование daemontools в NetBSD. Настройка запуска mathopd|daemontools_netbsd/#mathopd]]
+* [[Использование daemontools в NetBSD. Настройка запуска mathopd|netbsd_daemontools_mathopd]]
 * [[Настройка mathopd в NetBSD|mathopd_netbsd]]
