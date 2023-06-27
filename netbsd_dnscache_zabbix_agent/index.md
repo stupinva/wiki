@@ -1,6 +1,8 @@
 Мониторинг dnscache из djbdns в NetBSD через Zabbix-агента
 ==========================================================
 
+[[!tag daemontools zabbix_agent dnscache]]
+
 Для мониторинга через Zabbix-агента нужно привести файл `/service/dnscache/log/run` к следующему виду:
 
     #!/bin/sh
