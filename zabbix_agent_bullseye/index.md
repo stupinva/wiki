@@ -1,7 +1,20 @@
 Zabbix-агент в Debian Bullseye и Zabbix-сервер 3.4
 ==================================================
 
+[[!tag debian bullseye zabbix_agent]]
+
+Содержание
+----------
+
+[[!toc startlevel=2 levels=4]]
+
+Введение
+--------
+
 В Zabbix-агенте и сервере после версии 4.4 изменилась структура JSON, используемая элементами данных низкоуровневого обнаружения. Теперь возвращаемые данные больше не помещаются вовнутрь структуры `{"data": [...]}`, а возвращаются как есть, в виде массива `[...]`.
+
+Поиск узлов с более свежим пакетом
+----------------------------------
 
 В официальных репозиториях Debian Bullseye поставляется Zabbix-агент версии 5.0.8, который не совместим с серверами Zabbix версии 3.4. Для поиска проблемных узлов можно воспользоваться следующим запросом:
 
@@ -12,4 +25,20 @@ Zabbix-агент в Debian Bullseye и Zabbix-сервер 3.4
     WHERE items.status = 0
       AND items.error = 'Cannot find the "data" array in the received JSON object.';
 
-Для решения проблемы можно, например, установить в Debian Bullseye Zabbix-агент 4.0.4 из официальных репозиториев Debian Buster.
+Установка старого Zabbix-агента
+-------------------------------
+
+Для решения проблемы можно, например, установить в Debian Bullseye Zabbix-агент 4.0.4 из официальных репозиториев Debian Buster: [zabbix-agent_4.0.4+dfsg-1_amd64.deb](https://ftp.debian.org/debian/pool/main/z/zabbix/zabbix-agent_4.0.4+dfsg-1_amd64.deb):
+
+    # wget https://ftp.debian.org/debian/pool/main/z/zabbix/zabbix-agent_4.0.4+dfsg-1_amd64.deb
+    # dpkg -i zabbix-agent_4.0.4+dfsg-1_amd64.deb
+    # apt-get install -f
+
+Фиксация старого Zabbix-агента
+------------------------------
+
+Для того, чтобы установленный вручную пакет с Zabbix-агентом при обновлении системы из репозиториев не заменился более новым пакетом, можно создать файл `/etc/apt/preferences.d/zabbix` со следующим содержимым:
+
+    Package: zabbix-agent
+    Pin: version 1:4.0.4+dfsg-1+deb10u1
+    Pin-Priority: 1003
