@@ -1,6 +1,8 @@
 Установка и настройка агента Zabbix в NetBSD
 ============================================
 
+[[!tag netbsd pkgsrc zabbix_agent]]
+
 Впишем в файл /etc/mk.conf опции сборки пакетов:
 
     PKG_OPTIONS.perl=               -debug -dtrace -mstats -threads 64bitauto
