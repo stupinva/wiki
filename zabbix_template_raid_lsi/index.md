@@ -1,7 +1,7 @@
 Контроль аппаратного RAID-массива в Linux средствами Zabbix
 ===========================================================
 
-[[!tag megacli zabbix]]
+[[!tag debian megacli zabbix zabbix_agent]]
 
 Оглавление
 ----------
