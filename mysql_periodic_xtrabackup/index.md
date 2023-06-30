@@ -6,7 +6,7 @@
 Содержание
 ----------
 
-[[!tag startlevel=2 levels=4]]
+[[!toc startlevel=2 levels=4]]
 
 Введение
 --------
