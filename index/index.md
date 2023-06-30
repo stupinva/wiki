@@ -82,6 +82,7 @@ MySQL
 * [[Перенос базы данных с одного сервера MySQL на другой с помощью xtrabackup|mysql_migration_xtrabackup]]
 * [[Перенос базы данных с одного сервера MySQL на другой с помощью mysqldump|mysql_migration_mysqldump]]
 * [[Периодическое резервное копирование MySQL с помощью xtrabackup|mysql_periodic_xtrabackup]]
+* [[Периодическое резервное копирование MySQL с помощью снимков LVM|mysql_periodic_lvm_backup]]
 * [[Архивация периодических таблиц MySQL|mysql_archive_tables]]
 * [[Добавление нового узла в кластер Percona XtraDB Cluster|xtradb_cluster]]
 * [[Мониторинг MySQL с помощью Zabbix|mysql_zabbix]]
