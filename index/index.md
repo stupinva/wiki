@@ -79,6 +79,7 @@ MySQL
 * [[Настройка реплики MySQL с помощью xtrabackup|mysql_slave_xtrabackup]]
 * [[Настройка реплики MySQL с помощью снимков LVM и rysnc|mysql_slave_lvm_rsync]]
 * [[Настройка реплики MySQL с помощью mysqldump|mysql_slave_mysqldump]]
+* [[Скрипты для удобного развёртывания реплики MySQL с помощью снимков LVM|mysql_lvsend_lvrecv]]
 * [[Перенос базы данных с одного сервера MySQL на другой с помощью xtrabackup|mysql_migration_xtrabackup]]
 * [[Перенос базы данных с одного сервера MySQL на другой с помощью mysqldump|mysql_migration_mysqldump]]
 * [[Периодическое резервное копирование MySQL с помощью xtrabackup|mysql_periodic_xtrabackup]]
