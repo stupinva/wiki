@@ -111,12 +111,12 @@ case $1 in
 		$SUDO $MC -PdList -aALL -NoLog 2>&1 \
 			| $AWK -F: '
 				BEGIN {
-					print "{\"data\": [\n";
+					printf "{\"data\": [\n";
 					n = 0;
 				}
 
 				/^Adapter #/ {
-					split($0, cols, /\#/);
+					split($0, cols, /#/);
 					adapter = cols[2];
 				}
 
