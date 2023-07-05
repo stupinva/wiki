@@ -11,8 +11,8 @@ fi
 
 mount_snap() {
 	echo -n `date '+%Y-%m-%d %H:%M:%S'`
-	echo -n " Mounting snapshot $PVNAME/$LVSNAP to $SNAP_PATH..."
-	mount -o ro "/dev/$PVNAME/$LVSNAP" "$SNAP_PATH"
+	echo -n " Mounting snapshot $VGNAME/$LVSNAP to $SNAP_PATH..."
+	mount -o ro "/dev/$VGNAME/$LVSNAP" "$SNAP_PATH"
 	if [ "$?" -ne "0" ] ; then
 		echo " failed"
 		exit 2
@@ -27,7 +27,7 @@ unmount_snap() {
 	fi
 
 	echo -n `date '+%Y-%m-%d %H:%M:%S'`
-	echo -n " Unmounting snapshot $PVNAME/$LVSNAP..."
+	echo -n " Unmounting snapshot $VGNAME/$LVSNAP..."
 	umount "$SNAP_PATH" 2>/dev/null
 	if [ "$?" -ne "0" ] ; then
 		echo " failed"
@@ -38,14 +38,14 @@ unmount_snap() {
 }
 
 remove_snap() {
-	lvs -qq "$PVNAME/$LVSNAP" >/dev/null 2>&1
+	lvs -qq "$VGNAME/$LVSNAP" >/dev/null 2>&1
 	if [ "$?" -ne "0" ] ; then
 		return
 	fi
 
 	echo -n `date '+%Y-%m-%d %H:%M:%S'`
-	echo -n " Removing snapshot $PVNAME/$LVSNAP..."
-	lvremove -qf "$PVNAME/$LVSNAP" >/dev/null 2>&1
+	echo -n " Removing snapshot $VGNAME/$LVSNAP..."
+	lvremove -qf "$VGNAME/$LVSNAP" >/dev/null 2>&1
 	if [ "$?" -ne "0" ] ; then
 		echo " failed"
 		exit 4
@@ -69,8 +69,8 @@ create_snap() {
 	remove_snap
 
 	echo -n `date '+%Y-%m-%d %H:%M:%S'`
-	echo -n " Creating snapshot $PVNAME/$LVSNAP..."
-	lvs -qq "$PVNAME/$LVNAME" >/dev/null 2>&1
+	echo -n " Creating snapshot $VGNAME/$LVSNAP..."
+	lvs -qq "$VGNAME/$LVNAME" >/dev/null 2>&1
 	if [ "$?" -ne "0" ] ; then
 		echo " failed"
 		exit 6
@@ -82,7 +82,7 @@ create_snap() {
 -- SET lock_wait_timeout = 60;
 FLUSH LOCAL TABLES WITH READ LOCK;
 SHOW MASTER STATUS;
-system lvcreate -qqL 10G -s "$PVNAME/$LVNAME" -n "$LVSNAP"
+system lvcreate -qqL 10G -s "$VGNAME/$LVNAME" -n "$LVSNAP"
 UNLOCK TABLES;
 END
 				RC="$?"
@@ -93,7 +93,7 @@ END
 				LVM_SUPPRESS_FD_WARNINGS=1 mysql -BN 2>/dev/null <<END
 -- SET lock_wait_timeout = 60;
 FLUSH LOCAL TABLES WITH READ LOCK;
-system lvcreate -qqL 10G -s "$PVNAME/$LVNAME" -n "$LVSNAP"
+system lvcreate -qqL 10G -s "$VGNAME/$LVNAME" -n "$LVSNAP"
 UNLOCK TABLES;
 END
 				RC="$?"
@@ -106,7 +106,7 @@ END
 			remove_snap
 			continue
 		fi
-		lvs -qq "$PVNAME/$LVSNAP" >/dev/null 2>&1
+		lvs -qq "$VGNAME/$LVSNAP" >/dev/null 2>&1
 		if [ "$?" -ne "0" ] ; then
 			continue
 		fi
