@@ -76,14 +76,12 @@ MySQL
 * [[Настройка многопоточной репликации MySQL|mysql_threads_slave]]
 * [[Настройка других опций MySQL|mysql_tuning_misc]]
 * [[Устранение предупреждения MySQL об отсутствии прав доступа к файлу check_sector_size|mysql_check_sector_size]]
+* [[Резервное копирование и настройка репликации MySQL с помощью LVM|mysql_lvm]]
 * [[Настройка реплики MySQL с помощью xtrabackup|mysql_slave_xtrabackup]]
-* [[Настройка реплики MySQL с помощью снимков LVM и rysnc|mysql_slave_lvm_rsync]]
 * [[Настройка реплики MySQL с помощью mysqldump|mysql_slave_mysqldump]]
-* [[Скрипты для удобного развёртывания реплики MySQL с помощью снимков LVM|mysql_lvsend_lvrecv]]
 * [[Перенос базы данных с одного сервера MySQL на другой с помощью xtrabackup|mysql_migration_xtrabackup]]
 * [[Перенос базы данных с одного сервера MySQL на другой с помощью mysqldump|mysql_migration_mysqldump]]
 * [[Периодическое резервное копирование MySQL с помощью xtrabackup|mysql_periodic_xtrabackup]]
-* [[Периодическое резервное копирование MySQL с помощью снимков LVM|mysql_periodic_lvm_backup]]
 * [[Архивация периодических таблиц MySQL|mysql_archive_tables]]
 * [[Добавление нового узла в кластер Percona XtraDB Cluster|xtradb_cluster]]
 * [[Мониторинг MySQL с помощью Zabbix|mysql_zabbix]]
@@ -216,7 +214,6 @@ Android
 Черновики и заготовки
 ---------------------
 
-* [[Резервное копирование и настройка репликации MySQL с помощью LVM|mysql_lvm]]
 * [[Использование debconf|debconf]]
 * [[Печать сложных документов в Linux|printing]]
 * [[Настройка музыкального сервера на основе mpd|mpd]]
