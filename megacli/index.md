@@ -1,6 +1,13 @@
 Использование megacli
 =====================
 
+[[!tag megacli]]
+
+Оглавление
+----------
+
+[[!toc startlevel=2 levels=3]]
+
 Общие опции
 -----------
 
@@ -187,3 +194,4 @@
 ------------------------
 
 * [[Intel RAID Controller Command Line Tool 2 User Guide|megacli.pdf]]
+* [[MegaRAID SAS Software User Guide|megaraid_sas_software_guide.pdf]]
