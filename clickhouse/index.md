@@ -32,3 +32,43 @@
     FROM system.parts
     WHERE database = 'api_ufanet'
       AND table = 'api_fcm_notice';
+
+Просмотр количества таблиц в базах данных
+-----------------------------------------
+
+Для просмотра количества таблиц в каждой из баз данных, имеющихся на сервере, кроме системых, можно воспользоваться таким запросом к базе данных `information_schema`:
+
+    SELECT table_schema, COUNT(*)
+    FROM tables
+    WHERE table_schema NOT IN ('system', 'information_schema', 'INFORMATION_SCHEMA')
+    GROUP BY table_schema;
+
+Просмотр количества колонок в таблицах баз данных
+-------------------------------------------------
+
+Для просмотра количества колонок в таблицах в каждой из баз данных, имеющихся на сервере, кроме системых, можно воспользоваться таким запросом к базе данных `information_schema`:
+
+    SELECT table_schema, COUNT(*)
+    FROM columns
+    WHERE table_schema NOT IN ('system', 'information_schema', 'INFORMATION_SCHEMA')
+    GROUP BY table_schema;
+
+Просмотр объёмов баз данных
+---------------------------
+
+Для просмотра объёма в гигабайтах каждой из баз данных, имеющихся на сервере, кроме системых, можно воспользоваться таким запросом к базе данных `system`:
+
+    SELECT database, SUM(bytes_on_disk) / (1024 * 1024 * 1024)
+    FROM parts
+    GROUP BY database;
+
+Просмотр объёма данных за месяц в периодических таблицах баз данных
+-------------------------------------------------------------------
+
+Если в базах данных создаются секции с именами вида `ГГГГММ` и/или `ГГГГММДД`, то оценить объём данных в гигабайтах за прошлый (полный) месяц в таких таблицах каждой из баз данных можно с помощью следующего запроса к базе данных `system`:
+
+    SELECT database, SUM(bytes_on_disk) / (1024 * 1024 * 1024)
+    FROM parts
+    WHERE partition = DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 1 MONTH), '%Y%m')
+      OR partition LIKE CONCAT(DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 1 MONTH), '%Y%m'), '__')
+    GROUP BY database;
