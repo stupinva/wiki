@@ -144,6 +144,44 @@ JOIN в запросах UPDATE
       AND indexrelname NOT LIKE '%pkey%'
     ORDER BY pg_relation_size(schemaname ||'.'|| indexrelname) DESC;
 
+Просмотр количества таблиц в базе данных
+----------------------------------------
+
+Для просмотра количества таблиц в определённой базе данных, нужно подключиться к ней и выполнить следующий запрос:
+
+    SELECT COUNT(*)
+    FROM information_schema.tables
+    WHERE table_schema NOT IN ('pg_catalog', 'information_schema', 'repack', '_timescaledb_catalog', '_timescaledb_internal', '_timescaledb_config', '_timescaledb_cache', 'timescaledb_information', 'timescaledb_experimental');
+
+Из выборки исключены системные табличные пространства и табличные пространства расширений `repack` и `timescaledb`.
+
+Просмотр количества колонок в таблицах базе данных
+-------------------------------------------------
+
+Для просмотра количества колонок в таблицах в определённой базе данных, нужно подключиться к ней и выполнить следующий запрос:
+
+    SELECT COUNT(*)
+    FROM information_schema.columns
+    WHERE table_schema NOT IN ('pg_catalog', 'information_schema', 'repack', '_timescaledb_catalog', '_timescaledb_internal', '_timescaledb_config', '_timescaledb_cache', 'timescaledb_information', 'timescaledb_experimental');
+
+Из выборки исключены системные табличные пространства и табличные пространства расширений `repack` и `timescaledb`.
+
+Просмотр объёма базы данных
+---------------------------
+
+Для просмотра объёма определённой базы данных в гигабайтах, нужно подключиться к ней и выполнить следующий запрос:
+
+    SELECT SUM(pg_relation_size(C.oid)) / (1024 * 1024 * 1024) AS s
+    FROM pg_class C
+    LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
+    WHERE nspname NOT IN ('pg_catalog', 'information_schema', 'repack', '_timescaledb_catalog', '_timescaledb_internal', '_timescaledb_config', '_timescaledb_cache', 'timescaledb_information', 'timescaledb_experimental');
+
+Из выборки исключены системные табличные пространства и табличные пространства расширений `repack` и `timescaledb`.
+
+Тажке для просмотра списка всех баз данных с информацией об их объёме можно воспользоваться командой клиента `psql`:
+
+    \l+
+
 Выполнение SQL-запросов из сценариев оболочки
 ---------------------------------------------
 
