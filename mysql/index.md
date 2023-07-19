@@ -195,6 +195,40 @@
     ORDER BY s DESC
     LIMIT 10;
 
+### Просмотр количества таблиц в базах данных
+
+Для просмотра количества таблиц в каждой из баз данных, имеющихся на сервере, кроме системых, можно воспользоваться таким запросом:
+
+    SELECT table_schema, COUNT(*)
+    FROM tables
+    WHERE table_schema NOT IN ('mysql', 'sys', 'information_schema', 'performance_schema', 'admin')
+    GROUP BY table_schema;
+
+Из выборки исключена также база данных `admin`, которая используется для [[отслеживания подключений к MySQL|mysql_connections]].
+
+### Просмотр количества колонок в таблицах баз данных
+
+Для просмотра количества колонок в таблицах в каждой из баз данных, имеющихся на сервере, кроме системых, можно воспользоваться таким запросом:
+
+    SELECT table_schema, COUNT(*)
+    FROM columns
+    WHERE table_schema NOT IN ('mysql', 'sys', 'information_schema', 'performance_schema', 'admin')
+    GROUP BY table_schema;
+
+Из выборки исключена также база данных `admin`, которая используется для [[отслеживания подключений к MySQL|mysql_connections]].
+
+### Просмотр объёма данных за месяц в периодических таблицах баз данных
+
+Если в базе данных создаются таблицы с суффиксами вида `_ГГГГММ` и/или `_ГГГГММДД`, то оценить объём данных за прошлый (полный) месяца в таких таблицах каждой из баз данных можно с помощью следующего запроса:
+
+    SELECT table_schema,
+           SUM(data_length + index_length) / (1024 * 1024 * 1024)
+    FROM tables
+    WHERE table_schema NOT IN ('mysql', 'sys', 'information_schema', 'performance_schema')
+      AND (table_name LIKE CONCAT('%\_', DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 1 MONTH), '%Y%m'))
+        OR table_name LIKE CONCAT('%\_', DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 1 MONTH), '%Y%m'), '__'))
+    GROUP BY table_schema;
+
 ### Поиск таблиц без первичного ключа и ключа уникальности
 
 Для поиска таблиц, не имеющих первичного ключа, можно воспользоваться следующим запросом к базе данных `information_schema`:
