@@ -5,8 +5,11 @@
 
 
 * `docker container ls` - вывести список контейнеров,
+* `docker ps --format "table {{.Names}}" | awk 'NR > 1 { print $0; }'` - вывести список имён контейнеров по одному имени в строку,
+* `docker container inspect <контейнер>` - вывести информацию о контейнере,
 * `docker inspect -f '{{ .Mounts }}' <контейнер>` - вывести информацию о каталогах хост-системы, монтируемых в контейнер,
 * `docker inspect -f '{{range $index, $value := .Config.Env}} {{println $value}} {{end}}' <контейнер>` - вывести переменные окружения контейнера с их значениями,
+* `docker ps --format "table {{.Names}}" | awk 'NR > 1 { print $0; }' | while read name ; do echo "--- $name ---" ; docker inspect -f '{{range $index, $value := .Config.Env}} {{println $value}} {{end}}' "$name"; done` - вывести переменные окружения каждого из контейнеров,
 * `docker inspect -f '{{range .NetworkSettings.Networks}} {{.IPAddress}} {{end}}' <контейнер>` - вывести IP-адреса контейнера,
 * `docker exec -it <контейнер> <команда>` - запустить в работающем контейнере указанную команду в интерактивном режиме в терминале,
 * `docker container restart <контейнер>` - перезапустить контейнер,
