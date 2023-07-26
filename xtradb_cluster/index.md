@@ -60,4 +60,5 @@
 Использованные материалы
 ------------------------
 
-[Krunal Bauskar. Want IST Not SST for Node Rejoins? We Have a Solution!](https://www.percona.com/blog/2018/02/13/no-sst-node-rejoins/)
+* [Krunal Bauskar. Want IST Not SST for Node Rejoins? We Have a Solution!](https://www.percona.com/blog/2018/02/13/no-sst-node-rejoins/)
+* [XtraBackup Parameters](https://galeracluster.com/library/documentation/xtrabackup-options.html)
