@@ -103,6 +103,7 @@ PostgreSQL
 * [[Ещё одна шпаргалка по PostgreSQL|postgresql]]
 * [[Настройка буферов PostgreSQL|postgresql_buffers]]
 * [[Мониторинг PostgreSQL с помощью Zabbix|postgresql_zabbix]]
+* [[Исчерпание номеров транзакций в PostgreSQL|postgresql_wraparound]]
 * [[Рекомендации по поиску проблем и тонкой настройке PostgreSQL|postgresql_tuning]]
 * [[Поиск медленных запросов с помощью pg_stat_statements в PostgreSQL|pg_stat_statements]]
 * [[Ускорение запросов LIKE с % в начале шаблона в PostgreSQL|postgresql_trgm]]
