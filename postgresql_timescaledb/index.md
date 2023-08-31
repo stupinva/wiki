@@ -169,6 +169,24 @@ PostgreSQL и TimescaleDB
 |2.4               |12, 13                           |
 |2.5+              |12, 13, 14                       |
 
+Просмотр списка гипертаблиц
+---------------------------
+
+Информацию о гипертаблицах можно найти в представлении `timescaledb_information.hypertables`. В частности, список гипертаблиц можно получить с помощью запроса следующего вида:
+
+    SELECT hypertable_name
+    FROM timescaledb_information.hypertables;
+
+Размеры гипертаблиц
+-------------------
+
+Список гипертаблиц с их размерами, отсортированный по убыванию размера, можно получить с помощью следующего запроса:
+
+    SELECT hypertable_name,
+           pg_size_pretty(hypertable_size(hypertable_schema || '.' || hypertable_name))
+    FROM timescaledb_information.hypertables
+    ORDER BY hypertable_size(hypertable_schema || '.' || hypertable_name) DESC;
+
 Использованные материалы
 ------------------------
 
