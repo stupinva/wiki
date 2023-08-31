@@ -156,3 +156,4 @@
 * [Документация PostgresPro Standard 15 / 18.4.1. Память](https://postgrespro.ru/docs/postgrespro/15/runtime-config-resource)
 * [Документация PostgresPro Standard 15 / 18.10. Автоматическая очистка](https://postgrespro.ru/docs/postgrespro/15/runtime-config-autovacuum)
 * [Документация PostgresPro Standard 15 / 18.11.1. Поведение команд](https://postgrespro.ru/docs/postgrespro/15/runtime-config-client)
+* [Алексей Лесовский. Давайте отключим vacuum?!](https://habr.com/ru/articles/501516/)
