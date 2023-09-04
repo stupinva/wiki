@@ -149,7 +149,7 @@
 Настройка очистки для твердотельных дисков
 ------------------------------------------
 
-В статье Алексея Лесовского [Давайте отключим vacuum?!](https://habr.com/ru/articles/501516/) можно найти следующие рекомендации по настройке вакуума для твердотельных дисков:
+В статье Алексея Лесовского [Давайте отключим vacuum?!](https://habr.com/ru/articles/501516/) можно найти следующие рекомендации по настройке очистки для твердотельных дисков:
 
     vacuum_cost_delay = 0      # значение по умолчанию
     vacuum_cost_page_hit = 0   # по умолчанию 1
@@ -213,6 +213,35 @@
 ### autovacuum_vacuum_cost_limit (integer)
 
 Задаёт предел стоимости, который будет учитываться при автоматических операциях `VACUUM`. При значении -1 (по умолчанию) применяется обычное значение `vacuum_cost_limit`. Заметьте, что это значение распределяется пропорционально среди всех работающих процессов автоочистки, если их больше одного, так что сумма ограничений всех процессов никогда не превосходит данный предел. Задать этот параметр можно только в `postgresql.conf` или в командной строке при запуске сервера. Однако его можно переопределить для отдельных таблиц, изменив их параметры хранения.
+
+Просмотр состояния процессов очистки
+------------------------------------
+
+Посмотреть текущее состояние выполняемых процессов очистки можно с помощью следующего запроса:
+
+    SELECT p.pid,
+           now() - a.xact_start AS duration,
+           coalesce(wait_event_type ||'.'|| wait_event, 'f') AS waiting,
+           CASE 
+               WHEN a.query ~ '^autovacuum.*to prevent wraparound' THEN 'wraparound' 
+               WHEN a.query ~ '^vacuum' THEN 'user'
+               ELSE 'regular'
+           END AS mode,
+           p.datname AS database,
+           p.relid::regclass AS table,
+           p.phase,
+           pg_size_pretty(p.heap_blks_total * current_setting('block_size')::int) AS table_size,
+           pg_size_pretty(pg_total_relation_size(relid)) AS total_size,
+           pg_size_pretty(p.heap_blks_scanned * current_setting('block_size')::int) AS scanned,
+           pg_size_pretty(p.heap_blks_vacuumed * current_setting('block_size')::int) AS vacuumed,
+           round(100.0 * p.heap_blks_scanned / p.heap_blks_total, 1) AS scanned_pct,
+           round(100.0 * p.heap_blks_vacuumed / p.heap_blks_total, 1) AS vacuumed_pct,
+           p.index_vacuum_count,
+           round(100.0 * p.num_dead_tuples / p.max_dead_tuples,1) AS dead_pct
+    FROM pg_stat_progress_vacuum p
+    RIGHT JOIN pg_stat_activity a ON a.pid = p.pid
+    WHERE (a.query ~* '^autovacuum:' OR a.query ~* '^vacuum') AND a.pid <> pg_backend_pid()
+    ORDER BY now() - a.xact_start DESC;
 
 Источники
 ---------
