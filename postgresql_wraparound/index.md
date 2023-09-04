@@ -107,12 +107,12 @@
 
 При настройке автоматической очистки рекомендуется обратить внимание на следующие настройки:
 
-    autovacuum_freeze_max_age = 500000000
-    autovacuum_max_workers = 6
-    autovacuum_naptime = '15s'
-    autovacuum_vacuum_cost_delay = 0
-    maintenance_work_mem = '10GB'
-    vacuum_freeze_min_age = 10000000
+    autovacuum_freeze_max_age = 500000000 # по умолчанию 200000000
+    autovacuum_max_workers = 6            # по умолчанию 3
+    autovacuum_naptime = '15s'            # по умолчанию 1 минута
+    autovacuum_vacuum_cost_delay = 0      # по умолчанию 2 миллисекунды
+    maintenance_work_mem = '10GB'         # по умолчанию 64 мегабайта
+    vacuum_freeze_min_age = 10000000      # по умолчанию 50000000
 
 Для подбора подходящих значений можно воспользоваться утилитой `timescaledb-tune` из пакета `timescaledb-tools`. Ниже приведено объяснение каждого из значений из документации.
 
@@ -145,6 +145,26 @@
 ### vacuum_freeze_min_age (integer)
 
 Задаёт возраст для отсечки (в транзакциях), при достижении которого команда `VACUUM` должна замораживать версии строк при сканировании таблицы. Значение по умолчанию - 50 миллионов транзакций. Хотя пользователи могут задать любое значение от нуля до одного миллиарда, в `VACUUM` введён внутренний предел для действующего значения, равный половине `autovacuum_freeze_max_age`, чтобы принудительная автоочистка выполнялась не слишком часто.
+
+Настройка очистки для твердотельных дисков
+------------------------------------------
+
+В статье Алексея Лесовского [Давайте отключим vacuum?!](https://habr.com/ru/articles/501516/) можно найти следующие рекомендации по настройке вакуума для твердотельных дисков:
+
+    vacuum_cost_delay = 0      # значение по умолчанию
+    vacuum_cost_page_hit = 0   # по умолчанию 1
+    vacuum_cost_page_miss = 5  # по умолчанию 10
+    vacuum_cost_page_dirty = 5 # по умолчанию 20
+    vacuum_cost_limit = 200    # значение по умолчанию
+
+    autovacuum_max_workers = 10            # по умолчанию 3
+    autovacuum_naptime = 1s                # по умолчанию 1 минута
+    autovacuum_vacuum_threshold = 50       # значение по умолчанию
+    autovacuum_analyze_threshold = 50      # значение по умолчанию
+    autovacuum_vacuum_scale_factor = 0.05  # по умолчанию 0.2
+    autovacuum_analyze_scale_factor = 0.05 # по умолчанию 0.2
+    autovacuum_vacuum_cost_delay = 5ms     # по умолчанию 2 миллисекунды, даже агрессивнее, а ещё более агрессивные настройки можно найти выше - 0
+    autovacuum_vacuum_cost_limit = -1      # значение по умолчанию
 
 Источники
 ---------
