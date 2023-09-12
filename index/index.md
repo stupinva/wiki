@@ -73,6 +73,7 @@ MySQL
 * [[Настройка количества потоков MySQL|mysql_threads]]
 * [[Настройка источника репликации в MySQL|mysql_master]]
 * [[Настройка реплики в MySQL|mysql_slave]]
+* [[Как преобразовать обычную репликацию в репликацию GTID в MySQL|mysql_gtid]]
 * [[Настройка многопоточной репликации MySQL|mysql_threads_slave]]
 * [[Настройка других опций MySQL|mysql_tuning_misc]]
 * [[Устранение предупреждения MySQL об отсутствии прав доступа к файлу check_sector_size|mysql_check_sector_size]]
