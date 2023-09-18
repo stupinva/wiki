@@ -85,6 +85,7 @@ MySQL
 * [[Периодическое резервное копирование MySQL с помощью xtrabackup|mysql_periodic_xtrabackup]]
 * [[Архивация периодических таблиц MySQL|mysql_archive_tables]]
 * [[Добавление нового узла в кластер Percona XtraDB Cluster|xtradb_cluster]]
+* [[Обновление Percona XtraDB Cluster|xtradb_cluster_upgrade]] (перевод)
 * [[Мониторинг MySQL с помощью Zabbix|mysql_zabbix]]
 * [[Исправление ошибок в таблице InnoDB|mysql_recovery_innodb_table]]
 * [[Удаление временной системной таблицы MySQL|mysql_drop_temporary_system_table]]
