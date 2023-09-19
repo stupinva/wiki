@@ -171,6 +171,7 @@ Android
 * [[Сборка и использование декомпилятора pyc-файлов|pycdc]]
 * [[Настройка и использование LFS в git-репозитории|git_lfs]]
 * [[Zabbix-агент в Debian Bullseye и Zabbix-сервер 3.4|zabbix_agent_bullseye]]
+* [[Zabbix-агент в Debian Bookworm и Zabbix-сервер 3.4|zabbix_agent_bookworm]]
 * [[Изменение размера диска в Linux|linux_resize_disk]]
 * [[Калеб Коллуэй. GnuTLS|gnutls]]
 * [[Настройка IPMI|ipmi]]
