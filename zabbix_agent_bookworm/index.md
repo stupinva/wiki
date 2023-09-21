@@ -74,7 +74,7 @@ Zabbix-агент в Debian Bookworm и Zabbix-сервер 3.4
 
 В результате описанной выше процедуры сборки в выше появится пакет, который можно установить в систему следующим образом:
 
-    # dpkg -i zabbix-agent_4.0.4+dfsg-1_amd64.deb
+    # dpkg -i zabbix-agent_4.0.4+dfsg-1-debian-bookworm-1_amd64.deb
     # apt-get install -f
 
 Фиксация старого Zabbix-агента
