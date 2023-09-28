@@ -167,6 +167,7 @@ Android
 * [[Объединение сетевых интерфейсов в Linux|bonding_linux]]
 * [[Шпаргалка по Docker|docker]]
 * [[Реми Ван Элст. nginx 1.15.2, ssl_preread_protocol, совмещение HTTPS и SSH на одном порту|nginx_ssl_preread_protocol]] (перевод)
+* [[Бернхард Кнасмюллер. GitLab: Аутентификация с использованием талона доступа|gitlab_auth_token]] (перевод)
 * [[Розеттский камень GnuTLS/OpenSSL|gnutls_openssl]]
 * [[Использование autotools|autotools]]
 * [[Сборка и использование декомпилятора pyc-файлов|pycdc]]
