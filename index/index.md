@@ -67,6 +67,7 @@ MySQL
 * [[MySQL|mysql]] (черновик)
 * [[Настройка Linux для MySQL|mysql_linux]] (черновик)
 * [[Привилегии пользователей MySQL|mysql_privileges]]
+* [[Пол Намуаг. Шпаргалка по производительности MySQL|mysql_tuning]] (перевод)
 * [[Настройка клиентских буферов MySQL|mysql_client_buffers]]
 * [[Настройка общих буферов MySQL|mysql_buffers]]
 * [[Настройка журнала транзакций в MySQL|mysql_logs]]
