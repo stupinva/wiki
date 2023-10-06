@@ -179,6 +179,11 @@
     Firmware : XCV10132
     FirmwareUpdateAvailable : XCV10165
 
+Если же на накопителе установлено актуальное программное обеспечение, то эти строчки будут иметь следующий вид:
+
+    Firmware : XCV10165
+    FirmwareUpdateAvailable : The selected drive contains current firmware as of this tool release.
+
 Обновление программного обеспечения накопителей
 -----------------------------------------------
 
