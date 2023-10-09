@@ -185,6 +185,12 @@
 
     $ mysqldump --single-transaction --skip-comments --skip-add-drop-table --no-data db > db_schema.sql
 
+### Выгрузка только данных
+
+Для того, чтобы можно было загрузить данные в Percona XtraDB Cluster, обязательно нужно указать опцию `--skip-add-locks`:
+
+    $ mysqldump --single-transaction --skip-add-locks --no-create-info db > db_data.sql
+
 ### Просмотр размеров таблиц и индексов
 
 Для просмотра 10 самых крупных таблиц (вместе с индексами) можно воспользоваться запросом следующего вида, выполнив его в базе данных `information_schema`:
