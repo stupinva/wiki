@@ -139,6 +139,32 @@
 
     History list length 2759
 
+Для решения проблемы с зависшими транзакциями можно воспользоваться статьёй [Troubleshooting InnoDB History Length with Hung MySQL Transaction](https://minervadb.xyz/troubleshooting-innodb-history-length-with-hung-mysql-transaction/). Для поиска транзакций, выполняющихся дольше 60 секунд, воспользуемся запросом:
+
+    SELECT information_schema.processlist.id as processlist_id,
+           trx_started,
+           trx_isolation_level,
+           performance_schema.events_statements_history.EVENT_ID,
+           performance_schema.events_statements_history.TIMER_WAIT,
+           performance_schema.events_statements_history.event_name,
+           performance_schema.events_statements_history.sql_text,
+           performance_schema.events_statements_history.RETURNED_SQLSTATE,
+           performance_schema.events_statements_history.MYSQL_ERRNO,
+           performance_schema.events_statements_history.MESSAGE_TEXT,
+           performance_schema.events_statements_history.ERRORS,
+           performance_schema.events_statements_history.WARNINGS   
+    FROM information_schema.innodb_trx
+    JOIN information_schema.processlist ON information_schema.innodb_trx.trx_mysql_thread_id = information_schema.processlist.id
+    LEFT JOIN performance_schema.threads ON performance_schema.threads.processlist_id = information_schema.innodb_trx.trx_mysql_thread_id
+    LEFT JOIN performance_schema.events_statements_history ON performance_schema.events_statements_history.thread_id = performance_schema.threads.thread_id
+    WHERE information_schema.innodb_trx.trx_started < CURRENT_TIME() - INTERVAL 60 SECOND
+      AND information_schema.processlist.USER != 'SYSTEM_USER'
+    ORDER BY performance_schema.events_statements_history.EVENT_ID;
+
+Для завершения зависшей транзакции нужно выполнить команду `KILL` с идентификатором потока MySQL, в котором открыта транзакция:
+
+    KILL <processlist_id>;
+
 ### Просмотр объёма сегментов отката транзакций
 
 Узнать объём сегментов отката транзакций в мегабайтах можно из базы данных `information_schema` при помощи запроса:
