@@ -84,3 +84,4 @@
 ------------------------
 
 * [Muhammad Irfan. InnoDB Performance Optimization Basics](https://www.percona.com/blog/2013/09/20/innodb-performance-optimization-basics-updated/)
+* [В защиту swap'а [в Linux]: распространенные заблуждения](https://habr.com/ru/companies/flant/articles/348324/)
