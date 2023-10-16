@@ -58,6 +58,37 @@
 
     # mdadm --manage --stop /dev/md2
 
+Обновим информацию об имеющихся программных RAID-массивах:
+
+    # mdadm --examine --scan > /etc/mdadm/mdadm.conf
+
+В начало сгенерированного файла можно добавить текст, который бывает в этом файле по умолчанию:
+
+    # mdadm.conf
+    #
+    # !NB! Run update-initramfs -u after updating this file.
+    # !NB! This will ensure that initramfs has an uptodate copy.
+    #
+    # Please refer to mdadm.conf(5) for information about this file.
+    #
+    
+    # by default (built-in), scan all partitions (/proc/partitions) and all
+    # containers for MD superblocks. alternatively, specify devices to scan, using
+    # wildcards if desired.
+    #DEVICE partitions containers
+    
+    # automatically tag new arrays as belonging to the local system
+    HOMEHOST <system>
+    
+    # instruct the monitoring daemon where to send mail alerts
+    MAILADDR root
+    
+    # definitions of existing MD arrays
+
+Наконец, нужно собрать образ загрузочной файловой системы для ядра с новым файлом, чтобы ядро корректно определило программные RAID-массивы:
+
+    # udpate-initramfs -u -k all
+
 Удаление физического тома
 -------------------------
 
