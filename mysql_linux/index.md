@@ -164,3 +164,4 @@
 * [Documentation for /proc/sys/vm/swappiness](https://docs.kernel.org/admin-guide/sysctl/vm.html#swappiness)
 * [В защиту swap'а [в Linux]: распространенные заблуждения](https://habr.com/ru/companies/flant/articles/348324/)
 * [Джастин Эллингвуд. Использование Systemctl для управления службами и блоками Systemd](https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units-ru)
+* [HugeTLB Pages](https://www.kernel.org/doc/html/latest/admin-guide/mm/hugetlbpage.html)
