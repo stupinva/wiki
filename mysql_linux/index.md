@@ -171,6 +171,7 @@
 ------------------------
 
 * [Muhammad Irfan. InnoDB Performance Optimization Basics](https://www.percona.com/blog/2013/09/20/innodb-performance-optimization-basics-updated/)
+* [Ibrar Ahmed. Settling the Myth of Transparent HugePages for Databases](https://www.percona.com/blog/settling-the-myth-of-transparent-hugepages-for-databases/)
 * [Peter Zaitsev. Best Practices for Configuring Optimal MySQL Memory Usage](https://www.percona.com/blog/best-practices-for-configuring-optimal-mysql-memory-usage/)
 * [MySQL 5.7 Reference Manual  /  ...  /  Enabling Large Page Support](https://dev.mysql.com/doc/refman/5.7/en/large-page-support.html)
 * [MySQL 8.0 Reference Manual  /  ...  /  Enabling Large Page Support](https://dev.mysql.com/doc/refman/8.0/en/large-page-support.html)
