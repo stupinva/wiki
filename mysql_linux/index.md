@@ -154,6 +154,7 @@
 ------------------------
 
 * [Muhammad Irfan. InnoDB Performance Optimization Basics](https://www.percona.com/blog/2013/09/20/innodb-performance-optimization-basics-updated/)
+* [Peter Zaitsev. Best Practices for Configuring Optimal MySQL Memory Usage](https://www.percona.com/blog/best-practices-for-configuring-optimal-mysql-memory-usage/)
 * [MySQL 5.7 Reference Manual  /  ...  /  Enabling Large Page Support](https://dev.mysql.com/doc/refman/5.7/en/large-page-support.html)
 * [MySQL 8.0 Reference Manual  /  ...  /  Enabling Large Page Support](https://dev.mysql.com/doc/refman/8.0/en/large-page-support.html)
 * [Using mlock ulimits for SHM_HUGETLB deprecated](https://bugs.mysql.com/bug.php?id=51597)
