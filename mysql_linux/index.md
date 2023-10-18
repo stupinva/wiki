@@ -14,8 +14,38 @@
 Рекомендации по настройке Linux для MySQL:
 
 - использовать свежие ядра Linux,
-- использовать опции монтирования `noatime` и `nodiratime`,
-- поменять планировщик ввода-вывода с Completely Fair Queueing (CFQ) на Noop или Deadline,
+- использовать файловую систему ext4 или xfs,
+- использовать опции монтирования `noatime` и `nodiratime`.
+
+Изменение планировщика ввода-вывода
+-----------------------------------
+
+Рекомендуется поменять планировщик ввода-вывода с Completely Fair Queueing (CFQ) на Noop или Deadline. Посмотреть активный планировщик на каждом из дисков системы можно следующим образом:
+
+    $ cat /sys/block/sd*/queue/scheduler
+
+Чтобы поменять планировщик на всех дисках на `deadline`, можно воспользоваться следующей командой:
+
+    # for d in /sys/block/sd*/queue/scheduler ; do echo deadline > $d ; done
+
+Чтобы планировщик `deadline` использовался по умолчанию после загрузки системы, нужно открыть файл `/etc/default/grub` и добавить в переменную `GRUB_CMDLINE_LINUX` опцию `elevator=deadline`. Затем нужно выполнить команду для обновления конфигурации загрузчика:
+
+    # update-grub
+
+Изменение планировщика процессора
+---------------------------------
+
+Рекомендуется избегать использования планировщика `ondemand`. Проверим, какой планировщик настроен на каждом из ядер процессора:
+
+    $ cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+
+Для достижения максимальной производительности можно воспользоваться планировщиком `performance`. Настроить его для всех ядер процессоров можно с помощью следующей команды:
+
+    # for c in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor ; do echo performance > $c ; done
+
+Для того, чтобы планировщик `performance` использовался по умолчанию после загрузки системы, нужно открыть файл `/etc/default/grub` и добавить в переменную `GRUB_CMDLINE_LINUX` опцию `cpufreq.default_governor=performance`. Затем нужно выполнить команду для обновления конфигурации загрузчика:
+
+    # update-grub
 
 Защита от вытеснения в область подкачки
 ---------------------------------------
@@ -180,17 +210,14 @@
     # echo never > /sys/kernel/mm/transparent_hugepage/enabled
     # echo never > /sys/kernel/mm/transparent_hugepage/defrag
 
-Чтобы не нужно было выполнять эти действия после перезагрузки системы, передадим опцию ядру операционной системе при его загрузке. Для этого открываем файл `/etc/default/grub`, находим переменную `GRUB_CMDLINE_LINUX` и добавляем в список опций опцию `transparent_hugepage=never`. В результате должно получиться что-то такое:
-
-    GRUB_CMDLINE_LINUX="ipv6.disable=1 transparent_hugepage=never"
-
-Обновим конфигурацию загрузчика следующей командой:
+Для того, чтобы прозрачная поддержка огромных страниц была отключена в процесе загрузки системы, нужно открыть файл `/etc/default/grub` и добавить в переменную `GRUB_CMDLINE_LINUX` опцию `transparent_hugepage=never`. Затем нужно выполнить команду для обновления конфигурации загрузчика:
 
     # update-grub
 
 Использованные материалы
 ------------------------
 
+* [Alexander Rubin. Linux performance tuning tips for MySQL](https://www.percona.com/blog/linux-performance-tuning-tips-mysql/?trk=article-ssr-frontend-pulse_x-social-details_comments-action_comment-text)
 * [Muhammad Irfan. InnoDB Performance Optimization Basics](https://www.percona.com/blog/2013/09/20/innodb-performance-optimization-basics-updated/)
 * [Ibrar Ahmed. Settling the Myth of Transparent HugePages for Databases](https://www.percona.com/blog/settling-the-myth-of-transparent-hugepages-for-databases/)
 * [Wenbo Zhang. Transparent Huge Pages: Why We Disable It for Databases](https://www.pingcap.com/blog/transparent-huge-pages-why-we-disable-it-for-databases/)
@@ -202,6 +229,7 @@
 Дополнительные материалы
 ------------------------
 
+* [CPU Performance Scaling](https://www.kernel.org/doc/html/latest/admin-guide/pm/cpufreq.html)
 * [Documentation for /proc/sys/vm/swappiness](https://docs.kernel.org/admin-guide/sysctl/vm.html#swappiness)
 * [В защиту swap'а [в Linux]: распространенные заблуждения](https://habr.com/ru/companies/flant/articles/348324/)
 * [Джастин Эллингвуд. Использование Systemctl для управления службами и блоками Systemd](https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units-ru)
