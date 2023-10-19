@@ -1,7 +1,7 @@
 Обновление Percona XtraDB Cluster
 =================================
 
-[[!tag mysql]]
+[[!tag mysql wsrep]]
 
 Это перевод статьи: [Upgrading Percona XtraDB Cluster](https://docs.percona.com/percona-xtradb-cluster/5.7/howtos/upgrade_guide.html).
 
