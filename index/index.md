@@ -78,6 +78,7 @@ MySQL
 * [[Настройка многопоточной репликации MySQL|mysql_threads_slave]]
 * [[Настройка других опций MySQL|mysql_tuning_misc]]
 * [[Устранение предупреждения MySQL об отсутствии прав доступа к файлу check_sector_size|mysql_check_sector_size]]
+* [[Решение проблемы Could not increase number of max_open_files в MySQL|mysql_max_open_files_trouble]]
 * [[Резервное копирование и настройка репликации MySQL с помощью LVM|mysql_lvm]]
 * [[Настройка реплики MySQL с помощью xtrabackup|mysql_slave_xtrabackup]]
 * [[Настройка реплики MySQL с помощью mysqldump|mysql_slave_mysqldump]]
@@ -167,7 +168,6 @@ Android
 * [[Обновление прошивок твердотельных накопителей Intel|intel_ssd_firmware]]
 * [[Устранение проблем загрузки Debian на RAID1 и LVM через Grub|debian_raid1_lvm_grub]]
 * [[Удаление групп томов после некорректного удаления физических томов LVM|lvm_fix]]
-* [[Решение проблемы Could not increase number of max_open_files в MySQL|mysql_max_open_files_trouble]]
 * [[Объединение сетевых интерфейсов в Linux|bonding_linux]]
 * [[Шпаргалка по Docker|docker]]
 * [[Реми Ван Элст. nginx 1.15.2, ssl_preread_protocol, совмещение HTTPS и SSH на одном порту|nginx_ssl_preread_protocol]] (перевод)
