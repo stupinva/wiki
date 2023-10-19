@@ -249,6 +249,7 @@
 Использованные материалы
 ------------------------
 
+* [Mattias Geniar. How to change the reserved blocks on EXT3 or EXT4 filesystem in Linux](https://ma.ttias.be/change-reserved-blocks-ext3-ext4-filesystem-linux/)
 * [Alexander Rubin. Linux performance tuning tips for MySQL](https://www.percona.com/blog/linux-performance-tuning-tips-mysql/?trk=article-ssr-frontend-pulse_x-social-details_comments-action_comment-text)
 * [Muhammad Irfan. InnoDB Performance Optimization Basics](https://www.percona.com/blog/2013/09/20/innodb-performance-optimization-basics-updated/)
 * [Ibrar Ahmed. Settling the Myth of Transparent HugePages for Databases](https://www.percona.com/blog/settling-the-myth-of-transparent-hugepages-for-databases/)
