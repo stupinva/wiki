@@ -56,6 +56,13 @@ innodb_buffer_pool_instances
 
     [Note] InnoDB: page_cleaner: 1000ms intended loop took 8067ms. The settings might not be optimal. (flushed=386, during the time.)
 
+innodb_buffer_pool_chunk_size
+-----------------------------
+
+Экземпляры буферного пула распределяются блоками. Размер этого блока по умолчанию равен 128 мегабайтам. Рекомендуется, чтобы количество таких блоков в буферном пуле не превышало 1000. Если значение `innodb_buffer_pool_size / innodb_buffer_pool_chunk_size` больше 1000, то рекомендуется увеличить размер блока. Я предпочитаю использовать размеры блока, кратные размеру блока по умолчанию.
+
+Также стоит учитывать, что размер блока должен быть кратен 1 мегабайту. А при использовании опции `large_pages` размер блока должен быть кратен размеру страницы, который можно узанть из строчки `Hugepagesize` в псевдофайле `/proc/meminfo`.
+
 innodb_buffer_pool_dump_at_shutdown и innodb_buffer_pool_load_at_startup
 ------------------------------------------------------------------------
 
@@ -99,6 +106,7 @@ tmp_table_size
 
 * [Muhammad Irfan. InnoDB Performance Optimization Basics](https://www.percona.com/blog/2013/09/20/innodb-performance-optimization-basics-updated/) - обновлённая статья 2013 года
 * [Peter Zaitsev. InnoDB Performance Optimization Basics](https://www.percona.com/blog/2007/11/01/innodb-performance-optimization-basics/) - оригинальная статья 2007 года
+* [MySQL 5.7 Reference Manual  /  The InnoDB Storage Engine  /  InnoDB Startup Options and System Variables / innodb_buffer_pool_chunk_size](https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_buffer_pool_chunk_size)
 * [Вячеслав Гапон. Изменение InnoDB buffer pool в MySQL](https://ixnfo.com/innodb-buffer-pool-size.html)
 * [MySQL 8.0 Reference Manual / Configuring InnoDB Buffer Pool Size](https://dev.mysql.com/doc/refman/8.0/en/innodb-buffer-pool-resize.html)
 * [MySQL 5.7 Reference Manual / Server System Variables](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html)
