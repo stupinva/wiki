@@ -1,6 +1,8 @@
 Система pkgsrc
 ==============
 
+[[!meta title="Система pkgsrc"]]
+
 [[!tag pkgsrc pkgsrc-wip]]
 
 Содержание
