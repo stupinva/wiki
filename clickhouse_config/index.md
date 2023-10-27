@@ -215,6 +215,53 @@
 
 [Tom Schreiber, Tony Bonuccelli. Asynchronous Data Inserts in ClickHouse](https://clickhouse.com/blog/asynchronous-data-inserts-in-clickhouse)
 
+### Буферные таблицы
+
+### Деление таблиц на секции
+
+### Сортировка данных в таблицах
+
+Представим, что имеется таблица следующего вида:
+
+    CREATE TABLE customer_notice
+    (
+        `customer_id` UInt64,
+        `date_create` DateTime,
+        ...
+    )
+    ENGINE = MergeTree
+    PARTITION BY toYYYYMM(date_create)
+    ORDER BY (date_create, customer_id)
+    TTL date_create + toIntervalMonth(3)
+    SETTINGS index_granularity = 8192;
+
+Если поиск в таблице происходит с указанием интервала дат `date_create` и идентификатора `customer_id`, то при сортировке данных в таблице по полям `date_create, customer_id` сначала будут отобраны строки, соответствующие указанному интервалу дат, и лишь затем из результата будут отобраны строки, соответствующие идентификатору заказчика.
+
+Поскольку таблица уже поделена на секции по месяцам, то может оказаться выгодным поменять порядок сортировки на `customer_id, date_create`, и тогда при поиске данных сначала будут отобраны секции таблицы, соотвествующие интервалу дат, затем внутри них будут отобраны строки, соответствующие определённому идентификатору заказчика и интервалу дат.
+
+Если в таблице не много данных, то можно перенести их в таблицу с новым порядком сортировки одним запросом вида `INSERT INTO ... SELECT FROM`, следующим образом:
+
+    CREATE TABLE customer_notice_new
+    (
+        `customer_id` UInt64,
+        `date_create` DateTime,
+        ...
+    )
+    ENGINE = MergeTree
+    PARTITION BY toYYYYMM(date_create)
+    ORDER BY (customer_id, date_create)
+    TTL date_create + toIntervalMonth(3)
+    SETTINGS index_granularity = 8192;
+    
+    INSERT INTO customer_notice_new(customer_id, date_create, ...)
+    SELECT customer_id, date_create, ... FROM customer_notice;
+    
+    RENAME TABLE customer_notice TO customer_notice_bak;
+    
+    RENAME TABLE customer_notice_new TO customer_notice;
+
+Если же данных много и содержимое старой таблицы не умещается в оперативной памяти сервера ClickHouse целиком, то такой запрос придётся поделить на серию запросов с указанием интервалов дат в критерии фильтрации `WHERE date_create BETWEEN ... AND ...` и перенести, таким образом, данные по частям.
+
 Настройка пользователей
 -----------------------
 
