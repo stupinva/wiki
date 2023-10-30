@@ -188,6 +188,10 @@
         </merge_tree>
     </clickhouse>
 
+Если у отдельных таблиц имеется больше нескольких тысяч фрагментов, подлежащих удалению, то ускорить удаления фрагментов у таких таблиц можно изменением настройки таблицы, отвечающей за время жизни устаревших фрагментов в секундах:
+
+    ALTER TABLE db.table MODIFY SETTING old_parts_lifetime = 60;
+
 [Vu Dao. Clickhouse Server - Troubleshooting](https://dev.to/vumdao/clickhouse-server-troubleshooting-2gb7)
 
 ### Настройка асинхронной вставки данных
