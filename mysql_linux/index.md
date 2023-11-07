@@ -264,7 +264,15 @@
 
 Чтобы эти настройки применялись при загрузке системы, нужно прописать их в файле `/etc/sysctl.conf`.
 
-[Installing Red Hat Ceph Storage on Red Hat Enterprise Linux / 2.5. Tuning considerations for the Linux kernel when running Ceph](https://access.redhat.com/documentation/en-us/red_hat_ceph_storage/4/html-single/installation_guide/index#tuning-considerations-for-the-linux-kernel-when-running-ceph_install)
+### Настройка соотношения стоимости освобождения области подкачки и файлового кэша
+
+Ядро операционной системы может посчитать выгодным выгрузить в область подкачки редко используемые области памяти для того, чтобы разместить в освободившихся областях кэш файловой системы. Для управления склонностью ядра освобождать память для кэширования файловой системы предназначена переменная ядра `vm.vfs_cache_pressure`. По умолчанию её значение равно 100, при котором ядро одинаково оценивает стоимость освобождения кэша файловой системы и области подкачки. При меньших значениях ядро предпочитает удерживать в памяти кэш файловой системы, а при нуле вовсе перестаёт удалять из кэша данные, что может привести к утечкам оперативной памяти. При значениях больше 100 ядро предпочитает чаще очищать кэш файловой системы. Значение 1000 означает в 10 раз более агрессивную очистку кэша файловой системы, чем по умолчанию.
+
+Итак, нам необходимо, чтобы кэш файловой системы не приводил к вытеснению областей оперативной памяти в раздел подкачки. Для этого увеличим значение переменной ядра, которое она принимает по умолчанию, в 10 раз:
+
+    # sysctl -w vm.vfs_cache_pressure=1000
+
+Чтобы эти настройки применялись при загрузке системы, нужно прописать их в файле `/etc/sysctl.conf`.
 
 Использованные материалы
 ------------------------
@@ -278,6 +286,8 @@
 * [MySQL 5.7 Reference Manual  /  ...  /  Enabling Large Page Support](https://dev.mysql.com/doc/refman/5.7/en/large-page-support.html)
 * [MySQL 8.0 Reference Manual  /  ...  /  Enabling Large Page Support](https://dev.mysql.com/doc/refman/8.0/en/large-page-support.html)
 * [Using mlock ulimits for SHM_HUGETLB deprecated](https://bugs.mysql.com/bug.php?id=51597)
+* [Installing Red Hat Ceph Storage on Red Hat Enterprise Linux / 2.5. Tuning considerations for the Linux kernel when running Ceph](https://access.redhat.com/documentation/en-us/red_hat_ceph_storage/4/html-single/installation_guide/index#tuning-considerations-for-the-linux-kernel-when-running-ceph_install)
+* [Documentation for /proc/sys/vm/vfs_cache_pressure](https://www.kernel.org/doc/html/latest/admin-guide/sysctl/vm.html#vfs-cache-pressure)
 
 Дополнительные материалы
 ------------------------
