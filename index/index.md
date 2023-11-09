@@ -120,6 +120,7 @@ PostgreSQL
 * [[Поиск неиспользуемых строчек в файле pg_hba.conf|check_hba]]
 * [[Настройка PgBouncer|postgresql_pgbouncer]]
 * [[PostgreSQL и TimescaleDB|postgresql_timescaledb]]
+* [[PostgreSQL и mysql_fdw|postgresql_mysql_fdw]]
 * [[Настройка потоковой реплики PostgreSQL с помощью pg_basebackup|postgresql_streamint_pg_basebackup]]
 * [[Настройка PostgreSQL для миграции базы данных на новую версию TimescaleDB|postgresql_timescaledb_migration]]
 * [[Удаление дубликатов строк в таблицах PostgreSQL|postgresql_remove_duplicates]]
