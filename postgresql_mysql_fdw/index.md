@@ -1,0 +1,81 @@
+PostgreSQL и mysql_fdw
+======================
+
+[[!tag postgresql mysql]]
+
+Содержание
+----------
+
+[[!toc startlevel=2 levels=4]]
+
+Введение
+--------
+
+Для работы с таблицами на сторонних серверах в PostgreSQL существует соответствующий механизм. При выполнении запроса, в котором фигурирует стороння таблица, расширение отправляет на сторонний сервер запрос для извлечения данных, необходимых для выполнения запроса. В зависимости от расширения, в запрос для выполнения на стороннем сервере могут включаться дополнительные критерии фильтрации данных, которые удалось извлечь из исходного запроса: критерии для выражений `WHERE`, `GROUP BY`, `ORDER BY`, `LIMIT`, а при необходимости соединить данные в рамках одного запроса из нескольких сторонних таблиц на одном и том же стороннем сервере могут также добавляться выражения `JOIN` для соединения данных из этих таблиц и снижения объёма выборки.
+
+Установка расширения
+--------------------
+
+Расширение имеется в официальном репозитории Debian Bullseye, установим его:
+
+    # apt-get install postgresql-13-mysql-fdw
+
+Для включения расширения выполним в базе данных следующий запрос:
+
+    CREATE EXTENSION IF NOT EXISTS mysql_fdw;
+
+Использование расширения
+------------------------
+
+Предположим, что имеется сторонний сервер MySQL с доменным именем `db.example.net` и с базой данных `db`. На этом стороннем сервере заведён пользователь `login` с паролем `p4$$w0rd`, имеющий доступ к таблицам базы данных `db`. Созадим сторонний сервер в PostgreSQL:
+
+    CREATE SERVER mysql_db FOREIGN DATA WRAPPER mysql_fdw OPTIONS (
+        host 'db.example.net',
+        port '3306'
+    );
+
+Предположим, что мы устанавливаем подключение к базе данных PostgreSQL под именем `user`. В таком случае создадим для сочетания пользователя `user` и только что созданного стороннего сервера `mysql_db` правило отображения пользователя PostgreSQL в пользователя стороннего сервера:
+
+    CREATE USER MAPPING FOR user SERVER mysql_db OPTIONS (
+        password 'p4$$w0rd',
+        username 'login'
+    );
+
+Теперь остаётся создать описание сторонней таблицы, указав имя базы данных и таблицы на созданном нами стороннем сервере `mysql_db`. Например, создадим стороннюю таблицу `script`, которая будет отображаться в одноимённую таблицу на стороннем сервере:
+
+    CREATE FOREIGN TABLE script (
+        id integer,
+        title character varying(100) DEFAULT ''::character varying NOT NULL
+    )
+    SERVER mysql_db
+    OPTIONS (
+        dbname 'db',
+        table_name 'script'
+    );
+
+Несколько сторонних серверов
+----------------------------
+
+При необходимости работать с несколькими сторонними серверами в рамках одной базы данных, можно создать для таблиц каждого из сторонних серверов по одной схеме, а таблицы, соответствующие стороннему серверу, создавать в соответствующей схеме. Например, создадим схему `db` для работы с таблицами на стороннем сервере `mysql_db` из примера выше:
+
+    CREATE SCHEMA db;
+
+В таком случае таблицу `script` из примера выше создадим уже внутри этой схемы:
+
+    CREATE FOREIGN TABLE db.script (
+        id integer,
+        title character varying(100) DEFAULT ''::character varying NOT NULL
+    )
+    SERVER mysql_db
+    OPTIONS (
+        dbname 'billing',
+        table_name 'script'
+    );
+
+Дополнительная информация
+-------------------------
+
+* [EnterpriseDB / mysql_fdw / README.md](https://github.com/EnterpriseDB/mysql_fdw#readme)
+* [Документация к Postgres Pro Standard 13.12.2 / VI. Справочное руководство / Команды SQL / CREATE SERVER](https://postgrespro.ru/docs/postgrespro/13/sql-createserver)
+* [Документация к Postgres Pro Standard 13.12.2 / VI. Справочное руководство / Команды SQL / CREATE USER MAPPING](https://postgrespro.ru/docs/postgrespro/13/sql-createusermapping)
+* [Документация к Postgres Pro Standard 13.12.2 / VI. Справочное руководство / Команды SQL / CREATE FOREIGN TABLE](https://postgrespro.ru/docs/postgrespro/13/sql-createforeigntable)
