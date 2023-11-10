@@ -136,6 +136,7 @@ ClickHouse
 * [[Резервное копирование баз данных ClickHouse|clickhouse_backup]]
 * [[Перенос базы данных ClickHouse|clickhouse_move_db]]
 * [[Шпаргалка по ClickHouse|clickhouse]]
+* [[Повышение безопасности ClickHouse|clickhouse_hardening]] (перевод)
 
 SQLite
 ------
