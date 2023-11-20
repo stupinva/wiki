@@ -79,6 +79,7 @@ MySQL
 * [[Настройка других опций MySQL|mysql_tuning_misc]]
 * [[Устранение предупреждения MySQL об отсутствии прав доступа к файлу check_sector_size|mysql_check_sector_size]]
 * [[Решение проблемы Could not increase number of max_open_files в MySQL|mysql_max_open_files_trouble]]
+* [[Решение проблем с длиной истории InnoDB при зависании транзакций MySQL|mysql_hung_transactions]] (перевод)
 * [[Резервное копирование и настройка репликации MySQL с помощью LVM|mysql_lvm]]
 * [[Настройка реплики MySQL с помощью xtrabackup|mysql_slave_xtrabackup]]
 * [[Настройка реплики MySQL с помощью mysqldump|mysql_slave_mysqldump]]
