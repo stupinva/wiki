@@ -1,6 +1,8 @@
 Ву Дао. Как удалить пользователя/роль PostgreSQL с привилегиями
 ===============================================================
 
+[[!tag postgresql]]
+
 Это перевод статьи [Vu Dao. How To Drop A Postgres Role/User With privileges](https://dev.to/vumdao/how-to-drop-a-postgres-role-user-with-privileges-2h1i).
 
 Проблема
