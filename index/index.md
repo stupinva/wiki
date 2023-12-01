@@ -101,6 +101,7 @@ MySQL
 * [[Настройка ProxySQL|proxysql]]
 * [[Сборка ProxySQL для Debian 10.12 Buster|proxysql_deb_buster]]
 * [[Сборка ProxySQL для Debian 8.11.1 LTS Jessie|proxysql_deb_jessie]]
+* [[Развенчание мифа о прозрачных огромных страницах (Transparent HugePages) для баз данных|mysql_thp]] (перевод)
 
 PostgreSQL
 ----------
