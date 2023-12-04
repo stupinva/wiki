@@ -101,7 +101,6 @@ MySQL
 * [[Настройка ProxySQL|proxysql]]
 * [[Сборка ProxySQL для Debian 10.12 Buster|proxysql_deb_buster]]
 * [[Сборка ProxySQL для Debian 8.11.1 LTS Jessie|proxysql_deb_jessie]]
-* [[Развенчание мифа о прозрачных огромных страницах (Transparent HugePages) для баз данных|mysql_thp]] (перевод)
 
 PostgreSQL
 ----------
@@ -124,6 +123,7 @@ PostgreSQL
 * [[PostgreSQL и TimescaleDB|postgresql_timescaledb]]
 * [[PostgreSQL и mysql_fdw|postgresql_mysql_fdw]]
 * [[Ву Дао. Как удалить пользователя/роль PostgreSQL с привилегиями|postgresql_drop_user]] (перевод)
+* [[Ибрар Ахмед. Развенчание мифа о прозрачных огромных страницах (Transparent HugePages) для баз данных|mysql_thp]] (перевод)
 * [[Настройка потоковой реплики PostgreSQL с помощью pg_basebackup|postgresql_streamint_pg_basebackup]]
 * [[Настройка PostgreSQL для миграции базы данных на новую версию TimescaleDB|postgresql_timescaledb_migration]]
 * [[Удаление дубликатов строк в таблицах PostgreSQL|postgresql_remove_duplicates]]
