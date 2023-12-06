@@ -178,6 +178,7 @@ Android
 * [[Реми Ван Элст. nginx 1.15.2, ssl_preread_protocol, совмещение HTTPS и SSH на одном порту|nginx_ssl_preread_protocol]] (перевод)
 * [[Бернхард Кнасмюллер. GitLab: Аутентификация с использованием талона доступа|gitlab_auth_token]] (перевод)
 * [[Розеттский камень GnuTLS/OpenSSL|gnutls_openssl]]
+* [[Эд Хармоуш. OpenSSL 3.x и устаревшие провайдеры|openssl_legacy_provider]] (перевод)
 * [[Использование autotools|autotools]]
 * [[Сборка и использование декомпилятора pyc-файлов|pycdc]]
 * [[Настройка и использование LFS в git-репозитории|git_lfs]]
