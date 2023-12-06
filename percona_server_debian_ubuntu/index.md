@@ -18,15 +18,11 @@
 
 Подключаем репозитории с Percona Server 5.7, Percona XtraBackup 2.4 и Percona Toolkit:
 
-    # percona-release enable ps-57
+    # percona-release enable-only original
+    # percona-release enable prel
+    # percona-release enable tools
     # percona-release enable pxb-24
-    # percona-release enable pt
-
-В случае Debian Bullseye вместо этого можно подключить репозитории с Percona Server 8.0 и соответствующим ему пакетом Percona XtraBackup 8.0 (утилиты Percona Toolkit работают с любой версией сервера):
-
-    # percona-release enable ps-80
-    # percona-release enable pxb-80
-    # percona-release enable pt
+    # percona-release enable ps-57
 
 Обновляем список пакетов, доступных через репозитории:
 
@@ -40,13 +36,6 @@
     # apt-get install percona-server-server-5.7
     # apt-get install percona-server-client-5.7
     # apt-get install percona-xtrabackup-24
-    # apt-get install percona-toolkit
-
-Если же были выбраны репозитории с Percona Server 8.0 и Percona XtraBackup 8.0, то вместе с утилитами Percona Toolkit установить пакеты можно так:
-
-    # apt-get install percona-server-server
-    # apt-get install percona-server-client
-    # apt-get install percona-xtrabackup-80
     # apt-get install percona-toolkit
 
 Установка TokuDB
