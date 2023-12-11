@@ -61,4 +61,4 @@
 Использованные материалы
 ------------------------
 
-* [How to Log User Connections in MySQL](https://mysqlhints.blogspot.com/2011/01/how-to-log-user-connections-in-mysql.html)
+* [[Как вести журнал подключений пользователей к MySQL|mysql_connections_trans]]
