@@ -97,6 +97,7 @@ MySQL
 * [[Актуализация реплики mysql с помощью pt-table-checksum и pt-table-sync|pt_table_checksum_sync]]
 * [[Установка Percona Server в Debian/Ubuntu|percona_server_debian_ubuntu]]
 * [[Пример изменения настроек оптимизатора запросов MySQL|mysql_optimizer_switch]]
+* [[Как вести журнал подключений пользователей к MySQL|mysql_connections_trans]] (перевод)
 * [[Отслеживание подключений к MySQL|mysql_connections]]
 * [[Настройка ProxySQL|proxysql]]
 * [[Сборка ProxySQL для Debian 10.12 Buster|proxysql_deb_buster]]
