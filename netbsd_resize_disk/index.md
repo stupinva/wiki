@@ -5,11 +5,25 @@
 
 NetBSD установлена на виртуальную машину, диском для которой является логический том LVM. Логический диск называется `vm-mda` и находится в группе логических томов `stupin`.
 
-Диск внутри виртуальной машины определяется под именем `ld0`, на нём обнаруживается раздел `dk0` с корневой файловой системой NetBSD.
+Определим имя раздела виртуальной машины, размер которого нужно увеличить:
+
+    # df -h
+    Filesystem                         Size       Used      Avail %Cap Mounted on
+    /dev/dk0                            29G        24G       3.8G  86% /
+    kernfs                             1.0K       1.0K         0B 100% /kern
+    ptyfs                              1.0K       1.0K         0B 100% /dev/pts
+    procfs                             4.0K       4.0K         0B 100% /proc
+    tmpfs                              768M         0B       768M   0% /var/shm
+
+Определим имя диска, на котором находится этот раздел:
+
+    # dkctl dk0 getwedgeinfo
+    dk0 at ld0: cbab4f4f-597e-405e-b556-06dfc88e63cd
+    dk0: 62914463 blocks at 64, type: ffs
 
 Зафиксируем информацию до начала изменений размера диска `ld0`. Для начала посмотрим на содержимое заголовка разметки GPT:
 
-    mda# gpt header ld0
+    # gpt header ld0
     Media Size: 5368709120 (5G)
     Sector Size: 512
     Number of Sectors: 10485760 (10M)
@@ -33,21 +47,15 @@ NetBSD установлена на виртуальную машину, диск
       10485727        32         Sec GPT table
       10485759         1         Sec GPT header
 
-Посмотрим объём корневой файловой системы, размер которой собираемся увеличить:
-
-    mda# df -h /
-    Filesystem         Size       Used      Avail %Cap Mounted on
-    /dev/dk0           4.8G       3.6G       1.0G  78% /
-
 На физической машине, где находятся LVM-тома и запущена виртуализация KVM, выполним увеличение размера LVM-тома виртуальной машины:
 
-    root@stupin.su:~# lvresize -L 10G stupin/vm-mda
+    # lvresize -L 10G stupin/vm-mda
       Size of logical volume stupin/vm-mda changed from 5,00 GiB (1280 extents) to 10,00 GiB (2560 extents).
       Logical volume stupin/vm-mda successfully resized.
 
 После выключения и включения виртуальной машины можно увидеть, что размер носителя увеличился до 10 гигабайт:
 
-    mda# gpt header ld0
+    # gpt header ld0
     Media Size: 10737418240 (10G)
     Sector Size: 512
     Number of Sectors: 20971520 (20M)
@@ -61,7 +69,7 @@ NetBSD установлена на виртуальную машину, диск
 
 В выводе следующей команды видно, что вместо вторичных заголовка и таблицы появилось неиспользуемое пространство:
 
-    mda# gpt show ld0
+    # gpt show ld0
          start      size  index  contents
              0         1         PMBR
              1         1         Pri GPT header
@@ -72,11 +80,11 @@ NetBSD установлена на виртуальную машину, диск
 
 Запускаем обновление таблицы разделов GPT до размера носителя:
 
-    mda# gpt resizedisk ld0
+    # gpt resizedisk ld0
 
 Снова смотрим на таблицу разделов и видим, что за неиспользуемым пространством вновь появились вторичные заголовок и таблица GPT:
 
-    mda# gpt show ld0
+    # gpt show ld0
          start      size  index  contents
              0         1         PMBR
              1         1         Pri GPT header
@@ -89,12 +97,12 @@ NetBSD установлена на виртуальную машину, диск
 
 Изменяем размер GPT-раздела:
 
-    mda# gpt resize -i 1 ld0
+    # gpt resize -i 1 ld0
     /dev/rld0: Partition 1 resized: 64 20971423
 
 И убеждаемся, что размер GPT-раздела увеличился, а неиспользуемое место позади него исчезло:
 
-    mda# gpt show ld0
+    # gpt show ld0
          start      size  index  contents
              0         1         PMBR
              1         1         Pri GPT header
