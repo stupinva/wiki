@@ -28,7 +28,7 @@ case $1 in
 	QueryTimeMicroseconds|SelectQueryTimeMicroseconds|InsertQueryTimeMicroseconds|\
 	OtherQueryTimeMicroseconds|NetworkReceiveBytes|NetworkSendBytes|InsertedRows|\
 	SelectedRows)
-		$CH "SELECT value FROM events WHERE event = '$1'"
+		$CH "SELECT SUM(value) FROM events WHERE event = '$1'"
 		;;
 	MaxQueryDuration)
 		$CH "SELECT MAX(elapsed) FROM processes"
