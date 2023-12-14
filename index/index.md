@@ -51,6 +51,9 @@
 * [[Настройка dnscache из djbdns в NetBSD|netbsd_dnscache]]
 * [[Мониторинг dnscache из djbdns в NetBSD через Zabbix-агента|netbsd_dnscache_zabbix_agent]] (черновик)
 * [[Настройка tinydns и axfrdns из djbdns в NetBSD|netbsd_tinydns_axfrdns]] (разбить на статьи: 1. tinydns, 2. axfrdns, 3. настройка файлов зон)
+* [[Настройка tinydns из djbdns в NetBSD|netbsd_tinydns]]
+* [[Настройка axfrdns из djbdns в NetBSD|netbsd_axfrdns]]
+* [[Настройка файлов зон для tinydns и axfrdns из djbdns|djbdns_zones]]
 
 Настройка сетевого оборудования
 -------------------------------
