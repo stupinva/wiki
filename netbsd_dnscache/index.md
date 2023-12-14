@@ -1,7 +1,7 @@
 Настройка dnscache из djbdns в NetBSD
 =====================================
 
-[[!tag djbdns]]
+[[!tag djbdns dns]]
 
 Содержание
 ----------
