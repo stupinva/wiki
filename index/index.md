@@ -170,6 +170,7 @@ Android
 Другие статьи
 -------------
 
+* [[Джастин Эллингвуд. Введение в терминологию и концепции RAID|raid_intro]] (перевод)
 * [[Настройка hostapd с шириной канала в 40 МГц|hostapd_ht40]]
 * [[Отключение встроенного RAID-контроллера Intel(R) Embedded Server RAID Technology II|disable_intel_raid]]
 * [[Устранение проблемы с зависанием BIOS при вставке образа диска через IPMI KVM|ipmi_kvm_iso]]
