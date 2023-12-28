@@ -290,3 +290,4 @@
 * Описание формата журналов tinydns можно найти в статье [Rob Mayoff. tinydns Log File Format](http://www.dqd.com/~mayoff/notes/djbdns/tinydns-log.html)
 * Разнообразные заплатки к пакету dnbdns, используемые в проекте OpenWRT, можно найти в git-репозитории проекта [openwrt djbdns patches](https://github.com/arduino/openwrt-packages-yun/tree/master/net/djbdns/patches)
 * Описание форматов записей и метода расчёта значения поля `timestamp` можно найти в статье [TinyDNS Format](https://docs.bytemark.co.uk/article/tinydns-format/)
+* Хорошее описание процедуры миграции с одной записи на другую можно найти в статье [Cory Wright. djbdns: More Than Just a Mouthful of Consonants](https://www.linuxjournal.com/magazine/djbdns-more-just-mouthful-consonants)
