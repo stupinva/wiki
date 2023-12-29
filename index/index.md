@@ -53,6 +53,7 @@
 * [[Настройка tinydns из djbdns в NetBSD|netbsd_tinydns]]
 * [[Настройка axfrdns из djbdns в NetBSD|netbsd_axfrdns]]
 * [[Настройка файлов зон для tinydns и axfrdns из djbdns|djbdns_zones]]
+* [[Пример настройки файлов зон для tinydns и axfrdns из djbdns|djbdns_example]]
 
 Настройка сетевого оборудования
 -------------------------------
