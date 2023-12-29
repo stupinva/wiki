@@ -178,7 +178,7 @@
 
 Нужно скачать архив KyoceraLinuxPackages-20230720.tar.gz, доступный по ссылке "Linux Print Driver (9.3)", распаковать его и установить в систему пакет `Debian/Global/kyodialog_amd64/kyodialog_9.3-0_amd64.deb` из архива.
 
-Далее в [веб-интерфейсе CUPS](https://localhost:631/]:
+Далее в [веб-интерфейсе CUPS](https://localhost:631/):
 
 1. перейти в раздел [Администрирование](http://localhost:631/admin),
 2. нажать кнопку "Добавить принтер",
