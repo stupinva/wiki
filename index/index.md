@@ -194,7 +194,7 @@ Android
 * [[Калеб Коллуэй. GnuTLS|gnutls]]
 * [[Настройка IPMI|ipmi]]
 * [[Тестирование дисков для MySQL с помощью fio|fio_mysql]]
-* [[Изменение пароля пользователя|grafana_reset_password]]
+* [[Изменение пароля пользователя Grafana через базу данных|grafana_reset_password]]
 * [[Забавная проблема с uBlock Origin|ublock_trouble]]
 * [[Сборка deb-пакета nginx из Debian 11 Bullseye для Debian 8.11 Jessie|nginx_debian_jessie]]
 * [[Контроль аппаратного RAID-массива в Linux средствами Zabbix|zabbix_template_raid_lsi]]
