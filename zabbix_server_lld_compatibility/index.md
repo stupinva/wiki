@@ -53,18 +53,16 @@
 
 Идею для заплатки подсмотрим в исходных текстах Zabbix версии 6.4 в файле [src/zabbix_server/lld/lld.c](https://git.zabbix.com/projects/ZBX/repos/zabbix/browse/src/zabbix_server/lld/lld.c?at=refs%2Fheads%2Frelease%2F6.4) в функции lld_rows_get:
 
-    	if ('[' == *jp.start)
-    	{
-    		jp_array = jp;
-    	}
-    	else if (SUCCEED != zbx_json_brackets_by_name(&jp, ZBX_PROTO_TAG_DATA, &jp_array))	/* deprecated */
-    	{
-    		*error = zbx_dsprintf(*error, "Cannot find the \"%s\" array in the received JSON object.",
-    				ZBX_PROTO_TAG_DATA);
-    		goto out;
-   	}
-    
-    
+            if ('[' == *jp.start)
+            {
+                    jp_array = jp;
+            }
+            else if (SUCCEED != zbx_json_brackets_by_name(&jp, ZBX_PROTO_TAG_DATA, &jp_array))	/* deprecated */
+            {
+                    *error = zbx_dsprintf(*error, "Cannot find the \"%s\" array in the received JSON object.",
+                                    ZBX_PROTO_TAG_DATA);
+                    goto out;
+            }
 
 Как видно, перед разбором JSON с информацией об обнаруженных элементах, делается проверка - начинается ли эта структура с открывающейся квадратной скобки. Если она начинается с квадратной скобки, то это формат версии Zabbix 4.2 и выше. Этот формат соответствует простому массиву с макросами. В противном случае считается, что это устаревший формат Zabbix версии до 4.2. В этом формате массив помещается вовнутрь хэш-массива в качестве значения ключа "data".
 
