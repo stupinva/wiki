@@ -190,6 +190,7 @@ Android
 * [[Настройка и использование LFS в git-репозитории|git_lfs]]
 * [[Zabbix-агент в Debian Bullseye и Zabbix-сервер 3.4|zabbix_agent_bullseye]]
 * [[Zabbix-агент в Debian Bookworm и Zabbix-сервер 3.4|zabbix_agent_bookworm]]
+* [[Совместимость сервера Zabbix 3.4 с агентами версий 4.2 и выше|zabbix_server_lld_compatibility]]
 * [[Изменение размера диска в Linux|linux_resize_disk]]
 * [[Калеб Коллуэй. GnuTLS|gnutls]]
 * [[Настройка IPMI|ipmi]]
