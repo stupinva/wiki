@@ -18,9 +18,14 @@
             echo "Missing /usr/pkg/etc/ntpd.conf"
             exit 1
     fi
+
+    /bin/rm -f /var/db/openntpd/ntpd.drift
+
+    NTPSERVER=`/usr/bin/awk '/server/ { print $2; }' /usr/pkg/etc/ntpd.conf`
+    /usr/sbin/ntpdate -b $NTPSERVER
     
     exec \
-    /usr/pkg/sbin/ntpd -d -s -f /usr/pkg/etc/ntpd.conf
+    /usr/pkg/sbin/ntpd -d -f /usr/pkg/etc/ntpd.conf
 
 И сделаем его исполняемым:
 
