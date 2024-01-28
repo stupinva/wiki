@@ -54,6 +54,7 @@
 * [[Настройка axfrdns из djbdns в NetBSD|netbsd_axfrdns]]
 * [[Настройка файлов зон для tinydns и axfrdns из djbdns|djbdns_zones]]
 * [[Пример настройки файлов зон для tinydns и axfrdns из djbdns|djbdns_example]]
+* [[Делаем pkgsrc для сервера Minecraft|pkgsrc_minecraft_server]]
 
 Настройка сетевого оборудования
 -------------------------------
