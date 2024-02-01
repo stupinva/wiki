@@ -60,13 +60,17 @@
 Зависимость от Java
 -------------------
 
-Добавляем в `Makefile` фреймворк для обработки Java-приложений:
+Добавляем в `Makefile` фреймворк для обработки Java-приложений перед последней строчкой:
 
     .include "../../mk/java-vm.mk"
 
 И отмечаем в `Makefile`, что Java требуется только для запуска пакета, а не для его запуска:
 
     USE_JAVA=               run
+
+Отмечаем, что требуется Java не ниже версии 17:
+
+    USE_JAVA2=              17
 
 Благодаря этой строчке в зависимости пакета пропишется пакет с Java Runtime Environment. Если вместо ключевого слова `run` указать `yes`, то в сборочные зависимости пакета пропишется пакет с Java Development Kit.
 
@@ -107,3 +111,9 @@
 Теперь можно ещё раз попробовать собрать пакет:
 
     $ make package
+
+Использованные материалы
+------------------------
+
+* [The pkgsrc guide / Part II. The pkgsrc developer's guide](https://www.netbsd.org/docs/pkgsrc/developers-guide.html)
+* [NetBSD can also run a Minecraft server](https://rubenerd.com/netbsd-can-also-run-a-minecraft-server/)
