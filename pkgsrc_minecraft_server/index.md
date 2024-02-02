@@ -89,13 +89,13 @@
 
 Теперь нам остаётся только переместить двоичный файл с расширением `jar` и текст лицензии в соответствующие каталоги. Для этого я добавил в `Makefile` переменную со списокм каталогов, в которые будет выполняться установка файлов:
 
-    INSTALLATION_DIRS=      share/doc lib
+    INSTALLATION_DIRS=      share/doc/${PKGBASE} lib/${PKGBASE}
 
 И добавил в `Makefile` правило установки файлов пакета в систему:
 
     do-install:
-            ${INSTALL_DATA} ${FILESDIR}/LICENSE ${DESTDIR}${PREFIX}/share/doc/${PKGBASE}
-            ${INSTALL_LIB} ${WRKSRC}/${PKGBASE}${EXTRACT_SUFX} ${DESTDIR}${PREFIX}/lib/${PKGBASE}
+            ${INSTALL_DATA} ${FILESDIR}/LICENSE ${DESTDIR}${PREFIX}/share/doc/${PKGBASE}/
+            ${INSTALL_LIB} ${WRKSRC}/${PKGBASE}${EXTRACT_SUFX} ${DESTDIR}${PREFIX}/lib/${PKGBASE}/
 
 Сборка пакета
 -------------
