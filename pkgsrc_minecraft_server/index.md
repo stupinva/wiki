@@ -116,4 +116,5 @@
 ------------------------
 
 * [The pkgsrc guide / Part II. The pkgsrc developer's guide](https://www.netbsd.org/docs/pkgsrc/developers-guide.html)
-* [NetBSD can also run a Minecraft server](https://rubenerd.com/netbsd-can-also-run-a-minecraft-server/)
+* [Скачивание сервера Minecraft: Java Edition](https://www.minecraft.net/ru-ru/download/server)
+* [Ruben Schade. NetBSD can also run a Minecraft server](https://rubenerd.com/netbsd-can-also-run-a-minecraft-server/)
