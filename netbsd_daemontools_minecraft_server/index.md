@@ -101,3 +101,9 @@
     # chmod +x /etc/rc.d/minecraft_server
 
 Теперь можно будет включать и выключать сервис `minecraft_server` привычным образом через переменную `minecraft_server` в файле `/etc/rc.conf`, а также запускать, останавливать, перезапускать и проверять состояние сервиса с помощью скрипта `/etc/rc.d/minecraft_server`.
+
+Использованные материалы
+------------------------
+
+* [Скачивание сервера Minecraft: Java Edition](https://www.minecraft.net/ru-ru/download/server)
+* [Ruben Schade. NetBSD can also run a Minecraft server](https://rubenerd.com/netbsd-can-also-run-a-minecraft-server/)
