@@ -57,6 +57,7 @@
 * [[Делаем pkgsrc для сервера Minecraft|pkgsrc_minecraft_server]]
 * [[Запуск сервера Minecraft в NetBSD с помощью daemontools|netbsd_daemontools_minecraft_server]]
 * [[Делаем pkgsrc для клиента консоли администрирования сервера Minecraft mcrcon|pkgsrc_mcrcon]]
+* [[mcrcon и консоль администрирования сервера Minecraft|mcrcon]]
 
 Настройка сетевого оборудования
 -------------------------------
