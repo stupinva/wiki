@@ -43,7 +43,7 @@
 
 Файл `games/mcrcon/Makefile` завершил подключением системы pkgsrc:
 
-.include "../../mk/bsd.pkg.mk"
+    .include "../../mk/bsd.pkg.mk"
 
 И создадим пустой файл `PLIST`:
 
