@@ -56,6 +56,7 @@
 * [[Пример настройки файлов зон для tinydns и axfrdns из djbdns|djbdns_example]]
 * [[Делаем pkgsrc для сервера Minecraft|pkgsrc_minecraft_server]]
 * [[Запуск сервера Minecraft в NetBSD с помощью daemontools|netbsd_daemontools_minecraft_server]]
+* [[Делаем pkgsrc для клиента консоли администрирования сервера Minecraft mcrcon|pkgsrc_mcrcon]]
 
 Настройка сетевого оборудования
 -------------------------------
