@@ -133,10 +133,10 @@
 
 Для включения и настройки консоли администрирования сервером Minecraft, работающей по протоколу RCON, предназначены следующие опции в файле `/var/games/minecraft-server/server.properties`:
 
-   enable-rcon=true
-   rcon.password=$ecret_p4$$w0rd
-   rcon.port=25575
-   broadcast-rcon-to-ops=false
+    enable-rcon=true
+    rcon.password=$ecret_p4$$w0rd
+    rcon.port=25575
+    broadcast-rcon-to-ops=false
 
 Где:
 
