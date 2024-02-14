@@ -180,6 +180,7 @@ Android
 * [[Настройка hostapd с шириной канала в 40 МГц|hostapd_ht40]]
 * [[Отключение встроенного RAID-контроллера Intel(R) Embedded Server RAID Technology II|disable_intel_raid]]
 * [[Устранение проблемы с зависанием BIOS при вставке образа диска через IPMI KVM|ipmi_kvm_iso]]
+* [[Обновление BIOS и BMC на сервере Supermicro SYS-110P-WR|supermicro_firmware_update]]
 * [[Обновление прошивок твердотельных накопителей Intel|intel_ssd_firmware]]
 * [[Устранение проблем загрузки Debian на RAID1 и LVM через Grub|debian_raid1_lvm_grub]]
 * [[Удаление групп томов после некорректного удаления физических томов LVM|lvm_fix]]
