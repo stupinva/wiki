@@ -1,7 +1,7 @@
 Обновление BIOS и BMC на сервере Supermicro SYS-110P-WR
 =======================================================
 
-[[!tag firmware]]
+[[!tag firmware supermicro]]
 
 Содержание
 ----------
