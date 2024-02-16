@@ -3,6 +3,11 @@
 
 [[!tag supermicro debian bookworm java]]
 
+Содержание
+----------
+
+[[!toc startlevel=2 levels=4]]
+
 Введение
 --------
 
@@ -45,8 +50,8 @@
             at java.desktop/net.sourceforge.jnlp.Launcher.createApplication(Launcher.java:815)
             ... 2 more
 
-Поиск решения
--------------
+Поиск решения с репозиториями Debian
+------------------------------------
 
 Если заглянуть внутрь файла `launch.jnlp`, то можно увидеть, что приложение написано в расчёта на Java версии 6:
 
@@ -308,3 +313,63 @@
     Владелец сертификата не совпадает с именем узла «kvm.server.tld»
     HTTP-запрос отправлен. Ожидание ответа… 404 Not Found
     2024-02-16 15:37:29 ОШИБКА 404: Not Found.
+
+Поиск решения с Oracle Java
+---------------------------
+
+Попробуем воспользоваться той же версией Java, взятой на сайте Oracle.
+
+Перейдём на официальный сайт компании Oracle [www.oracle.com](https://www.oracle.com/).
+
+В меню Products, в разделе Hardware and Software переходим по ссылке [Java](https://www.oracle.com/java/).
+
+На окткрывшейся странице справа находим кнопку Download Java, нажимаем и попадаем на страницу [Java Downloads](https://www.oracle.com/java/technologies/downloads/).
+
+Нас интересует устаревшая версия Java, поэтому переходим по ссылке [Java archive](https://www.oracle.com/java/technologies/downloads/archive/).
+
+Находим на странице раздел "Java SE downloads", а под ним ссылку [Java SE 8 (8u211 and later)](https://www.oracle.com/java/technologies/javase/javase8u211-later-archive-downloads.html).
+
+В таблице файлов для скачивания находим строчку "Linux x64 Compressed Archive" и переходим на страницу скачивания архива `jdk-8u391-linux-x64.tar.gz`. Для скачивания архива необходимо принять лицензионное соглашение и зарегистрироваться на сайте.
+
+Поиски альтернативных источников для скачивания этого файла, не требующих регистрации, привели меня страницу [Java SE JDK and JRE 8.391](https://www.techspot.com/downloads/5198-java-jre.html) сайта [www.techspot.com](https://www.techspot.com/). К сожалению, файла в формате TGZ тут нет, однако можно скачать пакет в формате [JDK Linux 64-bit RPM](https://www.techspot.com/downloads/downloadnow/5198/?evp=cc95b0e22a5ea8c81b34b55f1d9c7c54&file=5646).
+
+При нажатии по ссылке скачивание начнётся автоматически. Если посмотреть ссылку, по которой происходит реальное скачивание, то она будет такой:
+
+    https://cfdownload.adobe.com/pub/adobe/coldfusion/java/java8/java8u391/jdk/jdk-8u391-linux-x64.rpm
+
+Решение
+-------
+
+Если попробовать заменить расширение файла `rpm` на `tar.gz`, то можно скачать файл в нужном нам формате:
+
+    $ wget https://cfdownload.adobe.com/pub/adobe/coldfusion/java/java8/java8u391/jdk/jdk-8u391-linux-x64.tar.gz
+
+Распакуем скачанный архив:
+
+    $ tar xzvf jdk-8u391-linux-x64.tar.gz
+
+В результате распаковки в текущем каталоге появится подкаталог `jdk1.8.0_391`. Запустим `javaws` из этого каталога с указанием JNLP-приложения:
+
+    $ jdk-1.8-oracle-x64/bin/javaws launch.jnlp 
+    Java HotSpot(TM) 64-Bit Server VM warning: ignoring option PermSize=32M; support was removed in 8.0
+    Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=32M; support was removed in 8.0
+    
+    (java:3945787): dbind-WARNING **: 17:09:38.226: AT-SPI: Error retrieving accessibility bus address: org.freedesktop.DBus.Error.ServiceUnknown: The name org.a11y.Bus was not provided by any .service files
+    connect failed sd:39
+    a singal 17 is raised
+    GetFileDevStr:4051 media_type = 40
+    GetFileDevStr:4051 media_type = 45
+    GetFileDevStr:4051 media_type = 40
+    GetFileDevStr:4051 media_type = 45
+    GetFileDevStr:4051 media_type = 40
+    GetFileDevStr:4051 media_type = 45
+
+Итак, на этот раз приложение запустилось, выведя предупреждение об игнорировании опций `PermSize` и `MaxPermSize`, которые поддерживались в Java 6 версии, в 8 версии игнорируются с выводом предупреждения, а в последующих версиях приводят к завершению работы Java-машины с сообщением об ошибке.
+
+Устранение предупреждений
+-------------------------
+
+Для того, чтобы устранить эти предупреждения, достаточно удалить эти опции из файла `launch.jnlp`:
+
+    <j2se version="1.6.0+" initial-heap-size="128M" max-heap-size="128M" java-vm-args="-XX:PermSize=32M -XX:MaxPermSize=32M"/>
+    <j2se version="1.6.0+" initial-heap-size="128M" max-heap-size="128M" java-vm-args=""/>
