@@ -1,6 +1,8 @@
 Установка Microsoft Edge в Debian Linux
 =======================================
 
+[[!tag supermicro edge]]
+
 Введение
 --------
 
@@ -46,3 +48,8 @@
 
 Установка
 ---------
+
+Скачанный deb-пакет устанавливаем в систему следующим образом:
+
+    # dpkg -i microsoft-edge-stable_121.0.2277.113-1_amd64.deb
+    # apt-get install -f
