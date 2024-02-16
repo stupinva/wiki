@@ -1,7 +1,7 @@
-Установка Microsoft Edge в Debian Linux
-=======================================
+Установка Microsoft Edge в Debian
+=================================
 
-[[!tag supermicro edge]]
+[[!tag supermicro edge debian bookworm]]
 
 Введение
 --------
