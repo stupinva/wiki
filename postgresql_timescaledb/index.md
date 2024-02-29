@@ -194,3 +194,4 @@ PostgreSQL и TimescaleDB
 * [TimescaleDB / How-to Guides / Configuration / TimescaleDB configuration / TimescaleDB configuration and tuning](https://docs.timescale.com/timescaledb/latest/how-to-guides/configuration/timescaledb-config/#administration)
 * [TimescaleDB / How-to Guides / Backup and restore / Using pg_dump/pg_restore / Logical backups with pg_dump and pg_restore](https://docs.timescale.com/timescaledb/latest/how-to-guides/backup-and-restore/pg-dump-and-restore/#backup-entiredb)
 * [TimescaleDB / How-to Guides / Update TimescaleDB / TimescaleDB release compatibility](https://docs.timescale.com/timescaledb/latest/how-to-guides/update-timescaledb/#timescaledb-release-compatibility)
+* [Self-hosted TimescaleDB / Troubleshooting self-hosted TimescaleDB / Errors encountered during a pg_dump migration](https://docs.timescale.com/self-hosted/latest/troubleshooting/#errors-encountered-during-a-pg_dump-migration)
