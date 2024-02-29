@@ -43,6 +43,7 @@
 * [[Установка и настройка Exim в NetBSD|netbsd_exim]] (черновик)
 * [[Установка greylistd в NetBSD|netbsd_greylistd]]
 * [[Запуск greylistd в NetBSD с помощью daemontools|netbsd_daemontools_greylistd]]
+* [[Запуск clamd и freshclamd в NetBSD с помощью daemontools|netbsd_daemontools_clamd_freshclamd]]
 * [[Запуск exim в NetBSD с помощью daemontools|netbsd_daemontools_exim]]
 * [[Запуск getty в NetBSD с помощью daemontools|netbsd_daemontools_getty]]
 * [[Запуск xdm в NetBSD с помощью daemontools|netbsd_daemontools_xdm]]
