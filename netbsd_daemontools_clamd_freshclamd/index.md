@@ -207,3 +207,14 @@
     clamd=YES
 
 Теперь можно будет включать и выключать сервис `clamd` привычным образом через переменную `clamd` в файле `/etc/rc.conf`, а также запускать, останавливать, перезапускать, перезагружать и проверять состояние сервиса с помощью скрипта `/etc/rc.d/clamd`.
+
+Ручное скачивание антивирусных баз
+----------------------------------
+
+Для ручного скачивания антивирусных баз можно воспользоваться, например, curl:
+
+    # cd /var/clamav
+    # curl http://clamav.ufanet.ru/bytecode.cvd --output bytecode.cvd
+    # curl http://clamav.ufanet.ru/bytecode.cvd --output main.cvd
+    # curl http://clamav.ufanet.ru/bytecode.cvd --output daily.cvd
+    # chown clamav:clamav *.cvd
