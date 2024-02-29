@@ -102,7 +102,7 @@
     SELECT pg_terminate_backend(pid)
     FROM pg_stat_activity
     WHERE pid <> pg_backend_pid()
-      AND usename <> 'replication';
+      AND usename NOT IN ('postgres', 'replication');
 
 Далее убедиться, что реплика догнала источник, например, при помощи следующей команды, запущенной от пользователя `postgres`:
 
