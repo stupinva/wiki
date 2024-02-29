@@ -272,7 +272,7 @@
 Если теперь аналогичным образом добавить в файл `/etc/java-8-openjdk/security/java.policy` разрешение запускать "все файлы" следующим образом:
 
     grant {
-            permission java.io.FilePermission "/usr/bin/xprop", "execute";
+            permission java.io.FilePermission "<<ALL FILES>>", "execute";
     };
 
 То JNLP-приложение завершается ошибкой скачивания JAR-файлов:
