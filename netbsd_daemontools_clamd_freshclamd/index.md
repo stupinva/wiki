@@ -215,6 +215,6 @@
 
     # cd /var/clamav
     # curl http://clamav.ufanet.ru/bytecode.cvd --output bytecode.cvd
-    # curl http://clamav.ufanet.ru/bytecode.cvd --output main.cvd
-    # curl http://clamav.ufanet.ru/bytecode.cvd --output daily.cvd
+    # curl http://clamav.ufanet.ru/main.cvd --output main.cvd
+    # curl http://clamav.ufanet.ru/daily.cvd --output daily.cvd
     # chown clamav:clamav *.cvd
