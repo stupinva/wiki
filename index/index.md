@@ -133,7 +133,7 @@ PostgreSQL
 * [[PostgreSQL и mysql_fdw|postgresql_mysql_fdw]]
 * [[Ву Дао. Как удалить пользователя/роль PostgreSQL с привилегиями|postgresql_drop_user]] (перевод)
 * [[Ибрар Ахмед. Развенчание мифа о прозрачных огромных страницах (Transparent HugePages) для баз данных|mysql_thp]] (перевод)
-* [[Настройка потоковой реплики PostgreSQL с помощью pg_basebackup|postgresql_streamint_pg_basebackup]]
+* [[Настройка потоковой реплики PostgreSQL с помощью pg_basebackup|postgresql_streaming_pg_basebackup]]
 * [[Настройка PostgreSQL для миграции базы данных на новую версию TimescaleDB|postgresql_timescaledb_migration]]
 * [[Удаление дубликатов строк в таблицах PostgreSQL|postgresql_remove_duplicates]]
 * [[Резервное копирование и восстановление PostgreSQL|postgresql_dump_restore]]
