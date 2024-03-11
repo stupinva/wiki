@@ -144,6 +144,30 @@ JOIN в запросах UPDATE
       AND indexrelname NOT LIKE '%pkey%'
     ORDER BY pg_relation_size(schemaname ||'.'|| indexrelname) DESC;
 
+Поле описания базы данных
+-------------------------
+
+Для просмотра строк описания всех баз данных можно воспользоваться командой `\l+` клиента `psql`:
+
+                                                                                                                     List of databases
+              Name           |          Owner          | Encoding |   Collate   |    Ctype    | ICU Locale | Locale Provider |                  Access privileges                  |  Size   | Tablespace |                Description                 
+    -------------------------+-------------------------+----------+-------------+-------------+------------+-----------------+-----------------------------------------------------+---------+------------+--------------------------------------------
+     postgres                | postgres                | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            | =Tc/postgres                                       +| 7485 kB | pg_default | default administrative connection database
+                             |                         |          |             |             |            |                 | postgres=CTc/postgres                              +|         |            | 
+                             |                         |          |             |             |            |                 | zabbix=c/postgres                                   |         |            | 
+     template0               | postgres                | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            | =c/postgres                                        +| 7297 kB | pg_default | unmodifiable empty database
+                             |                         |          |             |             |            |                 | postgres=CTc/postgres                               |         |            | 
+     template1               | postgres                | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            | =c/postgres                                        +| 7369 kB | pg_default | default template for new databases
+                             |                         |          |             |             |            |                 | postgres=CTc/postgres                               |         |            | 
+
+Для того, чтобы прописать в поле описания базы данных новое значение, можно воспользоваться запросом следующего вида:
+
+    COMMENT ON DATABASE postgres IS 'default administrative connection database';
+
+Для сброса поля описания базы данных вместо строки описания нужно указать ключевое слово `NULL`:
+
+    COMMENT ON DATABASE postgres IS NULL;
+
 Просмотр количества таблиц в базе данных
 ----------------------------------------
 
