@@ -188,6 +188,7 @@ Android
 * [[Устранение проблем загрузки Debian на RAID1 и LVM через Grub|debian_raid1_lvm_grub]]
 * [[Удаление групп томов после некорректного удаления физических томов LVM|lvm_fix]]
 * [[Объединение сетевых интерфейсов в Linux|bonding_linux]]
+* [[Имя узла с точкой в приглашении в Debian|debian_hostname_dot]]
 * [[Шпаргалка по Docker|docker]]
 * [[Реми Ван Элст. nginx 1.15.2, ssl_preread_protocol, совмещение HTTPS и SSH на одном порту|nginx_ssl_preread_protocol]] (перевод)
 * [[Бернхард Кнасмюллер. GitLab: Аутентификация с использованием талона доступа|gitlab_auth_token]] (перевод)
