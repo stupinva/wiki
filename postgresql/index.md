@@ -283,6 +283,14 @@ JOIN в запросах UPDATE
 
 Если у вас очень большой кластер, вы можете воспользоваться `pg_upgradecluster` с опцией `--link option`, чтобы обновление происходило без копирования, на месте. Однако это опасно - если случится ошибка, можно потерять данные. Просто не используйте эту опцию без необходимости, т.к. `-m upgrade` работает достаточно быстро.
 
+При обновлении с версии 9.4 до версии 9.6 может потребоваться исправить права доступа к схемам `public` каждой из баз данных, предоставив полные права доступа к схемам владельцам соответствующих баз данных:
+
+    GRANT ALL ON SCHEMA public TO owner;
+
+После обновления статистика таблиц становится неактуальной, из-за чего запросы могут выполняться не оптимальным образом, а работа приложений может существенно замедлиться. Статистика таблиц обновляется в фоновом режиме, а чтобы запустить принудительное обновление статистики всех таблиц, можно воспользоваться следующей командой:
+
+    $ vacuumdb -a -Z
+
 Использованные материалы:
 
 * Документация: [Upgrading a PostgreSQL Cluster](https://www.postgresql.org/docs/10/static/upgrading.html)
@@ -291,7 +299,7 @@ JOIN в запросах UPDATE
 * [What happens if I interrupt or cancel pg_upgradecluster?](https://dba.stackexchange.com/questions/173382/what-happens-if-i-interrupt-or-cancel-pg-upgradecluster/173400)
 * [Ubuntu manpage for pg_upgradecluster](http://manpages.ubuntu.com/manpages/trusty/en/man8/pg_upgradecluster.8.html)
 
-P.S. Это руководство годится для обновления с 9.6 до 11 и с 10 до 11.
+P.S. Это руководство годится для обновления с 9.6 до 11, с 10 до 11, с 11 до 13, с 13 до 15.
 
 Источник: [Upgrade PostgreSQL from 9.6 to 10.0 on Ubuntu 16.10 - A Step-by-Step Guide](https://stackoverflow.com/a/47233300)
 
@@ -500,6 +508,29 @@ P.S. Это руководство годится для обновления с
 
     api_ufanet=# DROP USER api_ufanet_ro;
     DROP ROLE
+
+Добавление прав доступа к базе данных
+-------------------------------------
+
+Для решения обратной задачи - выдачи полного доступа к базе данных и объектам внутри неё - можно воспользоваться следующими запросами.
+
+Первым делом выдаём права доступа пользователю к базе данных:
+
+    GRANT ALL ON DATABASE db TO user;
+
+Далее выдаём права доступа ко всем схемам внутри базы данных (для примера указана только схема `public`):
+
+    GRANT ALL ON SCHEMA public TO user;
+
+Выдаём права доступа к таблицам внутри каждой из схем в базе данных (для примера указана только схема `public`):
+
+    GRANT ALL ON ALL TABLES IN SCHEMA public TO user;
+
+Выдаём права доступа к последовательностям внутри каждой из схем в базе данных (для примера указана только схема `public`):
+
+    GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO user;
+
+Источник: [postgres 9.6 set give user privileges to database](https://stackoverflow.com/questions/48330649/postgres-9-6-set-give-user-privileges-to-database)
 
 Дополнительные материалы
 ------------------------
