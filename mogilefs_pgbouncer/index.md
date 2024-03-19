@@ -16,6 +16,14 @@ MogileFS с поддержкой работы через PgBouncer
 
     pg_server_prepare => 0,
 
+Аналогичные исправления нужно внести в исходные тексты `mogstats`. Интересующий нас фрагмент находится в одноимённом файле [mogstats](https://github.com/mogilefs/MogileFS-Utils/blob/master/mogstats#L312). Строчка 312 выглядит следующим образом:
+
+    RaiseError => 1,
+
+Добавим сразу за ней строчку:
+
+    pg_server_prepare => 0,
+
 Рекомендательные блокировки
 ---------------------------
 
@@ -50,6 +58,27 @@ MogileFS с поддержкой работы через PgBouncer
 Применить эти изменения к исходным текстам можно следующим образом:
 
     $ patch -p1 < mogilefs_without_pg_advisory_locks.patch
+
+Статистика дисков
+-----------------
+
+В выводе команды `mogadm device list` могут отображаться не верные данные. Эти данные берутся из таблицы device, которая по каким-то причинам не обновляется. В журнале трекера можно найти следующие ошибки:
+
+    Mar 19 14:56:42 mogilefs-tracker-2 mogilefsd[8211]: crash log: DBD::Pg::db do failed: ERROR:  smallint out of range at /usr/share/perl5/MogileFS/Store.pm line 1886.#012 at /usr/share/perl5/MogileFS/Worker/Delete.pm line 189
+    Mar 19 14:56:43 mogilefs-tracker-2 mogilefsd[8199]: Child 8211 (delete) died: 256 (UNEXPECTED)
+    Mar 19 14:56:43 mogilefs-tracker-2 mogilefsd[8199]: Job delete has only 0, wants 1, making 1.
+
+Исправить проблему можно изменив тип поля `failcount` в таблице `file_to_delete2` со `smallint` на `integer` с помощью следующего запроса:
+
+    ALTER TABLE file_to_delete2 ALTER COLUMN failcount SET DATA TYPE integer;
+
+Также утилита `mogstats` не выводит статистику по дискам, на которых нет файлов. Интересующая нас фрагмент находится в файле [mogstats](https://github.com/mogilefs/MogileFS-Utils/blob/master/mogstats#L410). Строка 410 выглядит следующим образом:
+
+    my $stats = $dbh->selectall_arrayref('SELECT devid, COUNT(devid) FROM file_on GROUP BY 1');
+
+Заменим в ней запрос, так чтобы строчка приняла следующий вид:
+
+    my $stats = $dbh->selectall_arrayref('SELECT device.devid, COUNT(file_on.devid) FROM device LEFT JOIN file_on ON file_on.devid = device.devid WHERE device.status = \'alive\' GROUP BY 1;');
 
 Теперь можно приступить к сборке доработанного deb-пакета.
 
