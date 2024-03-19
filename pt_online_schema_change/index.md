@@ -63,6 +63,12 @@
     Query OK, 0 rows affected (2 min 59.41 sec)
     Records: 0  Duplicates: 0  Warnings: 0
 
+Точно таким же образом можно вернуть в файловую систему не занятое место из таблицы, расположенной в отдельном файле:
+
+    mysql> ALTER TABLE lh_audits ENGINE=InnoDB, ALGORITHM=INPLACE, LOCK=NONE;
+    Query OK, 0 rows affected (19 min 30.75 sec)
+    Records: 0  Duplicates: 0  Warnings: 0
+
 Использованные материалы
 ------------------------
 
