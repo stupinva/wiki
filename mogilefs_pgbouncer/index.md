@@ -186,7 +186,7 @@ MogileFS с поддержкой работы через PgBouncer
 * [[libmogilefs-perl_1.16.dsc]]
 * [[libmogilefs-perl_1.16.tar.gz]]
 
-Эти файлы можно поместить в репозиторий, например, с помощью утилиты `aptly`.
+Эти файлы можно поместить в репозиторий, например, с помощью утилиты [aptly](http://stupin.su/blog/aptly/) или [[reprepro]].
 
 Доработка и сборка пакета с сервером
 ------------------------------------
@@ -287,7 +287,7 @@ MogileFS с поддержкой работы через PgBouncer
 * [[mogilefs-server_2.70+ufanet2.tar.gz]]
 * [[mogstored_2.70+ufanet2_all.deb]]
 
-Эти файлы можно поместить в репозиторий, например, с помощью утилиты `aptly`.
+Эти файлы можно поместить в репозиторий, например, с помощью утилиты [aptly](http://stupin.su/blog/aptly/) или [[reprepro]].
 
 Доработка и сборка пакета с утилитами
 -------------------------------------
@@ -370,7 +370,7 @@ MogileFS с поддержкой работы через PgBouncer
 * [[mogilefs-utils_2.28+ufanet2.dsc]]
 * [[mogilefs-utils_2.28+ufanet2.tar.gz]]
 
-Эти файлы можно поместить в репозиторий, например, с помощью утилиты `aptly`.
+Эти файлы можно поместить в репозиторий, например, с помощью утилиты [aptly](http://stupin.su/blog/aptly/) или [[reprepro]].
 
 Дополнительные материалы
 ------------------------
@@ -380,3 +380,4 @@ MogileFS с поддержкой работы через PgBouncer
 * [Настройка буферов PostgreSQL](postgresql_buffers)
 * [How To Setup MogileFS](https://mogilefs.github.io/mogilefs-docs/InstallHowTo.html)
 * [How To Interact with MogileFS](https://mogilefs.github.io/mogilefs-docs/CommandlineUsage.html)
+* [Как работает MogileFS](http://necromant2005.blogspot.com/2009/07/mogilefs.html)
