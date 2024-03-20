@@ -95,11 +95,6 @@ MogileFS с поддержкой работы через PgBouncer
     deb http://archive.debian.org/debian/ wheezy main contrib non-free
     deb http://archive.debian.org/debian-security/ wheezy/updates main contrib non-free
     deb http://archive.debian.org/debian/ wheezy-backports main contrib non-free
-    deb-src http://repo.lo.ufanet.ru/ wheezy main contrib non-free
-
-В списке репозиториев фигурирует репозиторий `repo.lo.ufanet.ru` в нём находятся исходные пакеты, доработанные под собственные нужды. Можно обойтись и без него, если воспользоваться [репозиторием git с исходными текстами MogileFS](https://github.com/mogilefs/MogileFS-Server). Установить в систему публичный GPG-ключ, которым подписан репозиторий `repo.lo.ufanet.ru`, можно следующим образом:
-
-    # wget --quiet -O - http://repo.lo.ufanet.ru/key.gpg | apt-key add -
 
 Поскольку мы установили устаревший релиз, отключим проверку актуальности репозиториев, создав файл `/etc/apt/apt.conf.d/valid` со следующим содержимым:
 
@@ -143,37 +138,96 @@ MogileFS с поддержкой работы через PgBouncer
 
 Установим пакеты, необходимые для сборки:
 
-    # apt-get install dpkg-dev devscripts libparse-debcontrol-perl quilt fakeroot build-essential:native debhelper debconf perl sysstat libstring-crc32-perl libperlbal-perl libio-aio-perl libdbd-mysql-perl libdbi-perl libnet-netmask-perl libwww-perl libdanga-socket-perl libmogilefs-perl libsys-syscall-perl libfile-fcntllock-perl
+    # apt-get install dpkg-dev devscripts libparse-debcontrol-perl quilt fakeroot build-essential:native debhelper debconf perl sysstat libstring-crc32-perl libperlbal-perl libio-aio-perl libdbd-mysql-perl libdbi-perl libnet-netmask-perl libwww-perl libdanga-socket-perl libsys-syscall-perl libfile-fcntllock-perl git
 
-Получение исходных текстов
---------------------------
+Сборка клиента
+--------------
 
-Скачиваем исходники deb-пакета `mogilefs-server`, они автоматически распакуются в каталог `mogilefs-server-2.70`:
+Скачиваем репозитории с исходниками клиентской библиотеки MogileFS:
 
-    $ apt-get source mogilefs-server
+    $ GIT_SSL_NO_VERIFY=yes git clone https://github.com/mogilefs/perl-MogileFS-Client
 
-И переходим в каталог с распакованными исходными текстами:
+Перейдём в каталог с получеными исходным текстами:
 
-    $ cd mogilefs-server-2.70
+    $ cd perl-MogileFS-Client
 
-В качестве альтернативы можно воспользоваться репозиторием с исходниками MogileFS:
+И переключимся на используемую на сервере версию 2.16:
 
-    $ git clone https://github.com/mogilefs/MogileFS-Server
+    $ git checkout 1.16
 
-Перейти в каталог с получеными исходным текстами:
+Меняем уровень совместимости для утилиты `debhelper`:
+
+    $ echo -n "7" > debian/compat
+
+Исправим в файле `changelog` номер версии, отредактировав этот файл с помощью команды `dch -i`, добавив в его начало дополнительную запись:
+
+    libmogilefs-perl (1.16) UNRELEASED; urgency=low
+    
+      * Building version 1.16.
+    
+     -- Vladimir Stupin <stupin_v@ufanet.ru>  Wed, 20 Mar 2024 11:52:35 +0500
+
+Выполняем сборку пакета с исходниками и двоичного пакета:
+
+    $ dpkg-buildpackage -us -uc -rfakeroot
+
+В вышестоящем каталоге появятся следующие файлы с результатами сборки:
+
+* libmogilefs-perl_1.16_all.deb
+* libmogilefs-perl_1.16_amd64.changes
+* libmogilefs-perl_1.16.dsc
+* libmogilefs-perl_1.16.tar.gz
+
+Эти файлы можно поместить в репозиторий, например, с помощью утилиты `aptly`.
+
+Доработка и сборка пакета с сервером
+------------------------------------
+
+Скачиваем репозитории с исходниками сервера MogileFS:
+
+    $ GIT_SSL_NO_VERIFY=yes git clone https://github.com/mogilefs/MogileFS-Server
+
+Перейдём в каталог с получеными исходным текстами:
 
     $ cd MogileFS-Server
 
-И переключиться на используемую на сервере версию 2.70:
+И переключимся на используемую на сервере версию 2.70:
 
     $ git checkout 2.70
 
-Доработка и сборка deb-пакета
------------------------------
+Подготовим описанную выше заплатку, если она ещё не подготовлена:
 
-Переименовываем файл с исходными текстами для соответствия выбранному формату:
+    $ git diff -R ac5534a0c3d046e660fa7581c9173857f182bd81 21a66942fde3bb4f9e5ee24dac787d3c9ebbb41f lib/MogileFS/Store/Postgres.pm > ../mogilefs_without_pg_advisory_locks.patch
 
-    $ mv ../mogilefs-server_2.70.tar.gz ../mogilefs-server_2.70+ufanet1.orig.tar.gz
+Начинаем добавление новой заплатки с названием `revert_pg_advisory_revert`:
+
+    $ quilt new pg_advisory_locks_revert
+
+Добавляем отслеживание в заплатке файла `lib/MogileFS/Store/Postgres.pm`:
+
+    $ quilt add lib/MogileFS/Store/Postgres.pm
+
+Вносим в файл `lib/MogileFS/Store/Postgres.pm` изменения, отменяющие использование Advisory Locks из PostgreSQL:
+
+    $ patch -p1 < ../mogilefs_without_pg_advisory_locks.patch
+
+Вносим изменения в патч:
+
+    $ quilt refresh
+
+Начинаем добавление новой заплатки с названием `pg_server_prepare_disabled`:
+
+    $ quilt new pg_server_prepare_disabled
+
+Добавляем в заплатку отслеживание изменений в файле `lib/MogileFS/Store.pm`:
+
+    $ quilt add lib/MogileFS/Store.pm
+
+Редактируем файл `lib/MogileFS/Store.pm`, за строкой 380 с текстом `sqlite_use_immediate_transaction => 1,` добавляем строку `pg_server_prepare => 0,`.
+
+Вносим изменения в патч:
+
+    $ quilt refresh
 
 Запускаем утилиту `dch` для обновления журнала изменений пакета:
 
@@ -181,70 +235,113 @@ MogileFS с поддержкой работы через PgBouncer
 
 Вводим описание доработанной нами версии пакета:
 
-    mogilefs-server (2.70+ufanet1) wheezy; urgency=low
+    mogilefs-server (2.70+ufanet2) UNRELEASED; urgency=low
     
-      * Undoed usage of PostgreSQL advisory locks to support PgBouncer,
+      * Revert usage of PostgreSQL advisory locks to support PgBouncer,
       * Disabled option pg_server_prepare to support PgBouncer.
     
-     -- Vladimir Stupin <vladimir@stupin.su>  Wed, 18 May 2022 15:28:20 +0500
-
-Редактируем файл `lib/MogileFS/Store.pm`, за строкой 380 с текстом `sqlite_use_immediate_transaction => 1,` добавляем строку `pg_server_prepare => 0,`.
-
-Скачиваем подготовленную ранее заплатку:
-
-    $ wget --quiet --no-check-certificate https://stupin.su/wiki/mogilefs_pgbouncer/mogilefs_without_pg_advisory_locks.patch
-
-На файл `lib/MogileFS/Store/Postgres.pm` накладываем заплатку:
-
-    $ patch -p1 < mogilefs_without_pg_advisory_locks.patch
-
-Удаляем заплатку и резервную копию файла до применения заплатки:
-
-    $ rm mogilefs_without_pg_advisory_locks.patch lib/MogileFS/Store/Postgres.pm.orig
-
-Добавляем новый файл, в который записываем формат, которому соответствует архив с исходными текстами программы:
-
-    $ mkdir debian/source
-    $ echo -n "3.0 (quilt)" > debian/source/format
-
-В файле `debian/rules` меняем строчку `dh_clean -k` на `dh_prep`.
+     -- Vladimir Stupin <stupin_v@ufanet.ru>  Wed, 20 Mar 2024 12:11:23 +0500
 
 Меняем уровень совместимости для утилиты `debhelper`:
 
     $ echo -n "7" > debian/compat
 
-Фиксируем изменения в исходном пакете:
-
-    $ dpkg-source --commit
-
-В ответ на запрос `Enter the desired patch name` вводим имя заплатки `pgbouncer-support`.
-
-Приводим заголовок заплатки к следующему виду:
-
-    Description: PgBouncer support
-     * Undoed usage of PostgreSQL advisory locks to support PgBouncer,
-     * Disabled option pg_server_prepare to support PgBouncer.
-     .
-     mogilefs-server (2.70+ufanet1) wheezy; urgency=low
-     .
-       * Undoed usage of PostgreSQL advisory locks to support PgBouncer,
-       * Disabled option pg_server_prepare to support PgBouncer.
-    Author: Vladimir Stupin <vladimir@stupin.su>
-    Last-Update: <2022-05-18>
-
 Выполняем сборку доработанного deb-пакета:
 
-    $ dpkg-buildpackage -rfakeroot -us -uc
+    $ dpkg-buildpackage -us -uc -rfakeroot
 
 В результате в каталоге выше должны появиться следующие файлы:
 
-* [[mogilefsd_2.70+ufanet1_all.deb]]
-* [[mogilefs-server_2.70+ufanet1_amd64.changes]]
-* [[mogilefs-server_2.70+ufanet1.debian.tar.gz]]
-* [[mogilefs-server_2.70+ufanet1.dsc]]
-* [[mogstored_2.70+ufanet1_all.deb]]
+* mogilefsd_2.70+ufanet2_all.deb
+* mogilefs-server_2.70+ufanet2_amd64.changes
+* mogilefs-server_2.70+ufanet2.dsc
+* mogilefs-server_2.70+ufanet2.tar.gz
+* mogstored_2.70+ufanet2_all.deb
 
-Эти файлы вместе с файлом [[mogilefs-server_2.70+ufanet1.orig.tar.gz]] можно поместить в репозиторий, например, с помощью утилиты `aptly`.
+Эти файлы можно поместить в репозиторий, например, с помощью утилиты `aptly`.
+
+Доработка и сборка пакета с утилитами
+-------------------------------------
+
+Устанавливаем в систему пакет `libmogilefs-perl`, собранный нами ранее:
+
+    # dpkg -i libmogilefs-perl_1.16_all.deb
+
+Скачиваем репозитории с исходниками утилит MogileFS:
+
+    $ GIT_SSL_NO_VERIFY=yes git clone https://github.com/mogilefs/MogileFS-Utils
+
+Перейдём в каталог с получеными исходным текстами:
+
+    $ cd MogileFS-Utils
+
+И переключимся на используемую на сервере версию 2.28:
+
+    $ git checkout 2.28
+
+Начинаем добавление новой заплатки с названием `pg_server_prepare_disabled`:
+
+    $ quilt new pg_server_prepare_disabled
+
+Добавляем в заплатку отслеживание изменений в файле `mogstats`:
+
+    $ quilt add mogstats
+
+Редактируем файл `mogstats`, за строкой 312 с текстом `RaiseError => 1,` добавляем строку `pg_server_prepare => 0,`.
+
+Вносим изменения в патч:
+
+    $ quilt refresh
+
+Начинаем добавление новой заплатки с названием `listing_devices_without_files`:
+
+    $ quilt new listing_devices_without_files
+
+Добавляем в заплатку отслеживание изменений в файле `mogstats`:
+
+    $ quilt add mogstats
+
+Откроем файл `mogstats` для редактирования, перейдём к строке 411:
+
+    my $stats = $dbh->selectall_arrayref('SELECT devid, COUNT(devid) FROM file_on GROUP BY 1');
+
+Заменим в ней запрос, так чтобы строчка приняла следующий вид:
+
+    my $stats = $dbh->selectall_arrayref('SELECT device.devid, COUNT(file_on.devid) FROM device LEFT JOIN file_on ON file_on.devid = device.devid WHERE device.status = \'alive\' GROUP BY 1');
+
+Вносим изменения в патч:
+
+    $ quilt refresh
+
+Запускаем утилиту `dch` для обновления журнала изменений пакета:
+
+    $ dch -i
+
+Вводим описание доработанной нами версии пакета:
+
+    mogilefs-utils (2.28+ufanet2) UNRELEASED; urgency=low
+    
+      * Disabled option pg_server_prepare to support PgBouncer in mogstats.
+      * Added listing devices without files in mogstats.
+    
+     -- Vladimir Stupin <stupin_v@ufanet.ru>  Wed, 20 Mar 2024 12:48:41 +0500
+
+Меняем уровень совместимости для утилиты `debhelper`:
+
+    $ echo -n "7" > debian/compat
+
+Выполняем сборку доработанного deb-пакета:
+
+    $ dpkg-buildpackage -us -uc -rfakeroot
+
+В результате в каталоге выше должны появиться следующие файлы:
+
+* mogilefs-utils_2.28+ufanet2_all.deb
+* mogilefs-utils_2.28+ufanet2_amd64.changes
+* mogilefs-utils_2.28+ufanet2.dsc
+* mogilefs-utils_2.28+ufanet2.tar.gz
+
+Эти файлы можно поместить в репозиторий, например, с помощью утилиты `aptly`.
 
 Дополнительные материалы
 ------------------------
