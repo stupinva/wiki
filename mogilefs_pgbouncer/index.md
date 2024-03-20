@@ -72,6 +72,14 @@ MogileFS с поддержкой работы через PgBouncer
 
     ALTER TABLE file_to_delete2 ALTER COLUMN failcount SET DATA TYPE integer;
 
+Чтобы таблица `file_to_delete2` сразу создавалась с полем `failcount` типа `integer`, поправим исходные тексты. Интересующий нас фрагмент находится в файле [lib/MogileFS/Store](https://github.com/mogilefs/MogileFS-Server/blob/master/lib/MogileFS/Store.pm#L813). В строке 813 поле `failcount` имеет тип `TINYINT`:
+
+    failcount TINYINT UNSIGNED NOT NULL default '0',
+
+Заменим тип поля на `INT`, так что строка примет следующий вид:
+
+    failcount INT UNSIGNED NOT NULL default '0',
+
 Также утилита `mogstats` не выводит статистику по дискам, на которых нет файлов. Интересующая нас фрагмент находится в файле [mogstats](https://github.com/mogilefs/MogileFS-Utils/blob/master/mogstats#L410). Строка 410 выглядит следующим образом:
 
     my $stats = $dbh->selectall_arrayref('SELECT devid, COUNT(devid) FROM file_on GROUP BY 1');
@@ -229,6 +237,26 @@ MogileFS с поддержкой работы через PgBouncer
 
     $ quilt refresh
 
+Начинаем добавление новой заплатки с названием `file_to_delete2_failcount_int`:
+
+    $ quilt new file_to_delete2_failcount_int
+
+Добавляем в заплатку отслеживание изменений в файле `lib/MogileFS/Store.pm`:
+
+    $ quilt add lib/MogileFS/Store.pm
+
+Откроем файл `lib/MogileFS/Store` на редактирвоание, перейдём к строчке 813, которая имеет вид:
+
+    failcount TINYINT UNSIGNED NOT NULL default '0',
+
+Заменим тип поля на `INT`, так что строка примет следующий вид:
+
+    failcount INT UNSIGNED NOT NULL default '0',
+
+Вносим изменения в патч:
+
+    $ quilt refresh
+
 Запускаем утилиту `dch` для обновления журнала изменений пакета:
 
     $ dch -i
@@ -239,8 +267,9 @@ MogileFS с поддержкой работы через PgBouncer
     
       * Revert usage of PostgreSQL advisory locks to support PgBouncer,
       * Disabled option pg_server_prepare to support PgBouncer.
+      * Type of field failcount in table file_to_delete2 changed from TINYINT to INT.
     
-     -- Vladimir Stupin <stupin_v@ufanet.ru>  Wed, 20 Mar 2024 12:11:23 +0500
+     -- Vladimir Stupin <stupin_v@ufanet.ru>  Wed, 20 Mar 2024 14:43:44 +0500
 
 Меняем уровень совместимости для утилиты `debhelper`:
 
