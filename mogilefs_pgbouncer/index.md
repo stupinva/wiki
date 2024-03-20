@@ -181,10 +181,10 @@ MogileFS с поддержкой работы через PgBouncer
 
 В вышестоящем каталоге появятся следующие файлы с результатами сборки:
 
-* libmogilefs-perl_1.16_all.deb
-* libmogilefs-perl_1.16_amd64.changes
-* libmogilefs-perl_1.16.dsc
-* libmogilefs-perl_1.16.tar.gz
+* [[libmogilefs-perl_1.16_all.deb]]
+* [[libmogilefs-perl_1.16_amd64.changes]]
+* [[libmogilefs-perl_1.16.dsc]]
+* [[libmogilefs-perl_1.16.tar.gz]]
 
 Эти файлы можно поместить в репозиторий, например, с помощью утилиты `aptly`.
 
@@ -281,11 +281,11 @@ MogileFS с поддержкой работы через PgBouncer
 
 В результате в каталоге выше должны появиться следующие файлы:
 
-* mogilefsd_2.70+ufanet2_all.deb
-* mogilefs-server_2.70+ufanet2_amd64.changes
-* mogilefs-server_2.70+ufanet2.dsc
-* mogilefs-server_2.70+ufanet2.tar.gz
-* mogstored_2.70+ufanet2_all.deb
+* [[mogilefsd_2.70+ufanet2_all.deb]]
+* [[mogilefs-server_2.70+ufanet2_amd64.changes]]
+* [[mogilefs-server_2.70+ufanet2.dsc]]
+* [[mogilefs-server_2.70+ufanet2.tar.gz]]
+* [[mogstored_2.70+ufanet2_all.deb]]
 
 Эти файлы можно поместить в репозиторий, например, с помощью утилиты `aptly`.
 
@@ -365,10 +365,10 @@ MogileFS с поддержкой работы через PgBouncer
 
 В результате в каталоге выше должны появиться следующие файлы:
 
-* mogilefs-utils_2.28+ufanet2_all.deb
-* mogilefs-utils_2.28+ufanet2_amd64.changes
-* mogilefs-utils_2.28+ufanet2.dsc
-* mogilefs-utils_2.28+ufanet2.tar.gz
+* [[mogilefs-utils_2.28+ufanet2_all.deb]]
+* [[mogilefs-utils_2.28+ufanet2_amd64.changes]]
+* [[mogilefs-utils_2.28+ufanet2.dsc]]
+* [[mogilefs-utils_2.28+ufanet2.tar.gz]]
 
 Эти файлы можно поместить в репозиторий, например, с помощью утилиты `aptly`.
 
