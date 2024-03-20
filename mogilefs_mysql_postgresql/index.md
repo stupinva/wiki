@@ -1,6 +1,13 @@
 Миграция трекера MogileFS с MySQL на PostgreSQL
 ===============================================
 
+[[!tag mogilefs postgresql mysq]]
+
+Содержание
+----------
+
+[[!toc startlevel=2 levels=4]]
+
 Вступление
 ----------
 
