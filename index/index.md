@@ -25,6 +25,7 @@
 * [[Запуск Zabbix-агента в NetBSD с помощью daemontools|netbsd_daemontools_zabbix_agent]]
 * [[Установка и настройка openntpd в NetBSD|netbsd_openntpd]]
 * [[Запуск OpenNTPd в NetBSD с помощью daemontools|netbsd_daemontools_openntpd]]
+* [[Запуск chronyd в NetBSD с помощью daemontools|netbsd_daemontools_chrony]]
 * [[Запуск socklog в NetBSD с помощью daemontools|netbsd_daemontools_socklog]]
 * [[Запуск sshd в NetBSD с помощью daemontools|netbsd_daemontools_sshd]]
 * [[Запуск powerd в NetBSD с помощью daemontools|netbsd_daemontools_powerd]]
